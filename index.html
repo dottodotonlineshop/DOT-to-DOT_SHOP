@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zeleon｜海外預購代購專門店</title>
-  <!-- Google Fonts: 幾何潮流粗體與俐落字體 -->
+  <title>DOT to DOT｜海外預購代購專門店</title>
+  
+  <!-- LINE 官方 SDK (LIFF) -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- Google 字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --primary-blue: #0044cc;
@@ -37,7 +42,7 @@
       overflow-x: hidden;
     }
 
-    /* 鮮明寶藍 Header 區塊 (參考圖片設計) */
+    /* 頂部鮮明寶藍導覽列 */
     .header-banner {
       background-color: var(--primary-blue);
       color: #ffffff;
@@ -57,7 +62,6 @@
       gap: 16px;
     }
 
-    /* 品牌識別 LOGO */
     .brand-logo {
       font-size: 32px;
       font-weight: 900;
@@ -73,7 +77,6 @@
       transform: scale(1.03);
     }
 
-    /* 膠囊按鈕導覽選單 */
     .nav-pills {
       display: flex;
       align-items: center;
@@ -96,7 +99,6 @@
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      text-decoration: none;
     }
 
     .pill-btn:hover, .pill-btn.active {
@@ -106,7 +108,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    /* 右側操作圖示集 */
     .nav-actions {
       display: flex;
       align-items: center;
@@ -128,7 +129,6 @@
     .action-badge-btn:hover {
       transform: scale(1.1);
     }
-
     .action-badge-btn svg {
       width: 24px;
       height: 24px;
@@ -157,10 +157,10 @@
       border: 2px solid var(--primary-blue);
     }
 
-    /* 會員頭像小圓圈 */
+    /* 會員頭像按鈕 */
     .user-avatar-btn {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: #ffffff;
       color: var(--primary-blue);
@@ -168,10 +168,11 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      border: 1.5px solid #ffffff;
-      font-size: 13px;
+      border: 2px solid #ffffff;
+      font-size: 12px;
       font-weight: 900;
       overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .user-avatar-btn img {
       width: 100%;
@@ -179,7 +180,7 @@
       object-fit: cover;
     }
 
-    /* 購物車圖示按鈕 (含膠囊數字標籤) */
+    /* 購物車小按鈕 */
     .cart-btn-wrap {
       display: flex;
       align-items: center;
@@ -208,16 +209,16 @@
       font-weight: 900;
     }
 
-    /* 頁面主要容器 (嚴格獨立分頁路由) */
+    /* 路由分頁機制 */
     main {
       flex: 1;
       width: 100%;
     }
 
     .page-section {
-      display: none; /* 預設全隱藏，透過 JS 切換顯示唯一活動分頁 */
+      display: none;
       width: 100%;
-      animation: fadeIn 0.25s ease forwards;
+      animation: fadeIn 0.2s ease forwards;
     }
     .page-section.active {
       display: block;
@@ -228,22 +229,19 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 容器公用寬度 */
     .container {
       max-width: 1180px;
       margin: 0 auto;
       padding: 40px 20px;
     }
 
-    /* Hero Banner 區 (ABOUT US 首頁專用) */
+    /* ABOUT US 專頁 */
     .hero-container {
       background-color: var(--primary-blue);
       color: #ffffff;
       padding: 50px 20px 80px;
       text-align: center;
-      position: relative;
     }
-
     .hero-title {
       font-size: clamp(38px, 9vw, 88px);
       font-weight: 900;
@@ -254,7 +252,6 @@
       margin-bottom: 24px;
       text-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
     }
-
     .hero-desc {
       font-size: 18px;
       max-width: 680px;
@@ -263,7 +260,6 @@
       color: rgba(255, 255, 255, 0.95);
       font-weight: 500;
     }
-
     .cta-button {
       display: inline-block;
       background-color: var(--accent-lime);
@@ -272,7 +268,6 @@
       font-size: 18px;
       font-weight: 900;
       border-radius: 999px;
-      text-decoration: none;
       cursor: pointer;
       box-shadow: 0 8px 24px rgba(204, 255, 0, 0.4);
       transition: all 0.2s ease;
@@ -280,10 +275,8 @@
     }
     .cta-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(204, 255, 0, 0.6);
     }
 
-    /* 品牌承諾特性卡片 (ABOUT US 獨有) */
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -292,7 +285,6 @@
       position: relative;
       z-index: 10;
     }
-
     .feature-card {
       background: #ffffff;
       padding: 30px;
@@ -312,7 +304,7 @@
       line-height: 1.7;
     }
 
-    /* 商品列表 (SHOP ALL 專頁) */
+    /* SHOP ALL 專頁 */
     .section-header {
       margin-bottom: 30px;
     }
@@ -334,7 +326,6 @@
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 28px;
     }
-
     .product-card {
       background: #ffffff;
       border: 1.5px solid var(--border-color);
@@ -349,20 +340,17 @@
       box-shadow: 0 14px 30px rgba(0, 30, 100, 0.08);
       border-color: var(--primary-blue);
     }
-
     .product-img-wrap {
       width: 100%;
       height: 240px;
       background: #f1f3f7;
       position: relative;
-      overflow: hidden;
     }
     .product-img-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-
     .preorder-badge {
       position: absolute;
       top: 12px;
@@ -373,7 +361,6 @@
       font-weight: 900;
       padding: 4px 10px;
       border-radius: 999px;
-      letter-spacing: 0.5px;
     }
 
     .product-content {
@@ -382,15 +369,12 @@
       flex-direction: column;
       flex: 1;
     }
-
     .product-name {
       font-size: 17px;
       font-weight: 800;
-      line-height: 1.4;
       margin-bottom: 8px;
       color: #111;
     }
-
     .product-eta {
       font-size: 12px;
       color: #7b46ff;
@@ -401,14 +385,12 @@
       align-self: flex-start;
       margin-bottom: 14px;
     }
-
     .spec-label {
       font-size: 12px;
       font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 6px;
     }
-
     .spec-select {
       width: 100%;
       padding: 9px 12px;
@@ -420,24 +402,17 @@
       outline: none;
       background: #fff;
     }
-    .spec-select:focus {
-      border-color: var(--primary-blue);
-    }
-
     .product-foot {
       margin-top: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
     }
-
     .product-price {
       font-size: 20px;
       font-weight: 900;
       color: var(--primary-blue);
     }
-
     .add-cart-btn {
       background: var(--primary-blue);
       color: #ffffff;
@@ -447,20 +422,18 @@
       font-size: 13px;
       font-weight: 800;
       cursor: pointer;
-      transition: background 0.15s;
     }
     .add-cart-btn:hover {
       background: #003399;
     }
 
-    /* 公告頁面 (NOTICE!) */
+    /* NOTICE 專頁 */
     .notice-item {
       background: #fff;
       border-left: 5px solid var(--primary-blue);
       padding: 20px 24px;
       border-radius: 0 12px 12px 0;
       margin-bottom: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       border-top: 1px solid var(--border-color);
       border-right: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
@@ -482,13 +455,13 @@
       line-height: 1.6;
     }
 
-    /* 常見問題 (Q&A) 頁面 */
+    /* Q&A 專頁 */
     .qa-box {
       border: 1.5px solid var(--border-color);
       border-radius: 12px;
       margin-bottom: 14px;
-      overflow: hidden;
       background: #fff;
+      overflow: hidden;
     }
     .qa-q {
       padding: 18px 22px;
@@ -497,11 +470,7 @@
       cursor: pointer;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       background: #fafbff;
-    }
-    .qa-q:hover {
-      color: var(--primary-blue);
     }
     .qa-a {
       padding: 20px 22px;
@@ -511,16 +480,13 @@
       border-top: 1px solid var(--border-color);
     }
 
-    /* 連線開箱 (NEW POST) 頁面 */
+    /* NEW POST 專頁 */
     .blog-card {
       background: #fff;
       border: 1.5px solid var(--border-color);
       border-radius: 16px;
-      overflow: hidden;
       margin-bottom: 24px;
-    }
-    .blog-header {
-      padding: 20px 24px;
+      padding: 24px;
     }
     .blog-tag {
       display: inline-block;
@@ -543,7 +509,7 @@
       line-height: 1.7;
     }
 
-    /* 購物車側滑抽屜 (Slide Cart Drawer) */
+    /* 購物車抽屜 */
     .cart-drawer-overlay {
       position: fixed;
       inset: 0;
@@ -552,10 +518,7 @@
       z-index: 2000;
       display: none;
     }
-    .cart-drawer-overlay.active {
-      display: block;
-    }
-
+    .cart-drawer-overlay.active { display: block; }
     .cart-drawer {
       position: fixed;
       top: 0;
@@ -570,10 +533,7 @@
       box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .cart-drawer.active {
-      right: 0;
-    }
-
+    .cart-drawer.active { right: 0; }
     .drawer-head {
       padding: 20px 24px;
       border-bottom: 1.5px solid var(--border-color);
@@ -582,26 +542,9 @@
       align-items: center;
       background: var(--accent-gray);
     }
-    .drawer-title {
-      font-size: 18px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-    .drawer-close {
-      background: none;
-      border: none;
-      font-size: 22px;
-      font-weight: 800;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-
-    .drawer-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
+    .drawer-title { font-size: 18px; font-weight: 900; }
+    .drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
     .cart-item {
       display: flex;
       gap: 14px;
@@ -609,48 +552,13 @@
       margin-bottom: 16px;
       border-bottom: 1px solid var(--border-color);
     }
-    .cart-item-img {
-      width: 70px;
-      height: 70px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #eee;
-    }
-    .cart-item-info {
-      flex: 1;
-    }
-    .cart-item-title {
-      font-size: 14px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-    .cart-item-spec {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .cart-item-eta {
-      font-size: 11px;
-      color: #7b46ff;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .cart-item-price {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--primary-blue);
-    }
-    .cart-item-del {
-      background: none;
-      border: none;
-      color: var(--danger-red);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-left: auto;
-      align-self: flex-start;
-    }
-
+    .cart-item-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+    .cart-item-spec { font-size: 12px; color: var(--text-muted); }
+    .cart-item-eta { font-size: 11px; color: #7b46ff; font-weight: 700; margin: 4px 0; }
+    .cart-item-price { font-size: 14px; font-weight: 900; color: var(--primary-blue); }
+    .cart-item-del { background: none; border: none; color: var(--danger-red); font-size: 12px; font-weight: 700; cursor: pointer; }
     .split-ship-tip {
       background: #eff6ff;
       border: 1px dashed var(--primary-blue);
@@ -658,32 +566,12 @@
       border-radius: 8px;
       font-size: 12px;
       color: var(--primary-blue);
-      line-height: 1.5;
       margin-bottom: 16px;
       font-weight: 600;
     }
-
-    .drawer-foot {
-      padding: 20px;
-      border-top: 1.5px solid var(--border-color);
-      background: #fafafa;
-    }
-    .foot-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .foot-total {
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--primary-blue);
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border-color);
-    }
-
+    .drawer-foot { padding: 20px; border-top: 1.5px solid var(--border-color); background: #fafafa; }
+    .foot-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; font-weight: 600; }
+    .foot-total { font-size: 18px; font-weight: 900; color: var(--primary-blue); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
     .checkout-btn {
       width: 100%;
       background: var(--primary-blue);
@@ -695,13 +583,9 @@
       font-weight: 900;
       margin-top: 14px;
       cursor: pointer;
-      transition: background 0.15s;
-    }
-    .checkout-btn:hover {
-      background: #003399;
     }
 
-    /* 結帳確認彈窗 */
+    /* 彈窗 */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -713,40 +597,20 @@
       justify-content: center;
       padding: 20px;
     }
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
     .modal-box {
       background: #ffffff;
       width: 100%;
       max-width: 520px;
       border-radius: 18px;
       padding: 28px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
       max-height: 90vh;
       overflow-y: auto;
     }
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .modal-title {
-      font-size: 20px;
-      font-weight: 900;
-      color: #111;
-    }
-    .form-group {
-      margin-bottom: 14px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      color: #333;
-    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: 900; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
     .form-input {
       width: 100%;
       padding: 10px 14px;
@@ -755,22 +619,15 @@
       font-size: 14px;
       outline: none;
     }
-    .form-input:focus {
-      border-color: var(--primary-blue);
-    }
+    .form-input:focus { border-color: var(--primary-blue); }
 
-    /* 會員彈窗 (LINE / Google 登入模擬) */
-    .auth-options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
-    }
+    /* LINE 官方登入按鈕 */
     .line-login-btn {
+      width: 100%;
       background: var(--line-green);
       color: #ffffff;
       border: none;
-      padding: 12px;
+      padding: 14px;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 800;
@@ -779,23 +636,10 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.3);
     }
-    .google-login-btn {
-      background: #ffffff;
-      border: 1.5px solid #dadce0;
-      color: #3c4043;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+    .line-login-btn:hover { background: #05b34c; }
 
-    /* 頁尾 */
     footer {
       background: var(--accent-black);
       color: #888888;
@@ -804,30 +648,15 @@
       text-align: center;
       margin-top: auto;
     }
-    footer a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 700;
-    }
-    .admin-link {
-      color: #555;
-      font-size: 11px;
-      margin-top: 14px;
-      display: inline-block;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
-  <!-- 鮮明寶藍導覽列 (1:1 復刻版型) -->
+  <!-- 頂部鮮明寶藍導覽列 -->
   <header class="header-banner">
     <div class="nav-container">
-      
-      <!-- LOGO -->
-      <div class="brand-logo" onclick="switchPage('about')">Zeleon</div>
+      <div class="brand-logo" onclick="switchPage('about')">DOT to DOT</div>
 
-      <!-- 膠囊分頁按鈕 (單頁路由切換) -->
       <nav class="nav-pills">
         <button class="pill-btn active" id="btn-about" onclick="switchPage('about')">ABOUT US</button>
         <button class="pill-btn" id="btn-notice" onclick="switchPage('notice')">NOTICE!</button>
@@ -836,31 +665,27 @@
         <button class="pill-btn" id="btn-shop" onclick="switchPage('shop')">SHOP ALL</button>
       </nav>
 
-      <!-- 右側動作圖示 -->
       <div class="nav-actions">
-        <!-- 通知鈴鐺 -->
-        <button class="action-badge-btn" onclick="switchPage('notice')" title="出貨通知">
+        <button class="action-badge-btn" onclick="switchPage('notice')" title="最新公告">
           <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          <span class="badge-count" id="badge-notice">2</span>
+          <span class="badge-count">2</span>
         </button>
 
-        <!-- 會員頭像 (點擊打開 LINE / Google 會員連動) -->
-        <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="會員中心">
+        <!-- 會員頭像 (點擊開關會員中心) -->
+        <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="LINE 會員">
           <span id="avatar-text">LINE</span>
         </div>
 
-        <!-- 購物車按鈕 -->
         <div class="cart-btn-wrap" onclick="toggleCartDrawer(true)">
           <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
           <span class="cart-num" id="cart-counter">0</span>
         </div>
       </div>
-
     </div>
   </header>
 
   <main>
-    <!-- 分頁 1：ABOUT US (獨立純淨頁，向下滑動絕不包含 NOTICE 或商品) -->
+    <!-- 分頁 1：ABOUT US -->
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
@@ -880,119 +705,85 @@
           </div>
           <div class="feature-card">
             <h3>📲 LINE 官方即時連動</h3>
-            <p>支援以 LINE ID 下單，綁定會員後可隨時在 LINE 官方帳號接收專屬物流進度推播，每件商品狀態即時掌控。</p>
+            <p>支援以 LINE 官方帳號無感授權登入，自動帶入你的 LINE 資訊，每件商品拆單狀態即時掌控。</p>
           </div>
-        </div>
-
-        <div style="margin-top: 60px; text-align: center;">
-          <h2 style="font-size: 24px; font-weight: 900; margin-bottom: 12px;">關於 ZELEON 團隊</h2>
-          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.8; max-width: 720px; margin: 0 auto;">
-            我們是一群常駐日韓與台灣的潮流買手。傳統賣貨便經常因單一品項缺貨而導致整單刪單，為了解決長期代購愛好者的困擾，我們自建了這套「自由拆單出貨」預購收單系統，帶給你安心透明的購物體驗。
-          </p>
         </div>
       </div>
     </section>
 
-    <!-- 分頁 2：NOTICE! 出貨與預購即時公告 -->
+    <!-- 分頁 2：NOTICE! -->
     <section id="page-notice" class="page-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">NOTICE & ANNOUNCEMENTS</h2>
           <p class="section-subtitle">最新到貨批次、國際航班清關狀態與重要營業公告</p>
         </div>
-
         <div class="notice-item">
           <div class="notice-date">2026.09.20 ・ 物流通知</div>
           <div class="notice-title">【日本秋季連線 第一批到貨】分批出貨啟動</div>
-          <div class="notice-body">9/1 至 9/10 訂購之日版工裝外套與球鞋現已全數抵達台灣物流倉，已依訂單順序分拆寄出，超商寄件簡訊已同步發送；同單內若有公仔模型將持續保留至下一檔期。</div>
+          <div class="notice-body">9/1 至 9/10 訂購之日版工裝外套與球鞋現已全數抵達台灣物流倉，已依訂單順序分拆寄出；同單內若有公仔模型將持續保留至下一檔期。</div>
         </div>
-
         <div class="notice-item">
           <div class="notice-date">2026.09.15 ・ 官方政策</div>
           <div class="notice-title">關於海外預購商品分批拆單出貨須知</div>
-          <div class="notice-body">本站支援「同筆訂單、先到先出貨」機制。當你的訂單中有不同到貨期的商品，每抵達一批即寄出一筆，運費計算與收件門市皆可透過 LINE 官方帳號隨時修改。</div>
+          <div class="notice-body">本站支援「同筆訂單、先到先出貨」機制。當你的訂單中有不同到貨期的商品，每抵達一批即寄出一筆，運費計算皆可透過 LINE 官方帳號隨時修改。</div>
         </div>
       </div>
     </section>
 
-    <!-- 分頁 3：Q&A 常見問題 -->
+    <!-- 分頁 3：Q&A -->
     <section id="page-qa" class="page-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
           <p class="section-subtitle">關於訂單拆單、付款方式與海外配送時程說明</p>
         </div>
-
         <div class="qa-box">
           <div class="qa-q">Q1：在同一張訂單買了現貨和等半年的模型，真的會分開出貨嗎？ <span>＋</span></div>
-          <div class="qa-a">會的！傳統平台會強制整單卡死，而在 Zeleon，我們的後台系統會將您的購物車自動拆解為「獨立品項行」。只要商品提早抵台，我們便會先行包裝出貨，不需等待其他長期待貨品項。</div>
+          <div class="qa-a">會的！我們的後台系統會將您的購物車自動拆解為「獨立品項行」。只要商品提早抵台，我們便會先行包裝出貨，不需等待其他長期待貨品項。</div>
         </div>
-
         <div class="qa-box">
-          <div class="qa-q">Q2：如果其中一樣商品在國外遇到店家斷貨，會整筆取消嗎？ <span>＋</span></div>
-          <div class="qa-a">不會。我們只會將該斷貨品項做單獨退款處理，其餘已採購到的預購商品正常留存等待出貨，不會強制整單取消。</div>
-        </div>
-
-        <div class="qa-box">
-          <div class="qa-q">Q3：下單後如何連動 LINE 官方帳號追蹤訂單？ <span>＋</span></div>
-          <div class="qa-a">結帳時請填寫您的 LINE ID 或 LINE 顯示名稱。送出訂單後，系統將自動寫入試算表並發送確認訊息至您的 LINE。</div>
+          <div class="qa-q">Q2：如果其中一樣商品在國外斷貨，會整筆取消嗎？ <span>＋</span></div>
+          <div class="qa-a">不會。我們只會將該斷貨品項單獨退款處理，其餘已採購到的預購商品正常留存等待出貨，不會強制整單取消。</div>
         </div>
       </div>
     </section>
 
-    <!-- 分頁 4：NEW POST 連線開箱與最新檔期日誌 -->
+    <!-- 分頁 4：NEW POST -->
     <section id="page-newpost" class="page-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">BUYER'S LOG & JOURNAL</h2>
           <p class="section-subtitle">現場連線實拍、選品指南與每週好物推薦</p>
         </div>
-
         <div class="blog-card">
-          <div class="blog-header">
-            <span class="blog-tag">現場連線實況</span>
-            <div class="blog-title">直擊東京原宿街頭！2026 秋冬限定金屬機能工裝外套開箱</div>
-            <div class="blog-desc">這次現場排隊實測版型微寬鬆，防風布料挺度非常高。預購單正開放中，第一批預計下週結單並空運回台。</div>
-          </div>
-        </div>
-
-        <div class="blog-card">
-          <div class="blog-header">
-            <span class="blog-tag">收藏家專欄</span>
-            <div class="blog-title">海外限定 1/7 比例模型訂購注意事項與半年長期等待保證</div>
-            <div class="blog-desc">模型出貨週期通常為半年至一年，我們全程採用氣泡柱加強盒裝，保證八角尖尖，歡迎安心下訂。</div>
-          </div>
+          <span class="blog-tag">現場連線實況</span>
+          <div class="blog-title">直擊東京原宿街頭！2026 秋冬限定金屬機能工裝外套開箱</div>
+          <div class="blog-desc">這次現場排隊實測版型微寬鬆，防風布料挺度非常高。預購單正開放中，第一批預計下週結單並空運回台。</div>
         </div>
       </div>
     </section>
 
-    <!-- 分頁 5：SHOP ALL 所有接單商品 (核心購物車頁) -->
+    <!-- 分頁 5：SHOP ALL (商品清單) -->
     <section id="page-shop" class="page-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">ALL PRE-ORDER PRODUCTS</h2>
           <p class="section-subtitle">點選商品規格直接加入購物車，結帳自動連動後台試算表</p>
         </div>
-
-        <div class="product-grid" id="product-grid-container">
-          <!-- 由 JS 動態生成商品卡片 -->
-        </div>
+        <div class="product-grid" id="product-grid-container"></div>
       </div>
     </section>
   </main>
 
-  <!-- 購物車側邊抽屜 -->
+  <!-- 購物車抽屜 -->
   <div class="cart-drawer-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
     <div class="drawer-head">
       <div class="drawer-title">購物車清單 (<span id="drawer-count">0</span>)</div>
       <button class="drawer-close" onclick="toggleCartDrawer(false)">✕</button>
     </div>
-
-    <div class="drawer-body" id="cart-items-container">
-      <!-- 購物車內容動態渲染 -->
-    </div>
-
+    <div class="drawer-body" id="cart-items-container"></div>
     <div class="drawer-foot">
       <div class="split-ship-tip">
         💡 提示：本單品項到貨期不同時將「自動拆單出貨」，提早到的包裹會優先寄發！
@@ -1009,7 +800,7 @@
     </div>
   </aside>
 
-  <!-- 結帳填單彈窗 (整合 Google 試算表 & LINE 送單) -->
+  <!-- 結帳填單彈窗 -->
   <div class="modal-overlay" id="checkout-modal">
     <div class="modal-box">
       <div class="modal-head">
@@ -1023,90 +814,81 @@
           <input type="text" class="form-input" id="buyer-name" required placeholder="例如：陳大明">
         </div>
         <div class="form-group">
-          <label>LINE 官方帳號 ID / 顯示名稱 *</label>
-          <input type="text" class="form-input" id="buyer-line" required placeholder="例如：ming_chen（方便發送出貨通知）">
+          <label>LINE 暱稱 / User ID *</label>
+          <input type="text" class="form-input" id="buyer-line" required placeholder="例如：ming_chen">
         </div>
         <div class="form-group">
           <label>手機號碼 *</label>
           <input type="tel" class="form-input" id="buyer-phone" required placeholder="0912-345-678">
         </div>
         <div class="form-group">
-          <label>取件 7-11 或全家門市名稱 / 店號 *</label>
+          <label>取件超商門市名稱 / 店號 *</label>
           <input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)">
         </div>
         <div class="form-group">
           <label>訂單備註 / 拆單出貨偏好</label>
-          <input type="text" class="form-input" id="buyer-note" placeholder="例如：衣服提早到請直接寄出">
+          <input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出">
         </div>
-
         <button type="submit" class="checkout-btn" id="submit-order-btn">確認送出預購單</button>
       </form>
     </div>
   </div>
 
-  <!-- 會員登入連動彈窗 (LINE / Google) -->
+  <!-- LINE 會員連動彈窗 -->
   <div class="modal-overlay" id="member-modal">
     <div class="modal-box" style="text-align: center;">
       <div class="modal-head">
-        <div class="modal-title">會員中心連動</div>
+        <div class="modal-title">LINE 會員中心</div>
         <button class="drawer-close" onclick="closeMemberModal()">✕</button>
       </div>
 
+      <!-- 未登入狀態 -->
       <div id="auth-unlogged">
         <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-          綁定 LINE 或 Google 帳號，即時查驗預購商品獨立拆單進度
+          透過 LINE 官方帳號無感授權登入，自動帶入寄件資訊並追蹤個人拆單進度
         </p>
-        <div class="auth-options">
-          <button class="line-login-btn" onclick="mockLogin('line')">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
-            使用 LINE 帳號快速登入
-          </button>
-          <button class="google-login-btn" onclick="mockLogin('google')">
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
-            使用 Google 帳戶登入
-          </button>
-        </div>
+        <button class="line-login-btn" onclick="loginWithLine()">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
+          使用 LINE 帳號一鍵登入
+        </button>
       </div>
 
+      <!-- 已登入狀態 -->
       <div id="auth-logged" style="display: none; text-align: left;">
-        <div style="background: var(--accent-gray); padding: 14px; border-radius: 10px; margin-bottom: 16px;">
-          <div style="font-weight: 800;" id="user-display-name">使用者名稱</div>
-          <div style="font-size: 12px; color: var(--text-muted);" id="user-display-id">ID: @line_user</div>
-        </div>
-        <div style="font-size: 14px; font-weight: 800; margin-bottom: 8px;">近期代購獨立拆單追蹤：</div>
-        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-size: 13px; margin-bottom: 8px;">
-          <div style="display: flex; justify-content: space-between; font-weight: 700;">
-            <span>原宿聯名外套 (黑-L)</span>
-            <span style="color: #06C755;">● 已抵台寄出 (單號: 781923)</span>
+        <div style="background: var(--accent-gray); padding: 14px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+          <img id="user-profile-pic" src="" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+          <div>
+            <div style="font-weight: 800; font-size: 16px;" id="user-display-name">LINE 用戶</div>
+            <div style="font-size: 11px; color: var(--text-muted); word-break: break-all;" id="user-display-id">ID: 載入中...</div>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">出貨時間：2026/09/18</div>
         </div>
-        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-size: 13px;">
-          <div style="display: flex; justify-content: space-between; font-weight: 700;">
-            <span>1/7 原創手辦公仔 (預約版)</span>
-            <span style="color: #7b46ff;">● 預購留存 (預計半年後抵台)</span>
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">狀態：廠商排程生產中</div>
-        </div>
-        <button class="checkout-btn" style="background: #333; margin-top: 20px;" onclick="mockLogout()">登出帳號</button>
-      </div>
 
+        <div style="font-size: 14px; font-weight: 800; margin-bottom: 8px;">你的預購商品獨立出貨進度：</div>
+        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-weight: 700;">
+            <span>工裝機能外套 (黑-L)</span>
+            <span style="color: #06C755;">● 抵台寄出 (單號: 881290)</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">批次：日本秋季第一梯</div>
+        </div>
+
+        <button class="checkout-btn" style="background: #444; margin-top: 16px;" onclick="logoutLine()">登出 LINE 帳號</button>
+      </div>
     </div>
   </div>
 
-  <!-- 頁尾 -->
   <footer>
-    <div style="max-width: 1000px; margin: 0 auto; line-height: 1.8;">
-      <p style="font-weight: 800; color: #fff; font-size: 16px; margin-bottom: 8px;">ZELEON PRE-ORDER SYSTEM</p>
-      <p>© 2026 ZELEON CO. 保留一切權利。海外代購屬委任契約給付，各商品出貨週期依官方發貨為準。</p>
-      <div style="margin-top: 14px;">
-        <span class="admin-link" onclick="promptGasWebhook()">⚙️ 設定 Google Apps Script Webhook 網址</span>
-      </div>
-    </div>
+    <p style="font-weight: 800; color: #fff; font-size: 16px; margin-bottom: 8px;">DOT to DOT ONLINE STORE</p>
+    <p>© 2026 DOT to DOT. 保留一切權利。海外代購委任服務。</p>
   </footer>
 
   <script>
-    // 預購商品清單 (可自由增減)
+    // ==========================================
+    // 【重要】請在此處填入你在 LINE Developers 取得的 LIFF ID
+    // ==========================================
+    const MY_LIFF_ID = "YOUR_LIFF_ID_HERE"; 
+
+    // 商品資料庫
     const PRODUCTS = [
       {
         id: 'p1',
@@ -1126,7 +908,7 @@
       },
       {
         id: 'p3',
-        name: '韓系高磅數復古厚底復古運動鞋',
+        name: '韓系高磅數復古厚底運動鞋',
         price: 2450,
         eta: '預計 10-14 天抵台出貨',
         img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80',
@@ -1142,34 +924,93 @@
       }
     ];
 
-    // 購物車狀態
     let cart = [];
-    let currentGasWebhook = localStorage.getItem('zeleon_gas_webhook') || '';
+    let currentUser = null;
 
-    // 初始化渲染
-    window.addEventListener('DOMContentLoaded', () => {
+    // 啟動與初始化 LIFF
+    window.addEventListener('DOMContentLoaded', async () => {
       renderProducts();
       updateCartDisplay();
+      await initializeLiff();
     });
 
-    // 嚴格單頁路由切換
+    async function initializeLiff() {
+      if (MY_LIFF_ID === "YOUR_LIFF_ID_HERE") {
+        console.warn("尚未填入 LIFF ID，LINE 登入將處於展示模式。");
+        return;
+      }
+      try {
+        await liff.init({ liffId: MY_LIFF_ID });
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile();
+          handleUserLoggedIn(profile);
+        }
+      } catch (err) {
+        console.error("LIFF 初始化失敗：", err);
+      }
+    }
+
+    // 執行真實 LINE 登入跳轉
+    function loginWithLine() {
+      if (MY_LIFF_ID === "YOUR_LIFF_ID_HERE") {
+        alert("請先在代碼中填入你的 LIFF ID！");
+        return;
+      }
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      }
+    }
+
+    // 登出 LINE
+    function logoutLine() {
+      if (liff.isLoggedIn()) {
+        liff.logout();
+        window.location.reload();
+      }
+    }
+
+    // 使用者登入成功處理
+    function handleUserLoggedIn(profile) {
+      currentUser = profile;
+
+      // 替換右上方頭像為使用者 LINE 真實大頭貼
+      const avatarSlot = document.getElementById('user-avatar-slot');
+      if (profile.pictureUrl) {
+        avatarSlot.innerHTML = `<img src="${profile.pictureUrl}" alt="${profile.displayName}">`;
+      } else {
+        avatarSlot.innerHTML = profile.displayName.charAt(0);
+      }
+
+      // 會員中心視窗資料填入
+      document.getElementById('auth-unlogged').style.display = 'none';
+      document.getElementById('auth-logged').style.display = 'block';
+      document.getElementById('user-display-name').textContent = profile.displayName;
+      document.getElementById('user-display-id').textContent = 'LINE ID: ' + profile.userId;
+      if (profile.pictureUrl) {
+        document.getElementById('user-profile-pic').src = profile.pictureUrl;
+      }
+
+      // 自動帶入結帳表單中的姓名與 LINE 欄位
+      const buyerNameInput = document.getElementById('buyer-name');
+      const buyerLineInput = document.getElementById('buyer-line');
+      if (buyerNameInput && !buyerNameInput.value) buyerNameInput.value = profile.displayName;
+      if (buyerLineInput && !buyerLineInput.value) buyerLineInput.value = `${profile.displayName} (${profile.userId.slice(0, 8)}...)`;
+    }
+
+    // 頁面獨立切換
     function switchPage(pageId) {
-      // 隱藏所有分頁
       document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-      // 移除所有導覽按鈕 active 樣式
       document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
 
-      // 顯示目標分頁
       const targetSec = document.getElementById('page-' + pageId);
       const targetBtn = document.getElementById('btn-' + pageId);
       if (targetSec) targetSec.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
 
-      // 切換後自動回到頁首頂部
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 渲染商品清單 (SHOP ALL)
+    // 渲染商品列表
     function renderProducts() {
       const container = document.getElementById('product-grid-container');
       if (!container) return;
@@ -1220,13 +1061,11 @@
       toggleCartDrawer(true);
     }
 
-    // 刪除購物車品項
     function removeCartItem(cartItemId) {
       cart = cart.filter(i => i.cartItemId !== cartItemId);
       updateCartDisplay();
     }
 
-    // 更新購物車所有顯示數值
     function updateCartDisplay() {
       document.getElementById('cart-counter').textContent = cart.length;
       document.getElementById('drawer-count').textContent = cart.length;
@@ -1265,7 +1104,6 @@
       document.getElementById('cart-total').textContent = `NT$ ${total.toLocaleString()}`;
     }
 
-    // 開關購物車抽屜
     function toggleCartDrawer(open) {
       const drawer = document.getElementById('cart-drawer');
       const overlay = document.getElementById('cart-overlay');
@@ -1278,7 +1116,6 @@
       }
     }
 
-    // 結帳彈窗處理
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -1292,49 +1129,6 @@
       document.getElementById('checkout-modal').classList.remove('active');
     }
 
-    // 提交訂單 (分拆品項送入 Google 試算表)
-    async function handleOrderSubmit(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submit-order-btn');
-      btn.disabled = true;
-      btn.textContent = '訂單連動送出中...';
-
-      const orderData = {
-        orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-        buyerName: document.getElementById('buyer-name').value,
-        buyerLine: document.getElementById('buyer-line').value,
-        buyerPhone: document.getElementById('buyer-phone').value,
-        buyerStore: document.getElementById('buyer-store').value,
-        buyerNote: document.getElementById('buyer-note').value,
-        orderDate: new Date().toLocaleString(),
-        items: cart // 購物車內所有個別品項
-      };
-
-      // 若有設定 GAS Webhook，透過 POST 傳輸
-      if (currentGasWebhook) {
-        try {
-          await fetch(currentGasWebhook, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-          });
-        } catch (err) {
-          console.warn('Webhook 送出失敗：', err);
-        }
-      }
-
-      alert(`🎉 預購訂單已送出！\n\n訂單編號：${orderData.orderId}\n已為您啟用「自動拆單出貨」服務，提早抵達的商品將優先寄送！`);
-
-      cart = [];
-      updateCartDisplay();
-      closeCheckoutModal();
-      document.getElementById('order-form').reset();
-      btn.disabled = false;
-      btn.textContent = '確認送出預購單';
-    }
-
-    // 會員中心開關與模擬登入
     function openMemberModal() {
       document.getElementById('member-modal').classList.add('active');
     }
@@ -1342,35 +1136,15 @@
       document.getElementById('member-modal').classList.remove('active');
     }
 
-    function mockLogin(type) {
-      document.getElementById('auth-unlogged').style.display = 'none';
-      document.getElementById('auth-logged').style.display = 'block';
-
-      if (type === 'line') {
-        document.getElementById('user-display-name').textContent = 'LINE 官方綁定用戶';
-        document.getElementById('user-display-id').textContent = 'LINE ID: @buyer_japan88';
-        document.getElementById('avatar-text').textContent = 'LINE';
-      } else {
-        document.getElementById('user-display-name').textContent = 'Google Account User';
-        document.getElementById('user-display-id').textContent = 'buyer@gmail.com';
-        document.getElementById('avatar-text').textContent = 'G';
-      }
-    }
-
-    function mockLogout() {
-      document.getElementById('auth-unlogged').style.display = 'block';
-      document.getElementById('auth-logged').style.display = 'none';
-      document.getElementById('avatar-text').textContent = 'LINE';
-    }
-
-    // 設定 Google Apps Script Webhook 網址
-    function promptGasWebhook() {
-      const url = prompt('請輸入你的 Google Apps Script Web 應用程式網址：', currentGasWebhook);
-      if (url !== null) {
-        currentGasWebhook = url.trim();
-        localStorage.setItem('zeleon_gas_webhook', currentGasWebhook);
-        alert('Google 試算表 Webhook 網址已更新儲存！');
-      }
+    // 訂單送出 (拆單邏輯)
+    function handleOrderSubmit(e) {
+      e.preventDefault();
+      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+      alert(`🎉 預購訂單已送出！\n\n訂單編號：${orderId}\n已為您啟用「自動拆單出貨」服務，提早抵達的商品將優先寄送！`);
+      cart = [];
+      updateCartDisplay();
+      closeCheckoutModal();
+      document.getElementById('order-form').reset();
     }
   </script>
 </body>
