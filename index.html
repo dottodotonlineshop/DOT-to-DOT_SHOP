@@ -8,6 +8,9 @@
   <!-- LINE 官方 SDK (LIFF) -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
+  <!-- Google 官方登入 SDK (Google Identity Services) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- Google 字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -180,7 +183,7 @@
       object-fit: cover;
     }
 
-    /* 購物車小按鈕 */
+    /* 購物車按鈕 */
     .cart-btn-wrap {
       display: flex;
       align-items: center;
@@ -235,7 +238,7 @@
       padding: 40px 20px;
     }
 
-    /* ABOUT US 專頁 */
+    /* ABOUT US */
     .hero-container {
       background-color: var(--primary-blue);
       color: #ffffff;
@@ -304,7 +307,7 @@
       line-height: 1.7;
     }
 
-    /* SHOP ALL 專頁 */
+    /* SHOP ALL */
     .section-header {
       margin-bottom: 30px;
     }
@@ -427,7 +430,7 @@
       background: #003399;
     }
 
-    /* NOTICE 專頁 */
+    /* NOTICE */
     .notice-item {
       background: #fff;
       border-left: 5px solid var(--primary-blue);
@@ -455,7 +458,7 @@
       line-height: 1.6;
     }
 
-    /* Q&A 專頁 */
+    /* Q&A */
     .qa-box {
       border: 1.5px solid var(--border-color);
       border-radius: 12px;
@@ -480,7 +483,7 @@
       border-top: 1px solid var(--border-color);
     }
 
-    /* NEW POST 專頁 */
+    /* NEW POST */
     .blog-card {
       background: #fff;
       border: 1.5px solid var(--border-color);
@@ -621,13 +624,20 @@
     }
     .form-input:focus { border-color: var(--primary-blue); }
 
-    /* LINE 官方登入按鈕 */
+    /* 登入按鈕群組 */
+    .auth-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
     .line-login-btn {
       width: 100%;
       background: var(--line-green);
       color: #ffffff;
       border: none;
-      padding: 14px;
+      padding: 13px;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 800;
@@ -636,9 +646,16 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.3);
+      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.25);
     }
     .line-login-btn:hover { background: #05b34c; }
+
+    /* Google 登入按鈕外層自訂樣式 */
+    .google-btn-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
 
     footer {
       background: var(--accent-black);
@@ -672,8 +689,8 @@
         </button>
 
         <!-- 會員頭像 (點擊開關會員中心) -->
-        <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="LINE 會員">
-          <span id="avatar-text">LINE</span>
+        <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="會員中心">
+          <span id="avatar-text">會員</span>
         </div>
 
         <div class="cart-btn-wrap" onclick="toggleCartDrawer(true)">
@@ -704,8 +721,8 @@
             <p>日本、韓國、歐美專櫃與官方授權通路直採。每筆委託均保留正式購入發票收據與海外國際空運單據，誠信代購。</p>
           </div>
           <div class="feature-card">
-            <h3>📲 LINE 官方即時連動</h3>
-            <p>支援以 LINE 官方帳號無感授權登入，自動帶入你的 LINE 資訊，每件商品拆單狀態即時掌控。</p>
+            <h3>📲 LINE / Google 快速綁定</h3>
+            <p>支援以 LINE 官方帳號或 Google 帳號無感授權登入，自動帶入你的資訊，每件商品拆單狀態即時掌控。</p>
           </div>
         </div>
       </div>
@@ -814,8 +831,8 @@
           <input type="text" class="form-input" id="buyer-name" required placeholder="例如：陳大明">
         </div>
         <div class="form-group">
-          <label>LINE 暱稱 / User ID *</label>
-          <input type="text" class="form-input" id="buyer-line" required placeholder="例如：ming_chen">
+          <label>聯絡方式 (LINE 暱稱 / Email) *</label>
+          <input type="text" class="form-input" id="buyer-line" required placeholder="例如：ming_chen 或 user@gmail.com">
         </div>
         <div class="form-group">
           <label>手機號碼 *</label>
@@ -834,23 +851,32 @@
     </div>
   </div>
 
-  <!-- LINE 會員連動彈窗 -->
+  <!-- 會員連動彈窗 (LINE / Google 雙登入) -->
   <div class="modal-overlay" id="member-modal">
     <div class="modal-box" style="text-align: center;">
       <div class="modal-head">
-        <div class="modal-title">LINE 會員中心</div>
+        <div class="modal-title">會員中心</div>
         <button class="drawer-close" onclick="closeMemberModal()">✕</button>
       </div>
 
       <!-- 未登入狀態 -->
       <div id="auth-unlogged">
-        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-          透過 LINE 官方帳號無感授權登入，自動帶入寄件資訊並追蹤個人拆單進度
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+          登入綁定帳號，自動填入寄件資訊並追蹤個人拆單進度
         </p>
-        <button class="line-login-btn" onclick="loginWithLine()">
-          <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
-          使用 LINE 帳號一鍵登入
-        </button>
+
+        <div class="auth-btn-group">
+          <!-- LINE 登入按鈕 -->
+          <button class="line-login-btn" onclick="loginWithLine()">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
+            使用 LINE 帳號一鍵登入
+          </button>
+
+          <!-- Google 官方原生按鈕渲染容器 -->
+          <div class="google-btn-wrapper">
+            <div id="g_id_signin_container"></div>
+          </div>
+        </div>
       </div>
 
       <!-- 已登入狀態 -->
@@ -858,7 +884,7 @@
         <div style="background: var(--accent-gray); padding: 14px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
           <img id="user-profile-pic" src="" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Avatar">
           <div>
-            <div style="font-weight: 800; font-size: 16px;" id="user-display-name">LINE 用戶</div>
+            <div style="font-weight: 800; font-size: 16px;" id="user-display-name">會員用戶</div>
             <div style="font-size: 11px; color: var(--text-muted); word-break: break-all;" id="user-display-id">ID: 載入中...</div>
           </div>
         </div>
@@ -872,7 +898,7 @@
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">批次：日本秋季第一梯</div>
         </div>
 
-        <button class="checkout-btn" style="background: #444; margin-top: 16px;" onclick="logoutLine()">登出 LINE 帳號</button>
+        <button class="checkout-btn" style="background: #444; margin-top: 16px;" onclick="handleLogout()">登出帳號</button>
       </div>
     </div>
   </div>
@@ -884,9 +910,10 @@
 
   <script>
     // ==========================================
-    // 已自動填入你的 LIFF ID
+    // 金鑰設定區 (已填入你的真實金鑰)
     // ==========================================
     const MY_LIFF_ID = "2011693279-1eGSgIL6"; 
+    const GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
 
     // 商品資料庫
     const PRODUCTS = [
@@ -927,69 +954,124 @@
     let cart = [];
     let currentUser = null;
 
-    // 啟動與初始化 LIFF
+    // 啟動與初始化
     window.addEventListener('DOMContentLoaded', async () => {
       renderProducts();
       updateCartDisplay();
-      await initializeLiff();
+      
+      // 檢查本機登入記憶
+      const savedUser = localStorage.getItem('dottodot_user');
+      if (savedUser) {
+        handleUserLoggedIn(JSON.parse(savedUser));
+      } else {
+        await initializeLiff();
+      }
+
+      // 初始化 Google 官方 SDK 按鈕
+      setupGoogleButton();
     });
 
+    // 設置 Google 登入按鈕
+    function setupGoogleButton() {
+      if (window.google) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse
+        });
+        const container = document.getElementById('g_id_signin_container');
+        if (container) {
+          google.accounts.id.renderButton(container, {
+            theme: "outline",
+            size: "large",
+            width: 320,
+            text: "signin_with",
+            shape: "pill"
+          });
+        }
+      } else {
+        setTimeout(setupGoogleButton, 300);
+      }
+    }
+
+    // --- LINE 登入 ---
     async function initializeLiff() {
       try {
         await liff.init({ liffId: MY_LIFF_ID });
         if (liff.isLoggedIn()) {
           const profile = await liff.getProfile();
-          handleUserLoggedIn(profile);
+          const userObj = {
+            provider: 'LINE',
+            displayName: profile.displayName,
+            userId: profile.userId,
+            pictureUrl: profile.pictureUrl
+          };
+          localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+          handleUserLoggedIn(userObj);
         }
       } catch (err) {
         console.error("LIFF 初始化失敗：", err);
       }
     }
 
-    // 執行真實 LINE 登入跳轉
     function loginWithLine() {
       if (!liff.isLoggedIn()) {
         liff.login();
       }
     }
 
-    // 登出 LINE
-    function logoutLine() {
-      if (liff.isLoggedIn()) {
-        liff.logout();
-        window.location.reload();
+    // --- Google 登入處理 ---
+    function handleGoogleCredentialResponse(response) {
+      try {
+        // 解碼 JWT Payload 取得用戶名稱、Email 與頭像
+        const payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1]))));
+        const userObj = {
+          provider: 'Google',
+          displayName: payload.name,
+          userId: payload.email,
+          pictureUrl: payload.picture
+        };
+        localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+        handleUserLoggedIn(userObj);
+      } catch (e) {
+        console.error("解析 Google 登入資訊失敗：", e);
       }
     }
 
-    // 使用者登入成功處理
-    function handleUserLoggedIn(profile) {
-      currentUser = profile;
+    // --- 通用登出 ---
+    function handleLogout() {
+      localStorage.removeItem('dottodot_user');
+      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+        liff.logout();
+      }
+      window.location.reload();
+    }
 
-      // 替換右上方頭像為使用者 LINE 真實大頭貼
+    // --- 登入成功共用畫面處理 ---
+    function handleUserLoggedIn(user) {
+      currentUser = user;
+
       const avatarSlot = document.getElementById('user-avatar-slot');
-      if (profile.pictureUrl) {
-        avatarSlot.innerHTML = `<img src="${profile.pictureUrl}" alt="${profile.displayName}">`;
+      if (user.pictureUrl) {
+        avatarSlot.innerHTML = `<img src="${user.pictureUrl}" alt="${user.displayName}">`;
       } else {
-        avatarSlot.innerHTML = profile.displayName.charAt(0);
+        avatarSlot.innerHTML = user.displayName.charAt(0);
       }
 
-      // 會員中心視窗資料填入
       document.getElementById('auth-unlogged').style.display = 'none';
       document.getElementById('auth-logged').style.display = 'block';
-      document.getElementById('user-display-name').textContent = profile.displayName;
-      document.getElementById('user-display-id').textContent = 'LINE ID: ' + profile.userId;
-      if (profile.pictureUrl) {
-        document.getElementById('user-profile-pic').src = profile.pictureUrl;
+      document.getElementById('user-display-name').textContent = `${user.displayName} (${user.provider})`;
+      document.getElementById('user-display-id').textContent = 'ID: ' + user.userId;
+      if (user.pictureUrl) {
+        document.getElementById('user-profile-pic').src = user.pictureUrl;
       }
 
-      // 自動帶入結帳表單中的姓名與 LINE 欄位
       const buyerNameInput = document.getElementById('buyer-name');
       const buyerLineInput = document.getElementById('buyer-line');
-      if (buyerNameInput && !buyerNameInput.value) buyerNameInput.value = profile.displayName;
-      if (buyerLineInput && !buyerLineInput.value) buyerLineInput.value = `${profile.displayName} (${profile.userId.slice(0, 8)}...)`;
+      if (buyerNameInput && !buyerNameInput.value) buyerNameInput.value = user.displayName;
+      if (buyerLineInput && !buyerLineInput.value) buyerLineInput.value = `${user.displayName} [${user.provider}]`;
     }
 
-    // 頁面獨立切換
+    // 嚴格獨立頁面切換
     function switchPage(pageId) {
       document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
       document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
