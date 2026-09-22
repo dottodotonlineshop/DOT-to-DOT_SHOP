@@ -162,8 +162,8 @@
 
     /* 會員頭像按鈕 */
     .user-avatar-btn {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #ffffff;
       color: var(--primary-blue);
@@ -172,10 +172,10 @@
       justify-content: center;
       cursor: pointer;
       border: 2px solid #ffffff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 900;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
     .user-avatar-btn img {
       width: 100%;
@@ -605,8 +605,8 @@
       background: #ffffff;
       width: 100%;
       max-width: 520px;
-      border-radius: 18px;
-      padding: 28px;
+      border-radius: 20px;
+      padding: 30px;
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -616,29 +616,32 @@
     .form-group label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
     .form-input {
       width: 100%;
-      padding: 10px 14px;
+      padding: 11px 14px;
       border: 1.5px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 14px;
       outline: none;
     }
     .form-input:focus { border-color: var(--primary-blue); }
 
-    /* 登入按鈕群組 */
+    /* =======================================
+       登入彈窗：LINE 為主 + 分隔線 + 等高對齊
+       ======================================= */
     .auth-btn-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 18px;
+      gap: 14px;
+      margin-top: 20px;
+      align-items: center;
+      width: 100%;
     }
 
-    .line-login-btn {
+    /* 統一兩種按鈕的大小、高度與圓角 */
+    .auth-common-btn {
       width: 100%;
-      background: var(--line-green);
-      color: #ffffff;
-      border: none;
-      padding: 13px;
-      border-radius: 10px;
+      max-width: 380px;
+      height: 48px;
+      border-radius: 999px;
       font-size: 15px;
       font-weight: 800;
       cursor: pointer;
@@ -646,15 +649,77 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.25);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      text-decoration: none;
     }
-    .line-login-btn:hover { background: #05b34c; }
 
-    /* Google 登入按鈕外層自訂樣式 */
-    .google-btn-wrapper {
+    /* 主要 LINE 按鈕 */
+    .line-login-btn {
+      background: var(--line-green);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(6, 199, 85, 0.28);
+    }
+    .line-login-btn:hover {
+      background: #05b34c;
+      transform: translateY(-1px);
+    }
+
+    /* 中間細分隔線 */
+    .auth-divider {
       width: 100%;
+      max-width: 380px;
       display: flex;
-      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 4px 0;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #e2e5eb;
+    }
+    .auth-divider::before { margin-right: 12px; }
+    .auth-divider::after { margin-left: 12px; }
+
+    /* 次要 Google 按鈕 (與 LINE 等高同款) */
+    .google-custom-btn {
+      background: #ffffff;
+      color: #3c4043;
+      border: 1.5px solid #dadce0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+    .google-custom-btn:hover {
+      background: #f8f9fa;
+      border-color: #c6c9cf;
+    }
+
+    /* 會員分頁切換 (常用資料 / 歷史訂單) */
+    .member-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    .member-tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .member-tab-btn.active {
+      color: var(--primary-blue);
+      border-bottom-color: var(--primary-blue);
     }
 
     footer {
@@ -688,7 +753,7 @@
           <span class="badge-count">2</span>
         </button>
 
-        <!-- 會員頭像 (點擊開關會員中心) -->
+        <!-- 會員頭像 (點擊進入會員專屬頁面) -->
         <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="會員中心">
           <span id="avatar-text">會員</span>
         </div>
@@ -839,7 +904,7 @@
           <input type="tel" class="form-input" id="buyer-phone" required placeholder="0912-345-678">
         </div>
         <div class="form-group">
-          <label>取件超商門市名稱 / 店號 *</label>
+          <label>預設取件方式 / 門市名稱與店號 *</label>
           <input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)">
         </div>
         <div class="form-group">
@@ -851,55 +916,116 @@
     </div>
   </div>
 
-  <!-- 會員連動彈窗 (LINE / Google 雙登入) -->
-  <div class="modal-overlay" id="member-modal">
-    <div class="modal-box" style="text-align: center;">
+  <!-- 初次登入設定常用資料彈窗 -->
+  <div class="modal-overlay" id="profile-setup-modal">
+    <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">會員中心</div>
+        <div class="modal-title">🎉 歡迎加入！填寫常用資料</div>
+        <button class="drawer-close" onclick="skipProfileSetup()">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.6;">
+        設定後未來每次預購下單將為您**自動帶入**，省去反覆填寫時間。（下單前亦可隨時於會員中心補齊）
+      </p>
+
+      <form onsubmit="handleSaveProfile(event)">
+        <div class="form-group">
+          <label>真實收件人姓名 *</label>
+          <input type="text" class="form-input" id="setup-real-name" required placeholder="請填寫超商取件真實證件姓名">
+        </div>
+        <div class="form-group">
+          <label>聯絡手機號碼 *</label>
+          <input type="tel" class="form-input" id="setup-phone" required placeholder="0912-345-678">
+        </div>
+        <div class="form-group">
+          <label>常用預設取件超商與門市 *</label>
+          <input type="text" class="form-input" id="setup-store" required placeholder="例如：7-11 鑫東門市 (123456) / 全家 新安店">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="checkout-btn" style="background: #eef1f6; color: #555;" onclick="skipProfileSetup()">稍後再填 (略過)</button>
+          <button type="submit" class="checkout-btn">儲存常用資料</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 會員中心主彈窗 (未登入：雙登入按鈕 / 已登入：完整個人主頁) -->
+  <div class="modal-overlay" id="member-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">會員專區</div>
         <button class="drawer-close" onclick="closeMemberModal()">✕</button>
       </div>
 
-      <!-- 未登入狀態 -->
-      <div id="auth-unlogged">
-        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+      <!-- 未登入畫面 -->
+      <div id="auth-unlogged" style="text-align: center;">
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 14px;">
           登入綁定帳號，自動填入寄件資訊並追蹤個人拆單進度
         </p>
 
         <div class="auth-btn-group">
-          <!-- LINE 登入按鈕 -->
-          <button class="line-login-btn" onclick="loginWithLine()">
+          <!-- 主要登入：LINE (置頂) -->
+          <button class="auth-common-btn line-login-btn" onclick="loginWithLine()">
             <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
             使用 LINE 帳號一鍵登入
           </button>
 
-          <!-- Google 官方原生按鈕渲染容器 -->
-          <div class="google-btn-wrapper">
-            <div id="g_id_signin_container"></div>
+          <!-- 視覺分隔線 -->
+          <div class="auth-divider">或使用其他方式登入</div>
+
+          <!-- 次要登入：Google (大小、外型與 LINE 等寬等高) -->
+          <button class="auth-common-btn google-custom-btn" onclick="loginWithGoogle()">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
+            使用 Google 帳戶登入
+          </button>
+        </div>
+      </div>
+
+      <!-- 已登入專屬主頁面 -->
+      <div id="auth-logged" style="display: none;">
+        <!-- 會員資訊頂部列 -->
+        <div style="background: var(--accent-gray); padding: 16px; border-radius: 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px;">
+          <img id="user-profile-pic" src="" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;" alt="Avatar">
+          <div style="flex: 1;">
+            <div style="font-weight: 900; font-size: 17px;" id="user-display-name">會員用戶</div>
+            <div style="font-size: 12px; color: var(--text-muted); word-break: break-all; margin-top: 2px;" id="user-display-id">ID: 載入中...</div>
+          </div>
+          <button onclick="handleLogout()" style="background: none; border: 1px solid #ccc; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer;">登出</button>
+        </div>
+
+        <!-- 功能分頁切換 -->
+        <div class="member-tabs">
+          <button class="member-tab-btn active" id="tab-btn-profile" onclick="switchMemberTab('profile')">常用收件資料</button>
+          <button class="member-tab-btn" id="tab-btn-orders" onclick="switchMemberTab('orders')">歷史訂單與拆單進度</button>
+        </div>
+
+        <!-- 分頁 1：常用收件資料 -->
+        <div id="member-tab-profile">
+          <form onsubmit="handleSaveProfile(event)">
+            <div class="form-group">
+              <label>真實收件人姓名 *</label>
+              <input type="text" class="form-input" id="profile-name" placeholder="請填寫證件真實姓名">
+            </div>
+            <div class="form-group">
+              <label>聯絡手機號碼 *</label>
+              <input type="tel" class="form-input" id="profile-phone" placeholder="0912-345-678">
+            </div>
+            <div class="form-group">
+              <label>偏好預設取件超商門市 *</label>
+              <input type="text" class="form-input" id="profile-store" placeholder="例如：7-11 鑫東門市 (123456)">
+            </div>
+            <button type="submit" class="checkout-btn" style="margin-top: 10px;">更新儲存常用資料</button>
+          </form>
+        </div>
+
+        <!-- 分頁 2：歷史訂單與進度 -->
+        <div id="member-tab-orders" style="display: none;">
+          <div id="member-orders-list">
+            <!-- 動態渲染歷史訂單 -->
           </div>
         </div>
       </div>
 
-      <!-- 已登入狀態 -->
-      <div id="auth-logged" style="display: none; text-align: left;">
-        <div style="background: var(--accent-gray); padding: 14px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
-          <img id="user-profile-pic" src="" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="Avatar">
-          <div>
-            <div style="font-weight: 800; font-size: 16px;" id="user-display-name">會員用戶</div>
-            <div style="font-size: 11px; color: var(--text-muted); word-break: break-all;" id="user-display-id">ID: 載入中...</div>
-          </div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 800; margin-bottom: 8px;">你的預購商品獨立出貨進度：</div>
-        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 13px; margin-bottom: 8px;">
-          <div style="display: flex; justify-content: space-between; font-weight: 700;">
-            <span>工裝機能外套 (黑-L)</span>
-            <span style="color: #06C755;">● 抵台寄出 (單號: 881290)</span>
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">批次：日本秋季第一梯</div>
-        </div>
-
-        <button class="checkout-btn" style="background: #444; margin-top: 16px;" onclick="handleLogout()">登出帳號</button>
-      </div>
     </div>
   </div>
 
@@ -909,9 +1035,7 @@
   </footer>
 
   <script>
-    // ==========================================
-    // 金鑰設定區 (已填入你的真實金鑰)
-    // ==========================================
+    // 金鑰設定區 (已填入真實設定)
     const MY_LIFF_ID = "2011693279-1eGSgIL6"; 
     const GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
 
@@ -959,37 +1083,28 @@
       renderProducts();
       updateCartDisplay();
       
-      // 檢查本機登入記憶
+      // 讀取本地會員登入記錄
       const savedUser = localStorage.getItem('dottodot_user');
       if (savedUser) {
-        handleUserLoggedIn(JSON.parse(savedUser));
+        currentUser = JSON.parse(savedUser);
+        handleUserLoggedIn(currentUser, false);
       } else {
         await initializeLiff();
       }
 
-      // 初始化 Google 官方 SDK 按鈕
-      setupGoogleButton();
+      // 初始化 Google 官方 SDK (使用 token client 確保自訂按鈕正常彈出視窗)
+      initGoogleTokenClient();
     });
 
-    // 設置 Google 登入按鈕
-    function setupGoogleButton() {
+    let googleTokenClient = null;
+    function initGoogleTokenClient() {
       if (window.google) {
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleCredentialResponse
         });
-        const container = document.getElementById('g_id_signin_container');
-        if (container) {
-          google.accounts.id.renderButton(container, {
-            theme: "outline",
-            size: "large",
-            width: 320,
-            text: "signin_with",
-            shape: "pill"
-          });
-        }
       } else {
-        setTimeout(setupGoogleButton, 300);
+        setTimeout(initGoogleTokenClient, 300);
       }
     }
 
@@ -1006,7 +1121,7 @@
             pictureUrl: profile.pictureUrl
           };
           localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-          handleUserLoggedIn(userObj);
+          handleUserLoggedIn(userObj, true);
         }
       } catch (err) {
         console.error("LIFF 初始化失敗：", err);
@@ -1019,10 +1134,13 @@
       }
     }
 
-    // --- Google 登入處理 ---
+    // --- Google 登入 (使用與 LINE 相同外觀的按鈕觸發) ---
+    function loginWithGoogle() {
+      google.accounts.id.prompt();
+    }
+
     function handleGoogleCredentialResponse(response) {
       try {
-        // 解碼 JWT Payload 取得用戶名稱、Email 與頭像
         const payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1]))));
         const userObj = {
           provider: 'Google',
@@ -1031,25 +1149,17 @@
           pictureUrl: payload.picture
         };
         localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-        handleUserLoggedIn(userObj);
+        handleUserLoggedIn(userObj, true);
       } catch (e) {
-        console.error("解析 Google 登入資訊失敗：", e);
+        console.error("Google 登入失敗：", e);
       }
     }
 
-    // --- 通用登出 ---
-    function handleLogout() {
-      localStorage.removeItem('dottodot_user');
-      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-        liff.logout();
-      }
-      window.location.reload();
-    }
-
-    // --- 登入成功共用畫面處理 ---
-    function handleUserLoggedIn(user) {
+    // --- 登入成功後處理 ---
+    function handleUserLoggedIn(user, isFirstTime) {
       currentUser = user;
 
+      // 更新頂部右側頭像
       const avatarSlot = document.getElementById('user-avatar-slot');
       if (user.pictureUrl) {
         avatarSlot.innerHTML = `<img src="${user.pictureUrl}" alt="${user.displayName}">`;
@@ -1057,6 +1167,7 @@
         avatarSlot.innerHTML = user.displayName.charAt(0);
       }
 
+      // 會員中心介面切換
       document.getElementById('auth-unlogged').style.display = 'none';
       document.getElementById('auth-logged').style.display = 'block';
       document.getElementById('user-display-name').textContent = `${user.displayName} (${user.provider})`;
@@ -1065,13 +1176,106 @@
         document.getElementById('user-profile-pic').src = user.pictureUrl;
       }
 
-      const buyerNameInput = document.getElementById('buyer-name');
-      const buyerLineInput = document.getElementById('buyer-line');
-      if (buyerNameInput && !buyerNameInput.value) buyerNameInput.value = user.displayName;
-      if (buyerLineInput && !buyerLineInput.value) buyerLineInput.value = `${user.displayName} [${user.provider}]`;
+      // 載入該會員的常用收件資料
+      const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
+      if (savedProfile.name) document.getElementById('profile-name').value = savedProfile.name;
+      if (savedProfile.phone) document.getElementById('profile-phone').value = savedProfile.phone;
+      if (savedProfile.store) document.getElementById('profile-store').value = savedProfile.store;
+
+      // 若為初次登入且尚無常用資料，跳出填寫常用資料引導視窗
+      if (isFirstTime && (!savedProfile.name || !savedProfile.phone || !savedProfile.store)) {
+        closeMemberModal();
+        document.getElementById('setup-real-name').value = user.displayName || '';
+        document.getElementById('profile-setup-modal').classList.add('active');
+      }
+
+      // 渲染歷史訂單
+      renderMemberOrders();
     }
 
-    // 嚴格獨立頁面切換
+    // 儲存常用資料 (首登彈窗 或 會員專區修改)
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const name = document.getElementById('setup-real-name')?.value || document.getElementById('profile-name').value;
+      const phone = document.getElementById('setup-phone')?.value || document.getElementById('profile-phone').value;
+      const store = document.getElementById('setup-store')?.value || document.getElementById('profile-store').value;
+
+      const profileData = { name, phone, store };
+      localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
+
+      // 同步回填會員中心表單
+      document.getElementById('profile-name').value = name;
+      document.getElementById('profile-phone').value = phone;
+      document.getElementById('profile-store').value = store;
+
+      document.getElementById('profile-setup-modal').classList.remove('active');
+      alert('常用收件資料已儲存！往後預購下單將自動為您帶入。');
+    }
+
+    function skipProfileSetup() {
+      document.getElementById('profile-setup-modal').classList.remove('active');
+    }
+
+    // 會員專區分頁切換
+    function switchMemberTab(tab) {
+      document.getElementById('tab-btn-profile').classList.toggle('active', tab === 'profile');
+      document.getElementById('tab-btn-orders').classList.toggle('active', tab === 'orders');
+      document.getElementById('member-tab-profile').style.display = tab === 'profile' ? 'block' : 'none';
+      document.getElementById('member-tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+    }
+
+    // 渲染會員的歷史預購訂單與拆單出貨狀態
+    function renderMemberOrders() {
+      if (!currentUser) return;
+      const listContainer = document.getElementById('member-orders-list');
+      const allOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+
+      if (allOrders.length === 0) {
+        listContainer.innerHTML = `
+          <div style="text-align:center; padding:30px 10px; color:var(--text-muted);">
+            <p style="font-weight:700;">目前尚無歷史訂單</p>
+            <p style="font-size:12px; margin-top:4px;">前往 SHOP ALL 下單預購品即可在此即時追蹤</p>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = allOrders.map(order => `
+        <div style="border:1.5px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:10px; border-bottom:1px dashed #eee; padding-bottom:8px;">
+            <span>訂單編號：<b>${order.orderId}</b></span>
+            <span>${order.date}</span>
+          </div>
+          ${order.items.map(item => `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px;">
+              <div>
+                <span style="font-weight:800;">${item.name}</span>
+                <span style="font-size:11px; color:#666;">(${item.spec})</span>
+              </div>
+              <span style="background:${item.status === '已抵台寄出' ? '#e6f9ed' : '#f2edff'}; color:${item.status === '已抵台寄出' ? '#06C755' : '#7b46ff'}; font-size:11px; font-weight:800; padding:3px 8px; border-radius:4px;">
+                ● ${item.status || '等待海外採購抵台'}
+              </span>
+            </div>
+          `).join('')}
+          <div style="text-align:right; font-size:13px; font-weight:900; margin-top:8px; color:var(--primary-blue);">
+            總計：NT$ ${order.total.toLocaleString()}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 登出
+    function handleLogout() {
+      localStorage.removeItem('dottodot_user');
+      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+        liff.logout();
+      }
+      window.location.reload();
+    }
+
+    // 頁面獨立切換
     function switchPage(pageId) {
       document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
       document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
@@ -1190,11 +1394,22 @@
       }
     }
 
+    // 打開結帳視窗（自動帶入常用資料）
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
         return;
       }
+
+      // 若有登入，自動帶入會員常用資料
+      if (currentUser) {
+        const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
+        document.getElementById('buyer-name').value = savedProfile.name || currentUser.displayName || '';
+        document.getElementById('buyer-line').value = `${currentUser.displayName} [${currentUser.provider}]`;
+        document.getElementById('buyer-phone').value = savedProfile.phone || '';
+        document.getElementById('buyer-store').value = savedProfile.store || '';
+      }
+
       toggleCartDrawer(false);
       document.getElementById('checkout-modal').classList.add('active');
     }
@@ -1210,11 +1425,48 @@
       document.getElementById('member-modal').classList.remove('active');
     }
 
-    // 訂單送出 (拆單邏輯)
+    // 訂單送出 (下單必填檢查 + 記錄至會員歷史訂單)
     function handleOrderSubmit(e) {
       e.preventDefault();
+
+      const buyerName = document.getElementById('buyer-name').value.trim();
+      const buyerPhone = document.getElementById('buyer-phone').value.trim();
+      const buyerStore = document.getElementById('buyer-store').value.trim();
+
+      if (!buyerName || !buyerPhone || !buyerStore) {
+        alert('⚠️ 結帳必填項目：真實姓名、手機電話與超商門市不得為空！');
+        return;
+      }
+
+      // 若已登入，順手更新儲存為最新常用資料
+      if (currentUser) {
+        const profileData = { name: buyerName, phone: buyerPhone, store: buyerStore };
+        localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
+        document.getElementById('profile-name').value = buyerName;
+        document.getElementById('profile-phone').value = buyerPhone;
+        document.getElementById('profile-store').value = buyerStore;
+      }
+
       const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-      alert(`🎉 預購訂單已送出！\n\n訂單編號：${orderId}\n已為您啟用「自動拆單出貨」服務，提早抵達的商品將優先寄送！`);
+      let totalAmount = 0;
+      cart.forEach(i => totalAmount += i.price);
+
+      // 建立訂單並加入會員歷史紀錄
+      if (currentUser) {
+        const userOrdersKey = 'dottodot_orders_' + currentUser.userId;
+        const currentOrders = JSON.parse(localStorage.getItem(userOrdersKey) || '[]');
+        currentOrders.unshift({
+          orderId: orderId,
+          date: new Date().toLocaleDateString(),
+          total: totalAmount,
+          items: cart.map(i => ({ name: i.name, spec: i.spec, status: '等待海外採購抵台' }))
+        });
+        localStorage.setItem(userOrdersKey, JSON.stringify(currentOrders));
+        renderMemberOrders();
+      }
+
+      alert(`🎉 預購訂單已成功送出！\n\n訂單編號：${orderId}\n已為您啟用「自動拆單出貨」服務，提早抵達的商品將優先寄送！\n您可以隨時在【會員中心】查看每件商品的拆單進度。`);
+
       cart = [];
       updateCartDisplay();
       closeCheckoutModal();
