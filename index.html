@@ -884,9 +884,9 @@
 
   <script>
     // ==========================================
-    // 【重要】請在此處填入你在 LINE Developers 取得的 LIFF ID
+    // 已自動填入你的 LIFF ID
     // ==========================================
-    const MY_LIFF_ID = "YOUR_LIFF_ID_HERE"; 
+    const MY_LIFF_ID = "2011693279-1eGSgIL6"; 
 
     // 商品資料庫
     const PRODUCTS = [
@@ -935,10 +935,6 @@
     });
 
     async function initializeLiff() {
-      if (MY_LIFF_ID === "YOUR_LIFF_ID_HERE") {
-        console.warn("尚未填入 LIFF ID，LINE 登入將處於展示模式。");
-        return;
-      }
       try {
         await liff.init({ liffId: MY_LIFF_ID });
         if (liff.isLoggedIn()) {
@@ -952,10 +948,6 @@
 
     // 執行真實 LINE 登入跳轉
     function loginWithLine() {
-      if (MY_LIFF_ID === "YOUR_LIFF_ID_HERE") {
-        alert("請先在代碼中填入你的 LIFF ID！");
-        return;
-      }
       if (!liff.isLoggedIn()) {
         liff.login();
       }
