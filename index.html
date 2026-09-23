@@ -256,7 +256,7 @@
   </header>
 
   <main>
-    <!-- ABOUT US 頁面 (已刪除三張特色卡片，僅保留 Hero 與 7 步驟流程) -->
+    <!-- ABOUT US 頁面 -->
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
@@ -753,6 +753,9 @@
     var isAdminMode = false;
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
     var currentGasWebhook = localStorage.getItem('dottodot_gas_webhook') || GAS_WEBHOOK_URL;
+    
+    var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
+    var MY_LIFF_ID = "2011693279-1eGSgIL6";
 
     var productSeriesData = [];
     var noticeData = [];
@@ -760,7 +763,7 @@
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
-    // 定義全域互動函式，確保會員、購物車、小鈴鐺、分頁切換 100% 有效
+    // 定義全域互動函式，確保所有按鈕 100% 有效
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -827,6 +830,34 @@
     function closeMemberModal() {
       var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.remove('active');
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) {
+        alert('購物車內尚無商品！');
+        return;
+      }
+
+      if (!currentUser) {
+        alert('⚠️ 結帳前請先登入會員，建立您的帳戶資料以便追蹤訂單與出貨進度！');
+        openMemberModal();
+        return;
+      }
+
+      var total = 0;
+      var previewHtml = '';
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].selected !== false) {
+          total += (cart[i].price * cart[i].quantity);
+          previewHtml += '• ' + cart[i].name + ' (' + cart[i].spec + ') x ' + cart[i].quantity + ' - NT$' + (cart[i].price * cart[i].quantity) + '<br>';
+        }
+      }
+      document.getElementById('checkout-preview-items').innerHTML = previewHtml;
+      document.getElementById('checkout-preview-total').textContent = 'NT$ ' + Number(total).toLocaleString();
+
+      toggleCartDrawer(false);
+      var chkModal1 = document.getElementById('checkout-modal-1');
+      if (chkModal1) chkModal1.classList.add('active');
     }
 
     function closeCheckoutModal1() { document.getElementById('checkout-modal-1').classList.remove('active'); }
