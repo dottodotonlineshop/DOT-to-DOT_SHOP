@@ -80,11 +80,6 @@
     .cta-button { display: inline-block; background-color: var(--accent-lime); color: var(--accent-black); padding: 12px 28px; font-size: clamp(14px, 4vw, 16px); font-weight: 900; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 24px rgba(204, 255, 0, 0.4); border: none; transition: transform 0.2s; }
     .cta-button:active { transform: scale(0.96); }
 
-    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: -30px; position: relative; z-index: 10; }
-    .feature-card { background: #ffffff; padding: 20px; border-radius: 16px; border: 1.5px solid var(--border-color); box-shadow: 0 12px 32px rgba(0, 20, 60, 0.06); }
-    .feature-card h3 { font-size: clamp(16px, 4vw, 18px); font-weight: 900; margin-bottom: 8px; color: var(--primary-blue); }
-    .feature-card p { font-size: clamp(12.5px, 3.5vw, 13.5px); color: var(--text-muted); line-height: 1.65; }
-
     .flow-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
     .flow-step-card { background: var(--accent-gray); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
     .flow-num { width: 28px; height: 28px; background: var(--primary-blue); color: #fff; font-weight: 900; font-size: 13px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
@@ -261,7 +256,7 @@
   </header>
 
   <main>
-    <!-- ABOUT US 頁面 (已復原 7 步驟輕鬆下單流程) -->
+    <!-- ABOUT US 頁面 (已刪除三張特色卡片，僅保留 Hero 與 7 步驟流程) -->
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
@@ -270,23 +265,8 @@
       </div>
 
       <div class="container">
-        <div class="feature-grid">
-          <div class="feature-card">
-            <h3>⚡ 解決長期待貨痛點</h3>
-            <p>即使同一張訂單內有等半年的手辦模型與兩週到貨的服飾，我們後台自動拆單！提早抵台的包裹優先寄出，絕不扣留整單。</p>
-          </div>
-          <div class="feature-card">
-            <h3>🔒 100% 正品委託保障</h3>
-            <p>日本、韓國、歐美專櫃與官方授權通路直採。每筆委託均保留正式購入發票收據與海外國際空運單據，誠信代購。</p>
-          </div>
-          <div class="feature-card">
-            <h3>📲 LINE / Google 快速綁定</h3>
-            <p>支援以 LINE 官方帳號授權登入（支援主動推播）或 Google 帳號登入，每件商品拆單狀態即時掌控。</p>
-          </div>
-        </div>
-
         <!-- 輕鬆下單 7 步驟流程 -->
-        <div style="margin-top: 50px;">
+        <div style="margin-top: 10px;">
           <div class="section-header" style="text-align: center;">
             <h2 class="section-title">📦 輕鬆下單 7 步驟流程</h2>
             <p class="section-subtitle">簡單快速，安心委託代購</p>
@@ -780,7 +760,7 @@
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
-    // 定義全域 switchPage 確保按鈕 100% 有效
+    // 定義全域互動函式，確保會員、購物車、小鈴鐺、分頁切換 100% 有效
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -799,6 +779,59 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    function toggleCartDrawer(open) {
+      if (isAdminMode) {
+        alert('目前為賣家後台模式，購物車功能已暫時停用。');
+        return;
+      }
+      var drawer = document.getElementById('cart-drawer');
+      var overlay = document.getElementById('cart-overlay');
+      if (drawer && overlay) {
+        if (open) {
+          drawer.classList.add('active');
+          overlay.classList.add('active');
+        } else {
+          drawer.classList.remove('active');
+          overlay.classList.remove('active');
+        }
+      }
+    }
+
+    function toggleNotificationPopover(e) {
+      if (isAdminMode) return;
+      if (e) e.stopPropagation();
+      var popover = document.getElementById('bell-popover');
+      if (popover) popover.classList.toggle('active');
+    }
+
+    function markAllNotificationsRead() {
+      var popover = document.getElementById('bell-popover');
+      var badge = document.getElementById('bell-badge');
+      if (badge) {
+        badge.style.display = 'none';
+        badge.textContent = '0';
+      }
+      if (currentUser) {
+        localStorage.setItem('dottodot_read_notifs_' + currentUser.userId, 'true');
+      }
+      if (popover) popover.classList.remove('active');
+    }
+
+    function openMemberModal() {
+      var memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.add('active');
+      syncOrdersFromSheet();
+    }
+
+    function closeMemberModal() {
+      var memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.remove('active');
+    }
+
+    function closeCheckoutModal1() { document.getElementById('checkout-modal-1').classList.remove('active'); }
+    function closeCheckoutModal2() { document.getElementById('checkout-modal-2').classList.remove('active'); }
+    function closeSuccessModal() { document.getElementById('order-success-modal').classList.remove('active'); }
 
     window.addEventListener('DOMContentLoaded', function() {
       fetchCMSFromCloud();
