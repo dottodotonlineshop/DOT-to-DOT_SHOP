@@ -80,6 +80,17 @@
     .cta-button { display: inline-block; background-color: var(--accent-lime); color: var(--accent-black); padding: 12px 28px; font-size: clamp(14px, 4vw, 16px); font-weight: 900; border-radius: 999px; cursor: pointer; box-shadow: 0 8px 24px rgba(204, 255, 0, 0.4); border: none; transition: transform 0.2s; }
     .cta-button:active { transform: scale(0.96); }
 
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: -30px; position: relative; z-index: 10; }
+    .feature-card { background: #ffffff; padding: 20px; border-radius: 16px; border: 1.5px solid var(--border-color); box-shadow: 0 12px 32px rgba(0, 20, 60, 0.06); }
+    .feature-card h3 { font-size: clamp(16px, 4vw, 18px); font-weight: 900; margin-bottom: 8px; color: var(--primary-blue); }
+    .feature-card p { font-size: clamp(12.5px, 3.5vw, 13.5px); color: var(--text-muted); line-height: 1.65; }
+
+    .flow-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
+    .flow-step-card { background: var(--accent-gray); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .flow-num { width: 28px; height: 28px; background: var(--primary-blue); color: #fff; font-weight: 900; font-size: 13px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+    .flow-title { font-size: 14px; font-weight: 800; color: #111; }
+    .flow-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
     .section-header { margin-bottom: 20px; }
     .section-title { font-size: clamp(22px, 6vw, 28px); font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: var(--accent-black); }
     .section-subtitle { font-size: clamp(12px, 3.5vw, 13px); color: var(--text-muted); margin-top: 4px; }
@@ -250,12 +261,75 @@
   </header>
 
   <main>
-    <!-- ABOUT US 頁面 -->
+    <!-- ABOUT US 頁面 (已復原 7 步驟輕鬆下單流程) -->
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
         <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物、明星個人品牌及同款代購。有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨</p>
         <button class="cta-button" onclick="switchPage('shop')">SHOP ALL ➔</button>
+      </div>
+
+      <div class="container">
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h3>⚡ 解決長期待貨痛點</h3>
+            <p>即使同一張訂單內有等半年的手辦模型與兩週到貨的服飾，我們後台自動拆單！提早抵台的包裹優先寄出，絕不扣留整單。</p>
+          </div>
+          <div class="feature-card">
+            <h3>🔒 100% 正品委託保障</h3>
+            <p>日本、韓國、歐美專櫃與官方授權通路直採。每筆委託均保留正式購入發票收據與海外國際空運單據，誠信代購。</p>
+          </div>
+          <div class="feature-card">
+            <h3>📲 LINE / Google 快速綁定</h3>
+            <p>支援以 LINE 官方帳號授權登入（支援主動推播）或 Google 帳號登入，每件商品拆單狀態即時掌控。</p>
+          </div>
+        </div>
+
+        <!-- 輕鬆下單 7 步驟流程 -->
+        <div style="margin-top: 50px;">
+          <div class="section-header" style="text-align: center;">
+            <h2 class="section-title">📦 輕鬆下單 7 步驟流程</h2>
+            <p class="section-subtitle">簡單快速，安心委託代購</p>
+          </div>
+          <div class="flow-steps-grid">
+            <div class="flow-step-card">
+              <div class="flow-num">1</div>
+              <div class="flow-title">閱讀訂購須知</div>
+              <div class="flow-desc">請先至 <a href="javascript:void(0)" onclick="switchPage('notice')" style="color:var(--primary-blue); font-weight:800;">NOTICE!</a> 頁面詳閱代購規範與權益。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">2</div>
+              <div class="flow-title">選購商品</div>
+              <div class="flow-desc">前往 <a href="javascript:void(0)" onclick="switchPage('shop')" style="color:var(--primary-blue); font-weight:800;">SHOP ALL</a> 瀏覽並挑選心儀的預購與現貨品項。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">3</div>
+              <div class="flow-title">點選購物車結帳</div>
+              <div class="flow-desc">確認規格與數量無誤後加入購物車，點擊結帳並登入會員。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">4</div>
+              <div class="flow-title">確認訂單詳情</div>
+              <div class="flow-desc">核對訂單明細、填寫真實收件人姓名、手機與配送超商/地址。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">5</div>
+              <div class="flow-title">確認匯款資訊</div>
+              <div class="flow-desc">依照頁面提供的匯款帳號完成轉帳，並填寫匯款日期、時間與末五碼。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">6</div>
+              <div class="flow-title">送出訂單等待對帳</div>
+              <div class="flow-desc">點擊送出對帳後，一鍵傳送訊息至官方 LINE 或社群完成回報。</div>
+            </div>
+            <div class="flow-step-card">
+              <div class="flow-num">7</div>
+              <div class="flow-title">採購與出貨追蹤</div>
+              <div class="flow-desc">對帳完成後等待商家採購與出貨，可隨時於會員中心即時追蹤進度。</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -706,6 +780,26 @@
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
+    // 定義全域 switchPage 確保按鈕 100% 有效
+    function switchPage(pageId) {
+      var allSections = document.querySelectorAll('.page-section');
+      var allButtons = document.querySelectorAll('.pill-btn');
+      
+      for (var i = 0; i < allSections.length; i++) {
+        allSections[i].classList.remove('active');
+      }
+      for (var j = 0; j < allButtons.length; j++) {
+        allButtons[j].classList.remove('active');
+      }
+
+      var targetSec = document.getElementById('page-' + pageId);
+      var targetBtn = document.getElementById('btn-' + pageId);
+      if (targetSec) targetSec.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
       fetchCMSFromCloud();
       updateCartDisplay();
@@ -720,7 +814,7 @@
       } catch (e) {}
 
       setTimeout(loadLineSDK, 300);
-      setInterval(fetchCMSFromCloud, 10000); // 每10秒自動向雲端同步最新商品與公告
+      setInterval(fetchCMSFromCloud, 10000);
     });
 
     function fetchCMSFromCloud() {
@@ -744,7 +838,6 @@
           renderPosts();
         }
       }).catch(function(err) {
-        // 雲端連線失敗時降級讀取本機
         productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || JSON.stringify(DEFAULT_SERIES));
         noticeData = JSON.parse(localStorage.getItem('dottodot_custom_notice') || JSON.stringify(DEFAULT_NOTICES));
         qaData = JSON.parse(localStorage.getItem('dottodot_custom_qa') || JSON.stringify(DEFAULT_QAS));
