@@ -886,9 +886,6 @@
             </div>
           </div>
 
-          <!-- 管理員專屬入口 (預設隱藏，登入指定 Google 帳號後自動顯示) -->
-          <button id="admin-nav-btn" onclick="switchPage('admin'); loadAdminOrders();" style="display:none; background:#ccff00; color:#111; border:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:900; cursor:pointer;">⚙️ 管理後台</button>
-
           <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="會員中心">
             <span id="avatar-text">會員</span>
           </div>
@@ -1057,7 +1054,7 @@
         <div class="admin-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
             <h3 style="font-size:17px; font-weight:900; color:var(--primary-blue);">📋 訂單採購/出貨狀態控管與發送 (連動試算表)</h3>
-            <button onclick="loadAdminOrders()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">↻ 重新整理試算表</button>
+            <button onclick="loadAdminOrders()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">↻ 整理即時狀態</button>
           </div>
           <div id="admin-orders-container">載入中...</div>
         </div>
@@ -1089,7 +1086,7 @@
     </div>
   </aside>
 
-  <!-- 第一階段：填寫訂購與收件資料 -->
+  <!-- 步驟一：確認訂單詳情與填寫聯絡/收件資料 -->
   <div class="modal-overlay" id="checkout-modal-1">
     <div class="modal-box">
       <div class="modal-head">
@@ -1097,7 +1094,6 @@
         <button class="drawer-close" onclick="closeCheckoutModal1()">✕</button>
       </div>
 
-      <!-- 訂單品項與總金額預覽 -->
       <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:14px;">
         <div style="font-weight:900; font-size:13px; margin-bottom:6px; color:var(--primary-blue);">📦 您的預購品項總覽：</div>
         <div id="checkout-preview-items" style="font-size:12.5px; color:#444; max-height:120px; overflow-y:auto; margin-bottom:8px;"></div>
@@ -1143,7 +1139,7 @@
     </div>
   </div>
 
-  <!-- 第二階段：匯款資訊與確認送出 (送出後才寫入 Google 表格) -->
+  <!-- 步驟二：匯款資訊與確認送出 (送出後才寫入 Google 表格) -->
   <div class="modal-overlay" id="checkout-modal-2">
     <div class="modal-box">
       <div class="modal-head">
@@ -1151,18 +1147,15 @@
         <button class="drawer-close" onclick="closeCheckoutModal2()">✕</button>
       </div>
 
-      <!-- 訂單編號與總金額提示 -->
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;">
         <div style="font-size:12px; color:#1e40af;">訂單總金額：<b id="step2-total-amount" style="font-size:16px; color:var(--primary-blue);">NT$ 0</b></div>
       </div>
 
-      <!-- 無卡匯款警告提示 -->
       <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">
         ⚠️ <b>無卡匯款提醒：</b><br>
         無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！
       </div>
 
-      <!-- 匯款帳號資訊 -->
       <div class="bank-info-box">
         🏦 <b>匯款帳號資訊</b><br>
         銀行代碼：822 (中國信託)<br>
@@ -1207,7 +1200,7 @@
 
       <textarea id="order-text-content" class="order-textarea" readonly></textarea>
 
-      <!-- 按鈕 1：直接傳送至官方 LINE -->
+      <!-- 按鈕 1：直接傳送至官方 LINE 聊天室 -->
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
         直接傳送至官方 LINE 聊天室進行對帳 ➔
@@ -1305,6 +1298,15 @@
           <button onclick="handleLogout()" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; cursor: pointer;">登出</button>
         </div>
 
+        <!-- 管理員專屬模式切換面板 -->
+        <div id="admin-mode-switch-box" style="display:none; background:#fef08a; border:1px solid #facc15; padding:10px; border-radius:8px; margin-bottom:14px; text-align:center;">
+          <div style="font-size:12px; font-weight:800; color:#854d0e; margin-bottom:6px;">👑 偵測到您是最高管理員</div>
+          <div style="display:flex; gap:8px; justify-content:center;">
+            <button onclick="switchPage('shop'); closeMemberModal();" style="background:#fff; border:1px solid #ca8a04; color:#854d0e; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">🏠 切換至一般會員模式</button>
+            <button onclick="switchPage('admin'); loadAdminOrders(); closeMemberModal();" style="background:#111; color:#ccff00; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">⚙️ 切換至賣家管理模式</button>
+          </div>
+        </div>
+
         <div class="member-tabs">
           <button class="member-tab-btn active" id="tab-btn-profile" onclick="switchMemberTab('profile')">常用收件資料</button>
           <button class="member-tab-btn" id="tab-btn-orders" onclick="switchMemberTab('orders')">歷史訂單與拆單進度</button>
@@ -1352,7 +1354,7 @@
   </footer>
 
   <script>
-    // 管理員設定區 (請在此處填入你的管理員 Google Email，或預設 wangpp525@gmail.com)
+    // 最高管理員信箱設定 (已設定為 dottodot.onlineshop@gmail.com)
     var ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"];
 
     function switchPage(pageId) {
@@ -1418,7 +1420,7 @@
       if (memModal) memModal.classList.remove('active');
     }
 
-    // 結帳檢查：未登入強制先彈出會員登入要求
+    // 結帳檢查：未登入前強制要求先登入
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -1451,7 +1453,6 @@
         updateShipInputUI('checkout');
       }
 
-      // 計算總預覽金額與品項
       var total = 0;
       var previewHtml = '';
       for (var i = 0; i < cart.length; i++) {
@@ -1482,7 +1483,6 @@
       if (chkModal1) chkModal1.classList.add('active');
     }
 
-    // 暫存步驟一資料，進入步驟二
     var pendingOrderData = null;
     function goToCheckoutStep2(e) {
       e.preventDefault();
@@ -1852,7 +1852,7 @@
         profPic.src = user.pictureUrl;
       }
 
-      // 檢查是否為管理員帳號
+      // 檢查是否為管理員信箱 (dottodot.onlineshop@gmail.com)
       var userEmail = (user.contactValue || "").trim().toLowerCase();
       var isAdmin = false;
       for (var i = 0; i < ADMIN_EMAILS.length; i++) {
@@ -1862,9 +1862,9 @@
         }
       }
 
-      var adminBtn = document.getElementById('admin-nav-btn');
-      if (adminBtn) {
-        adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+      var adminBox = document.getElementById('admin-mode-switch-box');
+      if (adminBox) {
+        adminBox.style.display = isAdmin ? 'block' : 'none';
       }
 
       try {
@@ -2086,7 +2086,7 @@
       window.location.reload();
     }
 
-    // 第二階段完成：送出訂單到 Google 試算表，並開啟對帳彈窗
+    // 步驟二完成：正式寫入 Google 試算表，並開啟對帳彈窗
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
 
@@ -2192,7 +2192,7 @@
       }
     }
 
-    // 對帳彈窗按鈕 2：智慧一鍵複製文字並前往社群
+    // 對帳彈窗按鈕 2：智慧一鍵複製文字並前往其他社群
     function copyAndOpenCommunity() {
       var textarea = document.getElementById('order-text-content');
       if (textarea) {
@@ -2497,7 +2497,9 @@
         } else {
           alert("LINE SDK 連線中，請稍候重試。");
         }
-      } catch (e) {}
+      } catch (e) {
+        alert("LINE 登入遇到問題，請重新整理頁面。");
+      }
     }
 
     function loginWithGoogle() {
