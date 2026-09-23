@@ -225,7 +225,7 @@
       font-weight: 900;
     }
 
-    /* 小鈴鐺 Popover (箭頭精準鎖定) */
+    /* 小鈴鐺 Popover (箭頭精確對準小鈴鐺中央) */
     .bell-wrapper {
       position: relative;
     }
@@ -474,7 +474,6 @@
       margin-bottom: 12px;
     }
 
-    /* 規格雙欄並排 */
     .form-row-spec {
       display: flex;
       gap: 8px;
@@ -659,7 +658,6 @@
     }
     .form-input:focus, .form-select:focus { border-color: var(--primary-blue); }
 
-    /* 下單成功對話框：雙通道對帳 (LINE + Threads) */
     .line-direct-btn {
       width: 100%;
       background: var(--line-green);
@@ -742,7 +740,6 @@
       text-align: left;
     }
 
-    /* 登入按鈕群組 */
     .auth-btn-group {
       display: flex;
       flex-direction: column;
@@ -793,7 +790,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
 
-    /* 會員分頁切換 */
     .member-tabs {
       display: flex;
       border-bottom: 2px solid var(--border-color);
@@ -816,7 +812,6 @@
       border-bottom-color: var(--primary-blue);
     }
 
-    /* 賣家後台樣式 */
     .admin-card {
       background: #ffffff;
       border: 1.5px solid var(--border-color);
@@ -1047,7 +1042,7 @@
       </div>
     </section>
 
-    <!-- 分頁 6：賣家專屬管理後台 (Admin Portal) -->
+    <!-- 分頁 6：賣家專屬管理後台 -->
     <section id="page-admin" class="page-section">
       <div class="container">
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -1194,25 +1189,20 @@
         總金額：<b id="success-order-total" style="color: var(--primary-blue);">NT$ 0</b>
       </p>
 
-      <!-- 訂單明細文字框 -->
       <textarea id="order-text-content" class="order-textarea" readonly></textarea>
 
-      <!-- 一鍵複製按鈕 (Google / 電腦版用戶適用) -->
       <button class="copy-order-btn" onclick="copyOrderDetails()">📋 一鍵複製上方訂單內容</button>
 
-      <!-- 通道 A：直連 @154bkwlh 官方 LINE 聊天室 -->
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
         打開官方 LINE 聊天室送出對帳 ➔
       </a>
 
-      <!-- 通道 B：前往官方 Threads 私訊對帳 -->
       <a id="threads-direct-link" href="https://www.threads.net" target="_blank" class="threads-direct-btn">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.88 12.33c-.35 1.76-1.74 2.87-3.69 2.87-2.3 0-3.95-1.58-3.95-3.82 0-2.45 1.83-4.14 4.39-4.14 2.37 0 3.79 1.42 3.79 3.55 0 .28-.02.57-.06.84h-6.24c.09 1.25.96 2.05 2.18 2.05 1.02 0 1.65-.54 1.88-1.35h1.7zm-1.84-2.48c-.04-1.02-.7-1.68-1.82-1.68-1.05 0-1.75.66-1.86 1.68h3.68z"></path></svg>
         前往 Threads 私訊對帳 (請先複製上方文字) ➔
       </a>
 
-      <!-- 強制回傳警語 -->
       <div class="warning-box">
         ⚠️ <b>請務必回傳對帳！</b><br>
         送單後請將此訂單訊息發送至官方 LINE（@154bkwlh）或 Threads。<br>
@@ -1360,8 +1350,8 @@
     const MY_LIFF_ID = "2011693279-1eGSgIL6"; 
     const GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
     const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
-    const OFFICIAL_LINE_ID = "@154bkwlh"; // 官方 LINE Basic ID
-    const OFFICIAL_THREADS_URL = "https://www.threads.net"; // 官方 Threads 首頁或私訊網址
+    const OFFICIAL_LINE_ID = "@154bkwlh"; 
+    const OFFICIAL_THREADS_URL = "https://www.threads.net"; 
     const ADMIN_PASSWORD = "admin888"; 
 
     // 商品系列資料庫
@@ -1416,7 +1406,7 @@
     function toggleNotificationPopover(e) {
       if (e) e.stopPropagation();
       const popover = document.getElementById('bell-popover');
-      popover.classList.toggle('active');
+      if (popover) popover.classList.toggle('active');
     }
 
     function markAllNotificationsRead() {
@@ -1429,7 +1419,7 @@
       if (currentUser) {
         localStorage.setItem('dottodot_read_notifs_' + currentUser.userId, 'true');
       }
-      popover.classList.remove('active');
+      if (popover) popover.classList.remove('active');
     }
 
     document.addEventListener('click', (e) => {
@@ -1539,10 +1529,14 @@
     }
 
     function updateCartDisplay() {
-      document.getElementById('cart-counter').textContent = cart.length;
-      document.getElementById('drawer-count').textContent = cart.length;
+      const cartCounter = document.getElementById('cart-counter');
+      const drawerCount = document.getElementById('drawer-count');
+      if (cartCounter) cartCounter.textContent = cart.length;
+      if (drawerCount) drawerCount.textContent = cart.length;
 
       const container = document.getElementById('cart-items-container');
+      if (!container) return;
+
       if (cart.length === 0) {
         container.innerHTML = `
           <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
@@ -1550,8 +1544,10 @@
             <p style="font-size: 12px; margin-top: 6px;">請前往 SHOP ALL 選購預購商品</p>
           </div>
         `;
-        document.getElementById('cart-subtotal').textContent = 'NT$ 0';
-        document.getElementById('cart-total').textContent = 'NT$ 0';
+        const subtotal = document.getElementById('cart-subtotal');
+        const total = document.getElementById('cart-total');
+        if (subtotal) subtotal.textContent = 'NT$ 0';
+        if (total) total.textContent = 'NT$ 0';
         return;
       }
 
@@ -1573,19 +1569,23 @@
         `;
       }).join('');
 
-      document.getElementById('cart-subtotal').textContent = `NT$ ${total.toLocaleString()}`;
-      document.getElementById('cart-total').textContent = `NT$ ${total.toLocaleString()}`;
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const totalEl = document.getElementById('cart-total');
+      if (subtotalEl) subtotalEl.textContent = `NT$ ${total.toLocaleString()}`;
+      if (totalEl) totalEl.textContent = `NT$ ${total.toLocaleString()}`;
     }
 
     function toggleCartDrawer(open) {
       const drawer = document.getElementById('cart-drawer');
       const overlay = document.getElementById('cart-overlay');
-      if (open) {
-        drawer.classList.add('active');
-        overlay.classList.add('active');
-      } else {
-        drawer.classList.remove('active');
-        overlay.classList.remove('active');
+      if (drawer && overlay) {
+        if (open) {
+          drawer.classList.add('active');
+          overlay.classList.add('active');
+        } else {
+          drawer.classList.remove('active');
+          overlay.classList.remove('active');
+        }
       }
     }
 
@@ -1605,10 +1605,12 @@
         inputId = 'profile-store';
       }
 
-      const method = document.getElementById(selectId).value;
+      const selectEl = document.getElementById(selectId);
       const label = document.getElementById(labelId);
       const input = document.getElementById(inputId);
+      if (!selectEl || !label || !input) return;
 
+      const method = selectEl.value;
       if (method === 'home') {
         label.textContent = context === 'checkout' ? '完整宅配收件地址 *' : '常用預設宅配地址 (選填)';
         input.placeholder = '例如：台北市信義區忠孝東路五段XX號X樓';
@@ -1618,59 +1620,103 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      renderProducts();
-      updateCartDisplay();
+    // 頁面切換核心函式
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
+
+      const targetSec = document.getElementById('page-' + pageId);
+      const targetBtn = document.getElementById('btn-' + pageId);
+      if (targetSec) targetSec.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 初始化流程 (加入各項容錯機制)
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        renderProducts();
+        updateCartDisplay();
+      } catch (err) {
+        console.error("初始化渲染異常：", err);
+      }
       
-      const savedUser = localStorage.getItem('dottodot_user');
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        handleUserLoggedIn(currentUser, false);
-      } else {
-        await initializeLiff();
+      try {
+        const savedUser = localStorage.getItem('dottodot_user');
+        if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+          handleUserLoggedIn(currentUser, false);
+        } else {
+          initializeLiff();
+        }
+      } catch (err) {
+        console.warn("本機會員資料讀取跳過：", err);
       }
 
       initGoogleTokenClient();
     });
 
     function initGoogleTokenClient() {
-      if (window.google) {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredentialResponse
-        });
-      } else {
-        setTimeout(initGoogleTokenClient, 300);
+      try {
+        if (window.google && window.google.accounts) {
+          google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleCredentialResponse
+          });
+        } else {
+          setTimeout(initGoogleTokenClient, 400);
+        }
+      } catch (e) {
+        console.warn("Google SDK 初始化跳過：", e);
       }
     }
 
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: MY_LIFF_ID });
-        if (liff.isLoggedIn()) {
-          const profile = await liff.getProfile();
-          const userObj = {
-            provider: 'LINE',
-            displayName: profile.displayName,
-            userId: profile.userId,
-            lineUserId: profile.userId, // 關鍵：記錄推播專用 User ID
-            contactValue: profile.displayName,
-            pictureUrl: profile.pictureUrl
-          };
-          localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-          handleUserLoggedIn(userObj, true);
+        if (typeof liff !== 'undefined') {
+          await liff.init({ liffId: MY_LIFF_ID });
+          if (liff.isLoggedIn()) {
+            const profile = await liff.getProfile();
+            const userObj = {
+              provider: 'LINE',
+              displayName: profile.displayName,
+              userId: profile.userId,
+              lineUserId: profile.userId,
+              contactValue: profile.displayName,
+              pictureUrl: profile.pictureUrl
+            };
+            localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+            handleUserLoggedIn(userObj, true);
+          }
         }
       } catch (err) {
-        console.error("LIFF 初始化失敗：", err);
+        console.warn("LIFF 初始化跳過：", err);
       }
     }
 
     function loginWithLine() {
-      if (!liff.isLoggedIn()) liff.login();
+      try {
+        if (typeof liff !== 'undefined') {
+          if (!liff.isLoggedIn()) liff.login();
+        } else {
+          alert("LINE SDK 尚未就緒，請重新整理頁面。");
+        }
+      } catch (e) {
+        console.error("LINE 登入錯誤：", e);
+      }
     }
 
     function loginWithGoogle() {
-      google.accounts.id.prompt();
+      try {
+        if (window.google && window.google.accounts) {
+          google.accounts.id.prompt();
+        } else {
+          alert("Google 登入套件載入中，請稍候重試。");
+        }
+      } catch (e) {
+        console.error("Google 登入喚起錯誤：", e);
+      }
     }
 
     function handleGoogleCredentialResponse(response) {
@@ -1682,7 +1728,7 @@
           provider: 'Google',
           displayName: payload.name,
           userId: payload.sub,
-          lineUserId: '', // Google 登入無 LINE ID
+          lineUserId: '',
           contactValue: realEmail,
           pictureUrl: payload.picture
         };
@@ -1697,33 +1743,53 @@
       currentUser = user;
 
       const avatarSlot = document.getElementById('user-avatar-slot');
-      if (user.pictureUrl) {
-        avatarSlot.innerHTML = `<img src="${user.pictureUrl}" alt="${user.displayName}">`;
-      } else {
-        avatarSlot.innerHTML = user.displayName.charAt(0);
+      if (avatarSlot) {
+        if (user.pictureUrl) {
+          avatarSlot.innerHTML = `<img src="${user.pictureUrl}" alt="${user.displayName}">`;
+        } else {
+          avatarSlot.innerHTML = user.displayName.charAt(0);
+        }
       }
 
-      document.getElementById('auth-unlogged').style.display = 'none';
-      document.getElementById('auth-logged').style.display = 'block';
-      document.getElementById('user-display-name').textContent = `${user.displayName} (${user.provider})`;
-      document.getElementById('user-display-id').textContent = user.contactValue || (user.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : 'LINE ID: ' + user.userId);
-      if (user.pictureUrl) {
-        document.getElementById('user-profile-pic').src = user.pictureUrl;
+      const unlogged = document.getElementById('auth-unlogged');
+      const logged = document.getElementById('auth-logged');
+      if (unlogged) unlogged.style.display = 'none';
+      if (logged) logged.style.display = 'block';
+
+      const dispName = document.getElementById('user-display-name');
+      const dispId = document.getElementById('user-display-id');
+      if (dispName) dispName.textContent = `${user.displayName} (${user.provider})`;
+      if (dispId) dispId.textContent = user.contactValue || (user.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : 'LINE ID: ' + user.userId);
+
+      const profPic = document.getElementById('user-profile-pic');
+      if (profPic && user.pictureUrl) {
+        profPic.src = user.pictureUrl;
       }
 
-      const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
-      if (savedProfile.name) document.getElementById('profile-name').value = savedProfile.name;
-      if (savedProfile.phone) document.getElementById('profile-phone').value = savedProfile.phone;
-      if (savedProfile.shipMethod) {
-        document.getElementById('profile-ship-method').value = savedProfile.shipMethod;
-        updateShipInputUI('profile');
-      }
-      if (savedProfile.store) document.getElementById('profile-store').value = savedProfile.store;
+      try {
+        const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
+        const profName = document.getElementById('profile-name');
+        const profPhone = document.getElementById('profile-phone');
+        const profMethod = document.getElementById('profile-ship-method');
+        const profStore = document.getElementById('profile-store');
 
-      if (isFirstTime && (!savedProfile.name && !savedProfile.phone)) {
-        closeMemberModal();
-        document.getElementById('setup-real-name').value = user.displayName || '';
-        document.getElementById('profile-setup-modal').classList.add('active');
+        if (profName && savedProfile.name) profName.value = savedProfile.name;
+        if (profPhone && savedProfile.phone) profPhone.value = savedProfile.phone;
+        if (profMethod && savedProfile.shipMethod) {
+          profMethod.value = savedProfile.shipMethod;
+          updateShipInputUI('profile');
+        }
+        if (profStore && savedProfile.store) profStore.value = savedProfile.store;
+
+        if (isFirstTime && (!savedProfile.name && !savedProfile.phone)) {
+          closeMemberModal();
+          const setupName = document.getElementById('setup-real-name');
+          const setupModal = document.getElementById('profile-setup-modal');
+          if (setupName) setupName.value = user.displayName || '';
+          if (setupModal) setupModal.classList.add('active');
+        }
+      } catch (e) {
+        console.warn("個人設定同步跳過：", e);
       }
 
       syncOrdersFromSheet();
@@ -1745,8 +1811,11 @@
           buildBellNotifications(data.orders);
         }
       } catch (err) {
-        const localOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
-        renderMemberOrders(localOrders);
+        console.warn("試算表連線中，先載入本機歷史紀錄：", err);
+        try {
+          const localOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+          renderMemberOrders(localOrders);
+        } catch (e) {}
       }
     }
 
@@ -1783,7 +1852,7 @@
       const popoverContent = document.getElementById('bell-popover-content');
       const badge = document.getElementById('bell-badge');
 
-      if (notifItems.length > 0) {
+      if (notifItems.length > 0 && popoverContent && badge) {
         popoverContent.innerHTML = notifItems.map(n => `
           <div class="pop-item ${n.type === 'ship' ? 'ship' : ''}">
             <strong style="color:${n.type === 'ship' ? '#06C755' : 'var(--primary-blue)'};">● ${n.title}</strong>
@@ -1819,31 +1888,51 @@
       const profileData = { name, phone, shipMethod, store };
       localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
 
-      document.getElementById('profile-name').value = name;
-      document.getElementById('profile-phone').value = phone;
-      document.getElementById('profile-ship-method').value = shipMethod;
+      const profName = document.getElementById('profile-name');
+      const profPhone = document.getElementById('profile-phone');
+      const profMethod = document.getElementById('profile-ship-method');
+      const profStore = document.getElementById('profile-store');
+      if (profName) profName.value = name;
+      if (profPhone) profPhone.value = phone;
+      if (profMethod) profMethod.value = shipMethod;
       updateShipInputUI('profile');
-      document.getElementById('profile-store').value = store;
+      if (profStore) profStore.value = store;
 
-      document.getElementById('profile-setup-modal').classList.remove('active');
+      const setupModal = document.getElementById('profile-setup-modal');
+      if (setupModal) setupModal.classList.remove('active');
       alert('常用收件資料已儲存！');
     }
 
     function skipProfileSetup() {
-      document.getElementById('profile-setup-modal').classList.remove('active');
+      const modal = document.getElementById('profile-setup-modal');
+      if (modal) modal.classList.remove('active');
     }
 
     function switchMemberTab(tab) {
-      document.getElementById('tab-btn-profile').classList.toggle('active', tab === 'profile');
-      document.getElementById('tab-btn-orders').classList.toggle('active', tab === 'orders');
-      document.getElementById('member-tab-profile').style.display = tab === 'profile' ? 'block' : 'none';
-      document.getElementById('member-tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+      const tabProfBtn = document.getElementById('tab-btn-profile');
+      const tabOrdBtn = document.getElementById('tab-btn-orders');
+      const tabProf = document.getElementById('member-tab-profile');
+      const tabOrd = document.getElementById('member-tab-orders');
+
+      if (tabProfBtn) tabProfBtn.classList.toggle('active', tab === 'profile');
+      if (tabOrdBtn) tabOrdBtn.classList.toggle('active', tab === 'orders');
+      if (tabProf) tabProf.style.display = tab === 'profile' ? 'block' : 'none';
+      if (tabOrd) tabOrd.style.display = tab === 'orders' ? 'block' : 'none';
     }
 
     function renderMemberOrders(ordersList) {
       if (!currentUser) return;
       const listContainer = document.getElementById('member-orders-list');
-      const allOrders = ordersList || JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+      if (!listContainer) return;
+
+      let allOrders = ordersList;
+      if (!allOrders) {
+        try {
+          allOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+        } catch (e) {
+          allOrders = [];
+        }
+      }
 
       if (allOrders.length === 0) {
         listContainer.innerHTML = `
@@ -1903,18 +1992,6 @@
       window.location.reload();
     }
 
-    function switchPage(pageId) {
-      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
-
-      const targetSec = document.getElementById('page-' + pageId);
-      const targetBtn = document.getElementById('btn-' + pageId);
-      if (targetSec) targetSec.classList.add('active');
-      if (targetBtn) targetBtn.classList.add('active');
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -1922,40 +1999,58 @@
       }
 
       if (currentUser) {
-        const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
-        document.getElementById('buyer-name').value = savedProfile.name || currentUser.displayName || '';
-        document.getElementById('buyer-line').value = currentUser.contactValue || (currentUser.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : currentUser.displayName);
-        document.getElementById('buyer-phone').value = savedProfile.phone || '';
-        if (savedProfile.shipMethod) {
-          document.getElementById('buyer-ship-method').value = savedProfile.shipMethod;
+        try {
+          const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
+          const buyerName = document.getElementById('buyer-name');
+          const buyerLine = document.getElementById('buyer-line');
+          const buyerPhone = document.getElementById('buyer-phone');
+          const buyerMethod = document.getElementById('buyer-ship-method');
+          const buyerStore = document.getElementById('buyer-store');
+
+          if (buyerName) buyerName.value = savedProfile.name || currentUser.displayName || '';
+          if (buyerLine) buyerLine.value = currentUser.contactValue || (currentUser.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : currentUser.displayName);
+          if (buyerPhone) buyerPhone.value = savedProfile.phone || '';
+          if (buyerMethod && savedProfile.shipMethod) {
+            buyerMethod.value = savedProfile.shipMethod;
+          }
+          updateShipInputUI('checkout');
+          if (buyerStore) buyerStore.value = savedProfile.store || '';
+        } catch (e) {
+          updateShipInputUI('checkout');
         }
-        updateShipInputUI('checkout');
-        document.getElementById('buyer-store').value = savedProfile.store || '';
       } else {
         updateShipInputUI('checkout');
       }
 
       toggleCartDrawer(false);
-      document.getElementById('checkout-modal').classList.add('active');
+      const chkModal = document.getElementById('checkout-modal');
+      if (chkModal) chkModal.classList.add('active');
     }
 
     function closeCheckoutModal() {
-      document.getElementById('checkout-modal').classList.remove('active');
+      const chkModal = document.getElementById('checkout-modal');
+      if (chkModal) chkModal.classList.remove('active');
     }
 
     function openMemberModal() {
-      document.getElementById('member-modal').classList.add('active');
+      const memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.add('active');
       syncOrdersFromSheet();
     }
+
     function closeMemberModal() {
-      document.getElementById('member-modal').classList.remove('active');
+      const memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.remove('active');
     }
+
     function closeSuccessModal() {
-      document.getElementById('order-success-modal').classList.remove('active');
+      const modal = document.getElementById('order-success-modal');
+      if (modal) modal.classList.remove('active');
     }
 
     function copyOrderDetails() {
       const textarea = document.getElementById('order-text-content');
+      if (!textarea) return;
       textarea.select();
       textarea.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(textarea.value).then(() => {
@@ -1966,7 +2061,7 @@
       });
     }
 
-    // 訂單結帳送出：生成 ORD-YYMMXXX，直通 @154bkwlh 對話框
+    // 送出預購單
     async function handleOrderSubmit(e) {
       e.preventDefault();
 
@@ -1984,8 +2079,10 @@
       }
 
       const submitBtn = document.getElementById('submit-order-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = '訂單連動送出中...';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '訂單連動送出中...';
+      }
 
       if (currentUser) {
         const profileData = { name: buyerName, phone: buyerPhone, shipMethod: buyerShipMethod, store: buyerStore };
@@ -2028,7 +2125,6 @@
         }
       }
 
-      // 組裝對帳文字訊息
       let lineItemsText = cart.map((it, idx) => `${idx + 1}. [${it.series}] ${it.itemName || it.name} (${it.spec}) - NT$${it.price}`).join('\n');
       let orderFullText = `【DOT to DOT 預購委託單】\n` +
                           `訂單編號：${finalOrderId}\n` +
@@ -2041,36 +2137,41 @@
                           `備註：${buyerNote || '無'}\n` +
                           `已下單完畢，煩請確認對帳，謝謝！`;
 
-      document.getElementById('order-text-content').value = orderFullText;
+      const textContent = document.getElementById('order-text-content');
+      if (textContent) textContent.value = orderFullText;
 
-      // 通道 A：使用 oaMessage/%40154bkwlh 直接進入官方 LINE 聊天室填入文字
       const encodedMsg = encodeURIComponent(orderFullText);
       const directLineLink = `https://line.me/R/oaMessage/%40154bkwlh/?${encodedMsg}`;
-      document.getElementById('line-direct-link').href = directLineLink;
+      const lineDirectEl = document.getElementById('line-direct-link');
+      if (lineDirectEl) lineDirectEl.href = directLineLink;
 
-      // 通道 B：Threads 對帳連結
-      document.getElementById('threads-direct-link').href = OFFICIAL_THREADS_URL;
+      const threadsEl = document.getElementById('threads-direct-link');
+      if (threadsEl) threadsEl.href = OFFICIAL_THREADS_URL;
 
-      document.getElementById('success-order-id').textContent = finalOrderId;
-      document.getElementById('success-order-total').textContent = `NT$ ${totalAmount.toLocaleString()}`;
+      const successId = document.getElementById('success-order-id');
+      const successTot = document.getElementById('success-order-total');
+      if (successId) successId.textContent = finalOrderId;
+      if (successTot) successTot.textContent = `NT$ ${totalAmount.toLocaleString()}`;
 
       cart = [];
       updateCartDisplay();
       closeCheckoutModal();
       document.getElementById('order-form').reset();
-      submitBtn.disabled = false;
-      submitBtn.textContent = '確認送出預購單';
 
-      document.getElementById('order-success-modal').classList.add('active');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '確認送出預購單';
+      }
+
+      const succModal = document.getElementById('order-success-modal');
+      if (succModal) succModal.classList.add('active');
 
       if (currentUser) {
         setTimeout(syncOrdersFromSheet, 1500);
       }
     }
 
-    // =======================================================
-    // 賣家管理後台邏輯 (Admin Functions)
-    // =======================================================
+    // 賣家後台邏輯
     function promptAdminLogin() {
       const pwd = prompt('請輸入賣家後台管理員密碼：');
       if (pwd === ADMIN_PASSWORD) {
@@ -2116,6 +2217,7 @@
     let adminOrdersList = [];
     async function loadAdminOrders() {
       const container = document.getElementById('admin-orders-container');
+      if (!container) return;
       container.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">載入試算表資料中...</div>';
 
       try {
@@ -2130,6 +2232,8 @@
 
     function renderAdminOrdersUI() {
       const container = document.getElementById('admin-orders-container');
+      if (!container) return;
+
       if (adminOrdersList.length === 0) {
         container.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">目前尚無任何訂單紀錄。</div>';
         return;
