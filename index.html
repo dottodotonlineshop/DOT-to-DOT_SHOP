@@ -73,10 +73,6 @@
       color: #ffffff;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.15s ease;
-    }
-    .brand-logo:hover {
-      transform: scale(1.03);
     }
 
     .nav-actions {
@@ -135,10 +131,6 @@
       align-items: center;
       justify-content: center;
       padding: 4px;
-      transition: transform 0.15s;
-    }
-    .action-badge-btn:hover {
-      transform: scale(1.1);
     }
     .action-badge-btn svg {
       width: 22px;
@@ -218,7 +210,7 @@
       font-weight: 900;
     }
 
-    /* 小鈴鐺 Popover (箭頭精確對準小鈴鐺中央) */
+    /* 鈴鐺 Popover */
     .bell-wrapper {
       position: relative;
     }
@@ -235,7 +227,6 @@
       z-index: 2100;
       display: none;
       padding: 14px;
-      animation: popIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .bell-popover-box.active {
       display: block;
@@ -251,11 +242,6 @@
       transform: rotate(45deg);
       border-left: 1px solid var(--border-color);
       border-top: 1px solid var(--border-color);
-    }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .pop-head {
@@ -293,7 +279,7 @@
       margin-top: 4px;
     }
 
-    /* 路由分頁機制 */
+    /* 路由分頁 */
     main {
       flex: 1;
       width: 100%;
@@ -354,7 +340,6 @@
       border-radius: 999px;
       cursor: pointer;
       box-shadow: 0 8px 24px rgba(204, 255, 0, 0.4);
-      transition: all 0.2s ease;
       border: none;
     }
 
@@ -414,11 +399,10 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
     }
     .product-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 14px 30px rgba(0, 30, 100, 0.08);
       border-color: var(--primary-blue);
     }
     .product-img-wrap {
@@ -467,7 +451,6 @@
       margin-bottom: 12px;
     }
 
-    /* 規格雙欄並排 */
     .form-row-spec {
       display: flex;
       gap: 8px;
@@ -516,15 +499,14 @@
       cursor: pointer;
     }
 
-    /* NOTICE & QA & NEW POST */
+    /* NOTICE, QA, BLOG */
     .notice-item {
       background: #fff;
+      border: 1px solid var(--border-color);
       border-left: 5px solid var(--primary-blue);
       padding: 16px 20px;
       border-radius: 0 12px 12px 0;
       margin-bottom: 14px;
-      border: 1px solid var(--border-color);
-      border-left: 5px solid var(--primary-blue);
     }
     .notice-date { font-size: 11.5px; font-weight: 800; color: var(--primary-blue); margin-bottom: 4px; }
     .notice-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
@@ -687,10 +669,8 @@
       justify-content: center;
       gap: 8px;
       text-decoration: none;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
       margin-top: 8px;
     }
-    .threads-direct-btn:hover { background: #222; }
 
     .copy-order-btn {
       width: 100%;
@@ -704,7 +684,6 @@
       cursor: pointer;
       margin-top: 8px;
     }
-    .copy-order-btn:hover { background: #e2e8f0; }
 
     .order-textarea {
       width: 100%;
@@ -843,7 +822,6 @@
       font-weight: 800;
       cursor: pointer;
     }
-    .btn-send-notif:hover { background: #0369a1; }
     .btn-close-order {
       background: #15803d;
       color: #ffffff;
@@ -1319,14 +1297,21 @@
 
   <script>
     // ==========================================
-    // 1. 全域 UI 控制函式 (置頂確保 HTML 隨時可調用)
+    // 1. 全域 UI 控制函式
     // ==========================================
     function switchPage(pageId) {
-      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
+      var allSections = document.querySelectorAll('.page-section');
+      var allButtons = document.querySelectorAll('.pill-btn');
+      
+      for (var i = 0; i < allSections.length; i++) {
+        allSections[i].classList.remove('active');
+      }
+      for (var j = 0; j < allButtons.length; j++) {
+        allButtons[j].classList.remove('active');
+      }
 
-      const targetSec = document.getElementById('page-' + pageId);
-      const targetBtn = document.getElementById('btn-' + pageId);
+      var targetSec = document.getElementById('page-' + pageId);
+      var targetBtn = document.getElementById('btn-' + pageId);
       if (targetSec) targetSec.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
 
@@ -1334,8 +1319,8 @@
     }
 
     function toggleCartDrawer(open) {
-      const drawer = document.getElementById('cart-drawer');
-      const overlay = document.getElementById('cart-overlay');
+      var drawer = document.getElementById('cart-drawer');
+      var overlay = document.getElementById('cart-overlay');
       if (drawer && overlay) {
         if (open) {
           drawer.classList.add('active');
@@ -1349,13 +1334,13 @@
 
     function toggleNotificationPopover(e) {
       if (e) e.stopPropagation();
-      const popover = document.getElementById('bell-popover');
+      var popover = document.getElementById('bell-popover');
       if (popover) popover.classList.toggle('active');
     }
 
     function markAllNotificationsRead() {
-      const popover = document.getElementById('bell-popover');
-      const badge = document.getElementById('bell-badge');
+      var popover = document.getElementById('bell-popover');
+      var badge = document.getElementById('bell-badge');
       if (badge) {
         badge.style.display = 'none';
         badge.textContent = '0';
@@ -1367,13 +1352,13 @@
     }
 
     function openMemberModal() {
-      const memModal = document.getElementById('member-modal');
+      var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.add('active');
       syncOrdersFromSheet();
     }
 
     function closeMemberModal() {
-      const memModal = document.getElementById('member-modal');
+      var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.remove('active');
     }
 
@@ -1385,12 +1370,12 @@
 
       if (currentUser) {
         try {
-          const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
-          const buyerName = document.getElementById('buyer-name');
-          const buyerLine = document.getElementById('buyer-line');
-          const buyerPhone = document.getElementById('buyer-phone');
-          const buyerMethod = document.getElementById('buyer-ship-method');
-          const buyerStore = document.getElementById('buyer-store');
+          var savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
+          var buyerName = document.getElementById('buyer-name');
+          var buyerLine = document.getElementById('buyer-line');
+          var buyerPhone = document.getElementById('buyer-phone');
+          var buyerMethod = document.getElementById('buyer-ship-method');
+          var buyerStore = document.getElementById('buyer-store');
 
           if (buyerName) buyerName.value = savedProfile.name || currentUser.displayName || '';
           if (buyerLine) buyerLine.value = currentUser.contactValue || (currentUser.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : currentUser.displayName);
@@ -1408,30 +1393,30 @@
       }
 
       toggleCartDrawer(false);
-      const chkModal = document.getElementById('checkout-modal');
+      var chkModal = document.getElementById('checkout-modal');
       if (chkModal) chkModal.classList.add('active');
     }
 
     function closeCheckoutModal() {
-      const chkModal = document.getElementById('checkout-modal');
+      var chkModal = document.getElementById('checkout-modal');
       if (chkModal) chkModal.classList.remove('active');
     }
 
     function closeSuccessModal() {
-      const modal = document.getElementById('order-success-modal');
+      var modal = document.getElementById('order-success-modal');
       if (modal) modal.classList.remove('active');
     }
 
     function skipProfileSetup() {
-      const modal = document.getElementById('profile-setup-modal');
+      var modal = document.getElementById('profile-setup-modal');
       if (modal) modal.classList.remove('active');
     }
 
     function switchMemberTab(tab) {
-      const tabProfBtn = document.getElementById('tab-btn-profile');
-      const tabOrdBtn = document.getElementById('tab-btn-orders');
-      const tabProf = document.getElementById('member-tab-profile');
-      const tabOrd = document.getElementById('member-tab-orders');
+      var tabProfBtn = document.getElementById('tab-btn-profile');
+      var tabOrdBtn = document.getElementById('tab-btn-orders');
+      var tabProf = document.getElementById('member-tab-profile');
+      var tabOrd = document.getElementById('member-tab-orders');
 
       if (tabProfBtn) tabProfBtn.classList.toggle('active', tab === 'profile');
       if (tabOrdBtn) tabOrdBtn.classList.toggle('active', tab === 'orders');
@@ -1442,14 +1427,14 @@
     // ==========================================
     // 2. 常數與商品資料庫
     // ==========================================
-    const MY_LIFF_ID = "2011693279-1eGSgIL6"; 
-    const GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
-    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
-    const OFFICIAL_LINE_ID = "@154bkwlh"; 
-    const OFFICIAL_THREADS_URL = "https://www.threads.net"; 
-    const ADMIN_PASSWORD = "admin888"; 
+    var MY_LIFF_ID = "2011693279-1eGSgIL6"; 
+    var GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
+    var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
+    var OFFICIAL_LINE_ID = "@154bkwlh"; 
+    var OFFICIAL_THREADS_URL = "https://www.threads.net"; 
+    var ADMIN_PASSWORD = "admin888"; 
 
-    const DEFAULT_SERIES = [
+    var DEFAULT_SERIES = [
       {
         id: 's1',
         seriesName: '日本原宿限定系列',
@@ -1491,14 +1476,14 @@
       }
     ];
 
-    let cart = [];
-    let currentUser = null;
-    let currentGasWebhook = localStorage.getItem('dottodot_gas_webhook') || GAS_WEBHOOK_URL;
-    let productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series')) || DEFAULT_SERIES;
+    var cart = [];
+    var currentUser = null;
+    var currentGasWebhook = localStorage.getItem('dottodot_gas_webhook') || GAS_WEBHOOK_URL;
+    var productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series')) || DEFAULT_SERIES;
 
-    document.addEventListener('click', (e) => {
-      const popover = document.getElementById('bell-popover');
-      const bellBtn = document.getElementById('bell-btn');
+    document.addEventListener('click', function(e) {
+      var popover = document.getElementById('bell-popover');
+      var bellBtn = document.getElementById('bell-btn');
       if (popover && popover.classList.contains('active')) {
         if (!popover.contains(e.target) && !bellBtn.contains(e.target)) {
           popover.classList.remove('active');
@@ -1510,83 +1495,124 @@
     // 3. 商品與購物車功能
     // ==========================================
     function renderProducts() {
-      const container = document.getElementById('product-grid-container');
+      var container = document.getElementById('product-grid-container');
       if (!container) return;
 
-      container.innerHTML = productSeriesData.map(s => {
-        const firstItem = s.items[0];
-        return `
-          <div class="product-card" id="card-${s.id}">
-            <div class="product-img-wrap">
-              <span class="preorder-badge">PRE-ORDER</span>
-              <img src="${s.img}" alt="${s.seriesName}">
-            </div>
-            <div class="product-content">
-              <div class="product-series">${s.seriesName}</div>
-              <div class="product-eta">⏱ ${s.eta}</div>
+      var html = '';
+      for (var i = 0; i < productSeriesData.length; i++) {
+        var s = productSeriesData[i];
+        var firstItem = s.items[0];
 
-              <div style="margin-bottom: 10px;">
-                <label class="spec-label">選取品項：</label>
-                <select class="spec-select" id="item-select-${s.id}" onchange="handleItemChange('${s.id}')">
-                  ${s.items.map((it, idx) => `<option value="${idx}">${it.name}</option>`).join('')}
-                </select>
-              </div>
+        var itemOptions = '';
+        for (var j = 0; j < s.items.length; j++) {
+          itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
+        }
 
-              <div class="form-row-spec">
-                <div class="spec-field">
-                  <label class="spec-label">顏色 / 款式：</label>
-                  <select class="spec-select" id="color-select-${s.id}">
-                    ${firstItem.colors.map(c => `<option value="${c}">${c}</option>`).join('')}
-                  </select>
-                </div>
-                <div class="spec-field">
-                  <label class="spec-label">尺寸 / 規格：</label>
-                  <select class="spec-select" id="size-select-${s.id}">
-                    ${firstItem.sizes.map(sz => `<option value="${sz}">${sz}</option>`).join('')}
-                  </select>
-                </div>
-              </div>
+        var colorOptions = '';
+        for (var k = 0; k < firstItem.colors.length; k++) {
+          colorOptions += '<option value="' + firstItem.colors[k] + '">' + firstItem.colors[k] + '</option>';
+        }
 
-              <div class="product-foot">
-                <div class="product-price" id="price-display-${s.id}">NT$ ${firstItem.price.toLocaleString()}</div>
-                <button class="add-cart-btn" onclick="addToCart('${s.id}')">加入購物車</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+        var sizeOptions = '';
+        for (var l = 0; l < firstItem.sizes.length; l++) {
+          sizeOptions += '<option value="' + firstItem.sizes[l] + '">' + firstItem.sizes[l] + '</option>';
+        }
+
+        html += '<div class="product-card" id="card-' + s.id + '">' +
+          '<div class="product-img-wrap">' +
+            '<span class="preorder-badge">PRE-ORDER</span>' +
+            '<img src="' + s.img + '" alt="' + s.seriesName + '">' +
+          '</div>' +
+          '<div class="product-content">' +
+            '<div class="product-series">' + s.seriesName + '</div>' +
+            '<div class="product-eta">⏱ ' + s.eta + '</div>' +
+            '<div style="margin-bottom: 10px;">' +
+              '<label class="spec-label">選取品項：</label>' +
+              '<select class="spec-select" id="item-select-' + s.id + '" onchange="handleItemChange(\'' + s.id + '\')">' +
+                itemOptions +
+              '</select>' +
+            '</div>' +
+            '<div class="form-row-spec">' +
+              '<div class="spec-field">' +
+                '<label class="spec-label">顏色 / 款式：</label>' +
+                '<select class="spec-select" id="color-select-' + s.id + '">' +
+                  colorOptions +
+                '</select>' +
+              '</div>' +
+              '<div class="spec-field">' +
+                '<label class="spec-label">尺寸 / 規格：</label>' +
+                '<select class="spec-select" id="size-select-' + s.id + '">' +
+                  sizeOptions +
+                '</select>' +
+              '</div>' +
+            '</div>' +
+            '<div class="product-foot">' +
+              '<div class="product-price" id="price-display-' + s.id + '">NT$ ' + Number(firstItem.price).toLocaleString() + '</div>' +
+              '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+      container.innerHTML = html;
     }
 
     function handleItemChange(seriesId) {
-      const series = productSeriesData.find(x => x.id === seriesId);
+      var series = null;
+      for (var i = 0; i < productSeriesData.length; i++) {
+        if (productSeriesData[i].id === seriesId) {
+          series = productSeriesData[i];
+          break;
+        }
+      }
       if (!series) return;
 
-      const itemIdx = parseInt(document.getElementById(`item-select-${seriesId}`).value, 10);
-      const item = series.items[itemIdx];
+      var selectEl = document.getElementById('item-select-' + seriesId);
+      var itemIdx = parseInt(selectEl.value, 10);
+      var item = series.items[itemIdx];
 
-      document.getElementById(`price-display-${seriesId}`).textContent = `NT$ ${item.price.toLocaleString()}`;
+      var priceEl = document.getElementById('price-display-' + seriesId);
+      if (priceEl) priceEl.textContent = 'NT$ ' + Number(item.price).toLocaleString();
 
-      const colorSelect = document.getElementById(`color-select-${seriesId}`);
-      colorSelect.innerHTML = item.colors.map(c => `<option value="${c}">${c}</option>`).join('');
+      var colorSelect = document.getElementById('color-select-' + seriesId);
+      if (colorSelect) {
+        var cHtml = '';
+        for (var j = 0; j < item.colors.length; j++) {
+          cHtml += '<option value="' + item.colors[j] + '">' + item.colors[j] + '</option>';
+        }
+        colorSelect.innerHTML = cHtml;
+      }
 
-      const sizeSelect = document.getElementById(`size-select-${seriesId}`);
-      sizeSelect.innerHTML = item.sizes.map(sz => `<option value="${sz}">${sz}</option>`).join('');
+      var sizeSelect = document.getElementById('size-select-' + seriesId);
+      if (sizeSelect) {
+        var sHtml = '';
+        for (var k = 0; k < item.sizes.length; k++) {
+          sHtml += '<option value="' + item.sizes[k] + '">' + item.sizes[k] + '</option>';
+        }
+        sizeSelect.innerHTML = sHtml;
+      }
     }
 
     function addToCart(seriesId) {
-      const series = productSeriesData.find(x => x.id === seriesId);
+      var series = null;
+      for (var i = 0; i < productSeriesData.length; i++) {
+        if (productSeriesData[i].id === seriesId) {
+          series = productSeriesData[i];
+          break;
+        }
+      }
       if (!series) return;
 
-      const itemIdx = parseInt(document.getElementById(`item-select-${seriesId}`).value, 10);
-      const item = series.items[itemIdx];
+      var selectEl = document.getElementById('item-select-' + seriesId);
+      var itemIdx = parseInt(selectEl.value, 10);
+      var item = series.items[itemIdx];
 
-      const selectedColor = document.getElementById(`color-select-${seriesId}`).value;
-      const selectedSize = document.getElementById(`size-select-${seriesId}`).value;
-      const fullSpec = `${selectedColor} / ${selectedSize}`;
+      var colorVal = document.getElementById('color-select-' + seriesId).value;
+      var sizeVal = document.getElementById('size-select-' + seriesId).value;
+      var fullSpec = colorVal + ' / ' + sizeVal;
 
       cart.push({
         series: series.seriesName,
-        name: `${series.seriesName} - ${item.name}`,
+        name: series.seriesName + ' - ' + item.name,
         itemName: item.name,
         price: item.price,
         spec: fullSpec,
@@ -1600,59 +1626,64 @@
     }
 
     function removeCartItem(cartItemId) {
-      cart = cart.filter(i => i.cartItemId !== cartItemId);
+      var newCart = [];
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].cartItemId !== cartItemId) {
+          newCart.push(cart[i]);
+        }
+      }
+      cart = newCart;
       updateCartDisplay();
     }
 
     function updateCartDisplay() {
-      const cartCounter = document.getElementById('cart-counter');
-      const drawerCount = document.getElementById('drawer-count');
+      var cartCounter = document.getElementById('cart-counter');
+      var drawerCount = document.getElementById('drawer-count');
       if (cartCounter) cartCounter.textContent = cart.length;
       if (drawerCount) drawerCount.textContent = cart.length;
 
-      const container = document.getElementById('cart-items-container');
+      var container = document.getElementById('cart-items-container');
       if (!container) return;
 
       if (cart.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
-            <p style="font-size: 15px; font-weight: 700;">購物車目前是空的</p>
-            <p style="font-size: 12px; margin-top: 6px;">請前往 SHOP ALL 選購預購商品</p>
-          </div>
-        `;
-        const subtotal = document.getElementById('cart-subtotal');
-        const total = document.getElementById('cart-total');
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">' +
+          '<p style="font-size: 15px; font-weight: 700;">購物車目前是空的</p>' +
+          '<p style="font-size: 12px; margin-top: 6px;">請前往 SHOP ALL 選購預購商品</p>' +
+        '</div>';
+        var subtotal = document.getElementById('cart-subtotal');
+        var total = document.getElementById('cart-total');
         if (subtotal) subtotal.textContent = 'NT$ 0';
         if (total) total.textContent = 'NT$ 0';
         return;
       }
 
-      let total = 0;
-      container.innerHTML = cart.map(item => {
-        total += item.price;
-        return `
-          <div class="cart-item">
-            <img src="${item.img}" class="cart-item-img" alt="">
-            <div class="cart-item-info">
-              <div class="cart-item-title">${item.itemName || item.name}</div>
-              <div style="font-size: 11px; color:#555;">系列：${item.series}</div>
-              <div class="cart-item-spec">規格：${item.spec}</div>
-              <div class="cart-item-eta">進度：${item.eta}</div>
-              <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
-            </div>
-            <button class="cart-item-del" onclick="removeCartItem(${item.cartItemId})">刪除</button>
-          </div>
-        `;
-      }).join('');
+      var totalAmount = 0;
+      var html = '';
+      for (var i = 0; i < cart.length; i++) {
+        var it = cart[i];
+        totalAmount += it.price;
+        html += '<div class="cart-item">' +
+          '<img src="' + it.img + '" class="cart-item-img" alt="">' +
+          '<div class="cart-item-info">' +
+            '<div class="cart-item-title">' + (it.itemName || it.name) + '</div>' +
+            '<div style="font-size: 11px; color:#555;">系列：' + it.series + '</div>' +
+            '<div class="cart-item-spec">規格：' + it.spec + '</div>' +
+            '<div class="cart-item-eta">進度：' + it.eta + '</div>' +
+            '<div class="cart-item-price">NT$ ' + Number(it.price).toLocaleString() + '</div>' +
+          '</div>' +
+          '<button class="cart-item-del" onclick="removeCartItem(' + it.cartItemId + ')">刪除</button>' +
+        '</div>';
+      }
+      container.innerHTML = html;
 
-      const subtotalEl = document.getElementById('cart-subtotal');
-      const totalEl = document.getElementById('cart-total');
-      if (subtotalEl) subtotalEl.textContent = `NT$ ${total.toLocaleString()}`;
-      if (totalEl) totalEl.textContent = `NT$ ${total.toLocaleString()}`;
+      var subtotalEl = document.getElementById('cart-subtotal');
+      var totalEl = document.getElementById('cart-total');
+      if (subtotalEl) subtotalEl.textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
+      if (totalEl) totalEl.textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
     }
 
     function updateShipInputUI(context) {
-      let selectId, labelId, inputId;
+      var selectId, labelId, inputId;
       if (context === 'checkout') {
         selectId = 'buyer-ship-method';
         labelId = 'buyer-address-label';
@@ -1667,13 +1698,12 @@
         inputId = 'profile-store';
       }
 
-      const selectEl = document.getElementById(selectId);
-      const label = document.getElementById(labelId);
-      const input = document.getElementById(inputId);
+      var selectEl = document.getElementById(selectId);
+      var label = document.getElementById(labelId);
+      var input = document.getElementById(inputId);
       if (!selectEl || !label || !input) return;
 
-      const method = selectEl.value;
-      if (method === 'home') {
+      if (selectEl.value === 'home') {
         label.textContent = context === 'checkout' ? '完整宅配收件地址 *' : '常用預設宅配地址 (選填)';
         input.placeholder = '例如：台北市信義區忠孝東路五段XX號X樓';
       } else {
@@ -1683,41 +1713,41 @@
     }
 
     // ==========================================
-    // 4. 會員與訂單同步邏輯
+    // 4. 會員與訂單資料
     // ==========================================
     function handleUserLoggedIn(user, isFirstTime) {
       currentUser = user;
 
-      const avatarSlot = document.getElementById('user-avatar-slot');
+      var avatarSlot = document.getElementById('user-avatar-slot');
       if (avatarSlot) {
         if (user.pictureUrl) {
-          avatarSlot.innerHTML = `<img src="${user.pictureUrl}" alt="${user.displayName}">`;
+          avatarSlot.innerHTML = '<img src="' + user.pictureUrl + '" alt="' + user.displayName + '">';
         } else {
           avatarSlot.innerHTML = user.displayName.charAt(0);
         }
       }
 
-      const unlogged = document.getElementById('auth-unlogged');
-      const logged = document.getElementById('auth-logged');
+      var unlogged = document.getElementById('auth-unlogged');
+      var logged = document.getElementById('auth-logged');
       if (unlogged) unlogged.style.display = 'none';
       if (logged) logged.style.display = 'block';
 
-      const dispName = document.getElementById('user-display-name');
-      const dispId = document.getElementById('user-display-id');
-      if (dispName) dispName.textContent = `${user.displayName} (${user.provider})`;
+      var dispName = document.getElementById('user-display-name');
+      var dispId = document.getElementById('user-display-id');
+      if (dispName) dispName.textContent = user.displayName + ' (' + user.provider + ')';
       if (dispId) dispId.textContent = user.contactValue || (user.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : 'LINE ID: ' + user.userId);
 
-      const profPic = document.getElementById('user-profile-pic');
+      var profPic = document.getElementById('user-profile-pic');
       if (profPic && user.pictureUrl) {
         profPic.src = user.pictureUrl;
       }
 
       try {
-        const savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
-        const profName = document.getElementById('profile-name');
-        const profPhone = document.getElementById('profile-phone');
-        const profMethod = document.getElementById('profile-ship-method');
-        const profStore = document.getElementById('profile-store');
+        var savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
+        var profName = document.getElementById('profile-name');
+        var profPhone = document.getElementById('profile-phone');
+        var profMethod = document.getElementById('profile-ship-method');
+        var profStore = document.getElementById('profile-store');
 
         if (profName && savedProfile.name) profName.value = savedProfile.name;
         if (profPhone && savedProfile.phone) profPhone.value = savedProfile.phone;
@@ -1729,8 +1759,8 @@
 
         if (isFirstTime && (!savedProfile.name && !savedProfile.phone)) {
           closeMemberModal();
-          const setupName = document.getElementById('setup-real-name');
-          const setupModal = document.getElementById('profile-setup-modal');
+          var setupName = document.getElementById('setup-real-name');
+          var setupModal = document.getElementById('profile-setup-modal');
           if (setupName) setupName.value = user.displayName || '';
           if (setupModal) setupModal.classList.add('active');
         }
@@ -1739,71 +1769,77 @@
       syncOrdersFromSheet();
     }
 
-    async function syncOrdersFromSheet() {
+    function syncOrdersFromSheet() {
       if (!currentUser || !currentGasWebhook) return;
       
-      const queryParam = encodeURIComponent(currentUser.contactValue || currentUser.displayName);
-      const nameParam = encodeURIComponent(currentUser.displayName || '');
-      const fetchUrl = `${currentGasWebhook}?contact=${queryParam}&name=${nameParam}`;
+      var queryParam = encodeURIComponent(currentUser.contactValue || currentUser.displayName);
+      var nameParam = encodeURIComponent(currentUser.displayName || '');
+      var fetchUrl = currentGasWebhook + '?contact=' + queryParam + '&name=' + nameParam;
 
-      try {
-        const resp = await fetch(fetchUrl);
-        const data = await resp.json();
+      fetch(fetchUrl).then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
         if (data && data.orders) {
           localStorage.setItem('dottodot_orders_' + currentUser.userId, JSON.stringify(data.orders));
           renderMemberOrders(data.orders);
           buildBellNotifications(data.orders);
         }
-      } catch (err) {
+      }).catch(function() {
         try {
-          const localOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+          var localOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
           renderMemberOrders(localOrders);
         } catch (e) {}
-      }
+      });
     }
 
     function buildBellNotifications(orders) {
       if (!orders || orders.length === 0) return;
       
-      let notifItems = [];
-      orders.forEach(order => {
-        if (order.payStatus && order.payStatus !== "尚未對帳") {
+      var notifItems = [];
+      for (var i = 0; i < orders.length; i++) {
+        var order = orders[i];
+        if (order.payStatus && order.payStatus !== '尚未對帳') {
           notifItems.push({
             type: 'pay',
-            title: `訂單 ${order.orderId} 對帳更新`,
-            desc: `狀態已更新為：【${order.payStatus}】`
+            title: '訂單 ' + order.orderId + ' 對帳更新',
+            desc: '狀態已更新為：【' + order.payStatus + '】'
           });
         }
-        order.items.forEach(item => {
-          if (item.trackingNo || (item.shipStatus && item.shipStatus !== "等待到貨")) {
+        for (var j = 0; j < order.items.length; j++) {
+          var item = order.items[j];
+          if (item.trackingNo || (item.shipStatus && item.shipStatus !== '等待到貨')) {
             notifItems.push({
               type: 'ship',
-              title: `📦 ${item.name} 出貨進度`,
-              desc: `狀態：${item.shipStatus}${item.trackingNo ? ' (單號: ' + item.trackingNo + ')' : ''}`
+              title: '📦 ' + item.name + ' 出貨進度',
+              desc: '狀態：' + item.shipStatus + (item.trackingNo ? ' (單號: ' + item.trackingNo + ')' : '')
             });
           }
-          if (item.payBatchNo || (item.procureStatus && item.procureStatus !== "未採購")) {
+          if (item.payBatchNo || (item.procureStatus && item.procureStatus !== '未採購')) {
             notifItems.push({
               type: 'procure',
-              title: `✈️ ${item.name} 採購進度`,
-              desc: `狀態：${item.procureStatus}${item.payBatchNo ? ' (批次: ' + item.payBatchNo + ')' : ''}`
+              title: '✈️ ' + item.name + ' 採購進度',
+              desc: '狀態：' + item.procureStatus + (item.payBatchNo ? ' (批次: ' + item.payBatchNo + ')' : '')
             });
           }
-        });
-      });
+        }
+      }
 
-      const popoverContent = document.getElementById('bell-popover-content');
-      const badge = document.getElementById('bell-badge');
+      var popoverContent = document.getElementById('bell-popover-content');
+      var badge = document.getElementById('bell-badge');
 
       if (notifItems.length > 0 && popoverContent && badge) {
-        popoverContent.innerHTML = notifItems.map(n => `
-          <div class="pop-item ${n.type === 'ship' ? 'ship' : ''}">
-            <strong style="color:${n.type === 'ship' ? '#06C755' : 'var(--primary-blue)'};">● ${n.title}</strong>
-            <div style="margin-top: 2px;">${n.desc}</div>
-          </div>
-        `).join('');
+        var html = '';
+        for (var k = 0; k < notifItems.length; k++) {
+          var n = notifItems[k];
+          var color = (n.type === 'ship') ? '#06C755' : 'var(--primary-blue)';
+          html += '<div class="pop-item ' + (n.type === 'ship' ? 'ship' : '') + '">' +
+            '<strong style="color:' + color + ';">● ' + n.title + '</strong>' +
+            '<div style="margin-top: 2px;">' + n.desc + '</div>' +
+          '</div>';
+        }
+        popoverContent.innerHTML = html;
 
-        const isRead = localStorage.getItem('dottodot_read_notifs_' + currentUser.userId);
+        var isRead = localStorage.getItem('dottodot_read_notifs_' + currentUser.userId);
         if (!isRead) {
           badge.textContent = notifItems.length;
           badge.style.display = 'flex';
@@ -1815,7 +1851,7 @@
       e.preventDefault();
       if (!currentUser) return;
 
-      let name, phone, shipMethod, store;
+      var name, phone, shipMethod, store;
       if (mode === 'setup') {
         name = document.getElementById('setup-real-name').value.trim();
         phone = document.getElementById('setup-phone').value.trim();
@@ -1828,30 +1864,30 @@
         store = document.getElementById('profile-store').value.trim();
       }
 
-      const profileData = { name, phone, shipMethod, store };
+      var profileData = { name: name, phone: phone, shipMethod: shipMethod, store: store };
       localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
 
-      const profName = document.getElementById('profile-name');
-      const profPhone = document.getElementById('profile-phone');
-      const profMethod = document.getElementById('profile-ship-method');
-      const profStore = document.getElementById('profile-store');
+      var profName = document.getElementById('profile-name');
+      var profPhone = document.getElementById('profile-phone');
+      var profMethod = document.getElementById('profile-ship-method');
+      var profStore = document.getElementById('profile-store');
       if (profName) profName.value = name;
       if (profPhone) profPhone.value = phone;
       if (profMethod) profMethod.value = shipMethod;
       updateShipInputUI('profile');
       if (profStore) profStore.value = store;
 
-      const setupModal = document.getElementById('profile-setup-modal');
+      var setupModal = document.getElementById('profile-setup-modal');
       if (setupModal) setupModal.classList.remove('active');
       alert('常用收件資料已儲存！');
     }
 
     function renderMemberOrders(ordersList) {
       if (!currentUser) return;
-      const listContainer = document.getElementById('member-orders-list');
+      var listContainer = document.getElementById('member-orders-list');
       if (!listContainer) return;
 
-      let allOrders = ordersList;
+      var allOrders = ordersList;
       if (!allOrders) {
         try {
           allOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
@@ -1861,55 +1897,62 @@
       }
 
       if (allOrders.length === 0) {
-        listContainer.innerHTML = `
-          <div style="text-align:center; padding:30px 10px; color:var(--text-muted);">
-            <p style="font-weight:700;">目前尚無歷史訂單</p>
-            <p style="font-size:12px; margin-top:4px;">前往 SHOP ALL 下單預購品即可在此即時追蹤</p>
-          </div>
-        `;
+        listContainer.innerHTML = '<div style="text-align:center; padding:30px 10px; color:var(--text-muted);">' +
+          '<p style="font-weight:700;">目前尚無歷史訂單</p>' +
+          '<p style="font-size:12px; margin-top:4px;">前往 SHOP ALL 下單預購品即可在此即時追蹤</p>' +
+        '</div>';
         return;
       }
 
-      listContainer.innerHTML = allOrders.map(order => `
-        <div style="border:1.5px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:12px; ${order.isClosed ? 'background:#f8fafc;' : ''}">
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); margin-bottom:8px; border-bottom:1px dashed #eee; padding-bottom:6px;">
-            <span>編號：<b style="color:#111;">${order.orderId}</b></span>
-            <div>
-              ${order.isClosed ? '<span class="admin-badge-closed" style="margin-right:4px;">● 已結案</span>' : ''}
-              <span style="background:#eff6ff; color:var(--primary-blue); font-weight:800; padding:2px 8px; border-radius:4px;">
-                對帳：${order.payStatus || '尚未對帳'}
-              </span>
-            </div>
-          </div>
+      var html = '';
+      for (var i = 0; i < allOrders.length; i++) {
+        var order = allOrders[i];
+        var closedBadge = order.isClosed ? '<span class="admin-badge-closed" style="margin-right:4px;">● 已結案</span>' : '';
+        
+        var itemsHtml = '';
+        for (var j = 0; j < order.items.length; j++) {
+          var it = order.items[j];
+          var shipColorBg = (it.shipStatus === '已寄出') ? '#e6f9ed' : '#fef3c7';
+          var shipColorTxt = (it.shipStatus === '已寄出') ? '#06C755' : '#b45309';
 
-          ${order.items.map(item => `
-            <div style="background:#fafbff; border-radius:8px; padding:10px; margin-bottom:8px; font-size:13px; border:1px solid #f0f3f8;">
-              <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:2px;">
-                <span>${item.name}</span>
-                <span style="color:var(--primary-blue);">NT$ ${Number(item.price).toLocaleString()}</span>
-              </div>
-              <div style="font-size:11px; color:#777; margin-bottom:4px;">系列：${item.series || '海外代購選品'}</div>
-              <div style="font-size:11.5px; color:#555; margin-bottom:6px;">規格：${item.spec}</div>
-              
-              <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span style="background:#eef2ff; color:#4338ca; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">
-                  採購：${item.procureStatus \vert{}\vert{} '未採購'}${item.payBatchNo ? ' (' + item.payBatchNo + ')' : ''}
-                </span>
-                <span style="background:${item.shipStatus === '已寄出' ? '#e6f9ed' : '#fef3c7'}; color:${item.shipStatus === '已寄出' ? '#06C755' : '#b45309'}; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">
-                  出貨：${item.shipStatus \vert{}\vert{} '等待到貨'}${item.trackingNo ? ' (' + item.trackingNo + ')' : ''}
-                </span>
-              </div>
-            </div>
-          `).join('')}
+          itemsHtml += '<div style="background:#fafbff; border-radius:8px; padding:10px; margin-bottom:8px; font-size:13px; border:1px solid #f0f3f8;">' +
+            '<div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:2px;">' +
+              '<span>' + it.name + '</span>' +
+              '<span style="color:var(--primary-blue);">NT$ ' + Number(it.price).toLocaleString() + '</span>' +
+            '</div>' +
+            '<div style="font-size:11px; color:#777; margin-bottom:4px;">系列：' + (it.series || '海外代購選品') + '</div>' +
+            '<div style="font-size:11.5px; color:#555; margin-bottom:6px;">規格：' + it.spec + '</div>' +
+            '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+              '<span style="background:#eef2ff; color:#4338ca; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">' +
+                '採購：' + (it.procureStatus || '未採購') + (it.payBatchNo ? ' (' + it.payBatchNo + ')' : '') +
+              '</span>' +
+              '<span style="background:' + shipColorBg + '; color:' + shipColorTxt + '; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">' +
+                '出貨：' + (it.shipStatus || '等待到貨') + (it.trackingNo ? ' (' + it.trackingNo + ')' : '') +
+              '</span>' +
+            '</div>' +
+          '</div>';
+        }
 
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-top:8px; color:var(--text-muted);">
-            <span>${order.shipMethod} ➜ ${order.buyerStore}</span>
-            <span style="font-size:14px; font-weight:900; color:var(--primary-blue);">
-              同單總金額：NT$ ${Number(order.totalAmount).toLocaleString()}
-            </span>
-          </div>
-        </div>
-      `).join('');
+        html += '<div style="border:1.5px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:12px;' + (order.isClosed ? 'background:#f8fafc;' : '') + '">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); margin-bottom:8px; border-bottom:1px dashed #eee; padding-bottom:6px;">' +
+            '<span>編號：<b style="color:#111;">' + order.orderId + '</b></span>' +
+            '<div>' +
+              closedBadge +
+              '<span style="background:#eff6ff; color:var(--primary-blue); font-weight:800; padding:2px 8px; border-radius:4px;">' +
+                '對帳：' + (order.payStatus || '尚未對帳') +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+          itemsHtml +
+          '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-top:8px; color:var(--text-muted);">' +
+            '<span>' + order.shipMethod + ' ➜ ' + order.buyerStore + '</span>' +
+            '<span style="font-size:14px; font-weight:900; color:var(--primary-blue);">' +
+              '同單總金額：NT$ ' + Number(order.totalAmount).toLocaleString() +
+            '</span>' +
+          '</div>' +
+        '</div>';
+      }
+      listContainer.innerHTML = html;
     }
 
     function handleLogout() {
@@ -1919,57 +1962,59 @@
     }
 
     function copyOrderDetails() {
-      const textarea = document.getElementById('order-text-content');
+      var textarea = document.getElementById('order-text-content');
       if (!textarea) return;
       textarea.select();
       textarea.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(textarea.value).then(() => {
+      navigator.clipboard.writeText(textarea.value).then(function() {
         alert('📋 訂單明細已成功複製！請直接貼上傳送給官方 LINE 或 Threads 客服。');
-      }).catch(() => {
+      }).catch(function() {
         document.execCommand('copy');
         alert('📋 訂單明細已成功複製！');
       });
     }
 
     // ==========================================
-    // 5. 訂單結帳送出 (修復 CORS 與重定向相容)
+    // 5. 送出訂單
     // ==========================================
-    async function handleOrderSubmit(e) {
+    function handleOrderSubmit(e) {
       e.preventDefault();
 
-      const buyerName = document.getElementById('buyer-name').value.trim();
-      const buyerContact = document.getElementById('buyer-line').value.trim();
-      const buyerPhone = document.getElementById('buyer-phone').value.trim();
-      const buyerShipMethod = document.getElementById('buyer-ship-method').value;
-      const buyerStore = document.getElementById('buyer-store').value.trim();
-      const buyerNote = document.getElementById('buyer-note').value.trim();
+      var buyerName = document.getElementById('buyer-name').value.trim();
+      var buyerContact = document.getElementById('buyer-line').value.trim();
+      var buyerPhone = document.getElementById('buyer-phone').value.trim();
+      var buyerShipMethod = document.getElementById('buyer-ship-method').value;
+      var buyerStore = document.getElementById('buyer-store').value.trim();
+      var buyerNote = document.getElementById('buyer-note').value.trim();
 
       if (!buyerName || !buyerPhone || !buyerStore) {
-        const targetDesc = buyerShipMethod === 'home' ? '宅配收件地址' : '超商門市名稱與店號';
-        alert(`⚠️ 下單必填提醒：真實姓名、電話與${targetDesc}皆為必填項目！`);
+        var targetDesc = (buyerShipMethod === 'home') ? '宅配收件地址' : '超商門市名稱與店號';
+        alert('⚠️ 下單必填提醒：真實姓名、電話與' + targetDesc + '皆為必填項目！');
         return;
       }
 
-      const submitBtn = document.getElementById('submit-order-btn');
+      var submitBtn = document.getElementById('submit-order-btn');
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = '訂單連動送出中...';
       }
 
       if (currentUser) {
-        const profileData = { name: buyerName, phone: buyerPhone, shipMethod: buyerShipMethod, store: buyerStore };
+        var profileData = { name: buyerName, phone: buyerPhone, shipMethod: buyerShipMethod, store: buyerStore };
         localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
       }
 
-      let totalAmount = 0;
-      cart.forEach(i => totalAmount += i.price);
+      var totalAmount = 0;
+      for (var i = 0; i < cart.length; i++) {
+        totalAmount += cart[i].price;
+      }
 
-      const now = new Date();
-      const yy = String(now.getFullYear()).slice(-2);
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const tempOrderId = `ORD-${yy}${mm}` + String(Math.floor(100 + Math.random() * 900));
+      var now = new Date();
+      var yy = String(now.getFullYear()).slice(-2);
+      var mm = String(now.getMonth() + 1).padStart(2, '0');
+      var tempOrderId = 'ORD-' + yy + mm + String(Math.floor(100 + Math.random() * 900));
 
-      const orderPayload = {
+      var orderPayload = {
         orderDate: new Date().toLocaleString(),
         buyerName: buyerName,
         buyerContact: buyerContact,
@@ -1982,55 +2027,58 @@
         items: cart
       };
 
-      let finalOrderId = tempOrderId;
+      var finalOrderId = tempOrderId;
 
       if (currentGasWebhook) {
-        try {
-          const resp = await fetch(currentGasWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(orderPayload)
-          });
-          const resData = await resp.json();
-          if (resData && resData.orderId) finalOrderId = resData.orderId;
-        } catch (err) {
-          console.warn('以非同步相容模式送出訂單：', err);
-          fetch(currentGasWebhook, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(orderPayload)
-          });
-        }
+        fetch(currentGasWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(orderPayload)
+        }).then(function(resp) {
+          return resp.json();
+        }).then(function(resData) {
+          if (resData && resData.orderId) {
+            finalOrderId = resData.orderId;
+            var succId = document.getElementById('success-order-id');
+            if (succId) succId.textContent = finalOrderId;
+          }
+        }).catch(function(err) {
+          console.warn('非同步備份模式送出：', err);
+        });
       }
 
-      let lineItemsText = cart.map((it, idx) => `${idx + 1}. [${it.series}] ${it.itemName || it.name} (${it.spec}) - NT$${it.price}`).join('\n');
-      let orderFullText = `【DOT to DOT 預購委託單】\n` +
-                          `訂單編號：${finalOrderId}\n` +
-                          `買家姓名：${buyerName}\n` +
-                          `手機號碼：${buyerPhone}\n` +
-                          `配送方式：${buyerShipMethod === 'home' ? '宅配' : '7-11'} (${buyerStore})\n` +
-                          `同單總金額：NT$ ${totalAmount.toLocaleString()}\n` +
-                          `---------------------\n` +
-                          `品項明細：\n${lineItemsText}\n` +
-                          `備註：${buyerNote || '無'}\n` +
-                          `已下單完畢，煩請確認對帳，謝謝！`;
+      var lineItemsText = '';
+      for (var j = 0; j < cart.length; j++) {
+        var it = cart[j];
+        lineItemsText += (j + 1) + '. [' + it.series + '] ' + (it.itemName || it.name) + ' (' + it.spec + ') - NT$' + it.price + '\n';
+      }
 
-      const textContent = document.getElementById('order-text-content');
+      var orderFullText = '【DOT to DOT 預購委託單】\n' +
+        '訂單編號：' + finalOrderId + '\n' +
+        '買家姓名：' + buyerName + '\n' +
+        '手機號碼：' + buyerPhone + '\n' +
+        '配送方式：' + (buyerShipMethod === 'home' ? '宅配' : '7-11') + ' (' + buyerStore + ')\n' +
+        '同單總金額：NT$ ' + Number(totalAmount).toLocaleString() + '\n' +
+        '---------------------\n' +
+        '品項明細：\n' + lineItemsText +
+        '備註：' + (buyerNote || '無') + '\n' +
+        '已下單完畢，煩請確認對帳，謝謝！';
+
+      var textContent = document.getElementById('order-text-content');
       if (textContent) textContent.value = orderFullText;
 
-      const encodedMsg = encodeURIComponent(orderFullText);
-      const directLineLink = `https://line.me/R/oaMessage/%40154bkwlh/?${encodedMsg}`;
-      const lineDirectEl = document.getElementById('line-direct-link');
+      var encodedMsg = encodeURIComponent(orderFullText);
+      var directLineLink = 'https://line.me/R/oaMessage/%40154bkwlh/?' + encodedMsg;
+      var lineDirectEl = document.getElementById('line-direct-link');
       if (lineDirectEl) lineDirectEl.href = directLineLink;
 
-      const threadsEl = document.getElementById('threads-direct-link');
+      var threadsEl = document.getElementById('threads-direct-link');
       if (threadsEl) threadsEl.href = OFFICIAL_THREADS_URL;
 
-      const successId = document.getElementById('success-order-id');
-      const successTot = document.getElementById('success-order-total');
+      var successId = document.getElementById('success-order-id');
+      var successTot = document.getElementById('success-order-total');
       if (successId) successId.textContent = finalOrderId;
-      if (successTot) successTot.textContent = `NT$ ${totalAmount.toLocaleString()}`;
+      if (successTot) successTot.textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
 
       cart = [];
       updateCartDisplay();
@@ -2042,7 +2090,7 @@
         submitBtn.textContent = '確認送出預購單';
       }
 
-      const succModal = document.getElementById('order-success-modal');
+      var succModal = document.getElementById('order-success-modal');
       if (succModal) succModal.classList.add('active');
 
       if (currentUser) {
@@ -2051,10 +2099,10 @@
     }
 
     // ==========================================
-    // 6. 賣家後台專屬邏輯
+    // 6. 賣家管理後台邏輯
     // ==========================================
     function promptAdminLogin() {
-      const pwd = prompt('請輸入賣家後台管理員密碼：');
+      var pwd = prompt('請輸入賣家後台管理員密碼：');
       if (pwd === ADMIN_PASSWORD) {
         switchPage('admin');
         loadAdminOrders();
@@ -2070,15 +2118,27 @@
 
     function handleAdminAddProduct(e) {
       e.preventDefault();
-      const seriesName = document.getElementById('adm-series-name').value.trim();
-      const img = document.getElementById('adm-series-img').value.trim();
-      const eta = document.getElementById('adm-series-eta').value.trim();
-      const itemName = document.getElementById('adm-item-name').value.trim();
-      const itemPrice = parseInt(document.getElementById('adm-item-price').value, 10);
-      const colors = document.getElementById('adm-item-colors').value.split(',').map(s => s.trim()).filter(Boolean);
-      const sizes = document.getElementById('adm-item-sizes').value.split(',').map(s => s.trim()).filter(Boolean);
+      var seriesName = document.getElementById('adm-series-name').value.trim();
+      var img = document.getElementById('adm-series-img').value.trim();
+      var eta = document.getElementById('adm-series-eta').value.trim();
+      var itemName = document.getElementById('adm-item-name').value.trim();
+      var itemPrice = parseInt(document.getElementById('adm-item-price').value, 10);
+      
+      var rawColors = document.getElementById('adm-item-colors').value.split(',');
+      var colors = [];
+      for (var i = 0; i < rawColors.length; i++) {
+        var c = rawColors[i].trim();
+        if (c) colors.push(c);
+      }
 
-      const newSeries = {
+      var rawSizes = document.getElementById('adm-item-sizes').value.split(',');
+      var sizes = [];
+      for (var j = 0; j < rawSizes.length; j++) {
+        var s = rawSizes[j].trim();
+        if (s) sizes.push(s);
+      }
+
+      var newSeries = {
         id: 'custom_' + Date.now(),
         seriesName: seriesName,
         img: img,
@@ -2091,28 +2151,28 @@
       productSeriesData.unshift(newSeries);
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       renderProducts();
-      alert(`🎉 商品系列【${seriesName}】已成功上架！前往前台 SHOP ALL 即可選購。`);
+      alert('🎉 商品系列【' + seriesName + '】已成功上架！前往前台 SHOP ALL 即可選購。');
       e.target.reset();
     }
 
-    let adminOrdersList = [];
-    async function loadAdminOrders() {
-      const container = document.getElementById('admin-orders-container');
+    var adminOrdersList = [];
+    function loadAdminOrders() {
+      var container = document.getElementById('admin-orders-container');
       if (!container) return;
       container.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">載入試算表資料中...</div>';
 
-      try {
-        const resp = await fetch(`${currentGasWebhook}?admin=true`);
-        const data = await resp.json();
+      fetch(currentGasWebhook + '?admin=true').then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
         adminOrdersList = data.orders || [];
         renderAdminOrdersUI();
-      } catch (err) {
-        container.innerHTML = `<div style="color:red; padding:20px;">載入失敗：${err.message}</div>`;
-      }
+      }).catch(function(err) {
+        container.innerHTML = '<div style="color:red; padding:20px;">載入失敗：' + err.message + '</div>';
+      });
     }
 
     function renderAdminOrdersUI() {
-      const container = document.getElementById('admin-orders-container');
+      var container = document.getElementById('admin-orders-container');
       if (!container) return;
 
       if (adminOrdersList.length === 0) {
@@ -2120,108 +2180,121 @@
         return;
       }
 
-      container.innerHTML = adminOrdersList.map((ord, ordIdx) => `
-        <div class="admin-card ${ord.isClosed ? 'closed-order' : ''}" id="admin-card-${ord.orderId}">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">
-            <div>
-              <span style="font-size:16px; font-weight:900;">${ord.orderId}</span>
-              <span style="font-size:12px; color:#64748b; margin-left:8px;">(${ord.orderDate})</span>
-              ${ord.isClosed ? '<span class="admin-badge-closed" style="margin-left:6px;">● 已結案</span>' : ''}
-              ${ord.buyerLineUserId ? '<span style="background:#e6f9ed; color:#06C755; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">LINE 已綁定 (可推播)</span>' : '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">Google/社群用戶</span>'}
-            </div>
-            <div>
-              <label style="font-size:12px; font-weight:800; margin-right:4px;">對帳狀態：</label>
-              <select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-${ord.orderId}" ${ord.isClosed ? 'disabled' : ''}>
-                <option value="尚未對帳" ${ord.payStatus === '尚未對帳' ? 'selected' : ''}>尚未對帳</option>
-                <option value="已對帳 (款項確認)" ${ord.payStatus === '已對帳 (款項確認)' ? 'selected' : ''}>已對帳 (款項確認)</option>
-                <option value="部分退款" ${ord.payStatus === '部分退款' ? 'selected' : ''}>部分退款</option>
-              </select>
-            </div>
-          </div>
+      var html = '';
+      for (var ordIdx = 0; ordIdx < adminOrdersList.length; ordIdx++) {
+        var ord = adminOrdersList[ordIdx];
+        var closedClass = ord.isClosed ? 'closed-order' : '';
+        var closedBadge = ord.isClosed ? '<span class="admin-badge-closed" style="margin-left:6px;">● 已結案</span>' : '';
+        var lineTag = ord.buyerLineUserId 
+          ? '<span style="background:#e6f9ed; color:#06C755; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">LINE 已綁定 (可推播)</span>'
+          : '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">Google/社群用戶</span>';
 
-          <div style="font-size:13px; color:#334155; margin-bottom:10px;">
-            買家：<b>${ord.buyerName}</b> ｜ 聯絡方式：<b>${ord.buyerContact}</b> ｜ 電話：${ord.buyerPhone}<br>
-            配送：${ord.shipMethod} ➜ ${ord.buyerStore} ｜ 備註：${ord.buyerNote || '無'}
-          </div>
+        var itemsHtml = '';
+        for (var itemIdx = 0; itemIdx < ord.items.length; itemIdx++) {
+          var it = ord.items[itemIdx];
+          itemsHtml += '<div style="background:#ffffff; border-radius:8px; padding:10px; margin-bottom:8px; border:1px solid #cbd5e1;">' +
+            '<div style="display:flex; justify-content:space-between; font-weight:800; font-size:13px; margin-bottom:4px;">' +
+              '<span>' + it.name + ' <span style="font-size:11px; color:#64748b;">(' + it.spec + ')</span></span>' +
+              '<span style="color:var(--primary-blue);">NT$ ' + Number(it.price).toLocaleString() + '</span>' +
+            '</div>' +
+            '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">' +
+              '<div>' +
+                '<label class="spec-label">支付批次單號</label>' +
+                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.payBatchNo || '') + '" placeholder="例: BATCH-01" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+              '</div>' +
+              '<div>' +
+                '<label class="spec-label">採購狀態</label>' +
+                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-' + ord.orderId + '-' + itemIdx + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+                  '<option value="未採購" ' + (it.procureStatus === '未採購' ? 'selected' : '') + '>未採購</option>' +
+                  '<option value="已下單海外廠商" ' + (it.procureStatus === '已下單海外廠商' ? 'selected' : '') + '>已下單海外廠商</option>' +
+                  '<option value="國際航班直飛中" ' + (it.procureStatus === '國際航班直飛中' ? 'selected' : '') + '>國際航班直飛中</option>' +
+                  '<option value="抵台清關中" ' + (it.procureStatus === '抵台清關中' ? 'selected' : '') + '>抵台清關中</option>' +
+                '</select>' +
+              '</div>' +
+              '<div>' +
+                '<label class="spec-label">物流寄件單號</label>' +
+                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.trackingNo || '') + '" placeholder="例: 711-928371" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+              '</div>' +
+              '<div>' +
+                '<label class="spec-label">出貨狀態</label>' +
+                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-' + ord.orderId + '-' + itemIdx + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+                  '<option value="等待到貨" ' + (it.shipStatus === '等待到貨' ? 'selected' : '') + '>等待到貨</option>' +
+                  '<option value="倉庫包裝中" ' + (it.shipStatus === '倉庫包裝中' ? 'selected' : '') + '>倉庫包裝中</option>' +
+                  '<option value="已寄出" ' + (it.shipStatus === '已寄出' ? 'selected' : '') + '>已寄出</option>' +
+                  '<option value="買家已取件" ' + (it.shipStatus === '買家已取件' ? 'selected' : '') + '>買家已取件</option>' +
+                '</select>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }
 
-          <div style="background:#f1f5f9; padding:10px; border-radius:10px; margin-bottom:12px;">
-            <div style="font-weight:800; font-size:12.5px; margin-bottom:6px;">📦 拆單品項出貨/採購狀態維護：</div>
-            ${ord.items.map((it, itemIdx) => `
-              <div style="background:#ffffff; border-radius:8px; padding:10px; margin-bottom:8px; border:1px solid #cbd5e1;">
-                <div style="display:flex; justify-content:space-between; font-weight:800; font-size:13px; margin-bottom:4px;">
-                  <span>${it.name} <span style="font-size:11px; color:#64748b;">(${it.spec})</span></span>
-                  <span style="color:var(--primary-blue);">NT$ ${Number(it.price).toLocaleString()}</span>
-                </div>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
-                  <div>
-                    <label class="spec-label">支付批次單號</label>
-                    <input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-${ord.orderId}-${itemIdx}" value="${it.payBatchNo \vert{}\vert{} ''}" placeholder="例: BATCH-01" ${ord.isClosed ? 'disabled' : ''}>
-                  </div>
-                  <div>
-                    <label class="spec-label">採購狀態</label>
-                    <select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-${ord.orderId}-${itemIdx}" ${ord.isClosed ? 'disabled' : ''}>
-                      <option value="未採購" ${it.procureStatus === '未採購' ? 'selected' : ''}>未採購</option>
-                      <option value="已下單海外廠商" ${it.procureStatus === '已下單海外廠商' ? 'selected' : ''}>已下單海外廠商</option>
-                      <option value="國際航班直飛中" ${it.procureStatus === '國際航班直飛中' ? 'selected' : ''}>國際航班直飛中</option>
-                      <option value="抵台清關中" ${it.procureStatus === '抵台清關中' ? 'selected' : ''}>抵台清關中</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="spec-label">物流寄件單號</label>
-                    <input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-${ord.orderId}-${itemIdx}" value="${it.trackingNo \vert{}\vert{} ''}" placeholder="例: 711-928371" ${ord.isClosed ? 'disabled' : ''}>
-                  </div>
-                  <div>
-                    <label class="spec-label">出貨狀態</label>
-                    <select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-${ord.orderId}-${itemIdx}" ${ord.isClosed ? 'disabled' : ''}>
-                      <option value="等待到貨" ${it.shipStatus === '等待到貨' ? 'selected' : ''}>等待到貨</option>
-                      <option value="倉庫包裝中" ${it.shipStatus === '倉庫包裝中' ? 'selected' : ''}>倉庫包裝中</option>
-                      <option value="已寄出" ${it.shipStatus === '已寄出' ? 'selected' : ''}>已寄出</option>
-                      <option value="買家已取件" ${it.shipStatus === '買家已取件' ? 'selected' : ''}>買家已取件</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
+        var actionBtns = '';
+        if (!ord.isClosed) {
+          actionBtns = '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\', ' + ordIdx + ', true)">' +
+            '📨 核對無誤，確認發送最新狀態給客人' +
+          '</button>' +
+          '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', true)">' +
+            '🔒 確認結案 (出貨對帳完畢)' +
+          '</button>';
+        } else {
+          actionBtns = '<span style="font-size:13px; color:#64748b; font-weight:800; align-self:center;">' +
+            '✅ 此訂單已結案，按鈕已鎖定無法再推播通知。' +
+          '</span>' +
+          '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', false)">' +
+            '🔓 取消結案 (重新開啟編輯)' +
+          '</button>';
+        }
 
-          <div class="admin-action-btn-row">
-            ${!ord.isClosed ? `
-              <button class="btn-send-notif" onclick="adminSubmitStatus('${ord.orderId}',${ordIdx}, true)">
-                📨 核對無誤，確認發送最新狀態給客人
-              </button>
-              <button class="btn-close-order" onclick="adminToggleCloseOrder('${ord.orderId}',${ordIdx}, true)">
-                🔒 確認結案 (出貨對帳完畢)
-              </button>
-            ` : `
-              <span style="font-size:13px; color:#64748b; font-weight:800; align-self:center;">
-                ✅ 此訂單已結案，按鈕已鎖定無法再推播通知。
-              </span>
-              <button class="btn-unclose-order" onclick="adminToggleCloseOrder('${ord.orderId}',${ordIdx}, false)">
-                🔓 取消結案 (重新開啟編輯)
-              </button>
-            `}
-          </div>
-        </div>
-      `).join('');
+        html += '<div class="admin-card ' + closedClass + '" id="admin-card-' + ord.orderId + '">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">' +
+            '<div>' +
+              '<span style="font-size:16px; font-weight:900;">' + ord.orderId + '</span>' +
+              '<span style="font-size:12px; color:#64748b; margin-left:8px;">(' + ord.orderDate + ')</span>' +
+              closedBadge +
+              lineTag +
+            '</div>' +
+            '<div>' +
+              '<label style="font-size:12px; font-weight:800; margin-right:4px;">對帳狀態：</label>' +
+              '<select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-' + ord.orderId + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+                '<option value="尚未對帳" ' + (ord.payStatus === '尚未對帳' ? 'selected' : '') + '>尚未對帳</option>' +
+                '<option value="已對帳 (款項確認)" ' + (ord.payStatus === '已對帳 (款項確認)' ? 'selected' : '') + '>已對帳 (款項確認)</option>' +
+                '<option value="部分退款" ' + (ord.payStatus === '部分退款' ? 'selected' : '') + '>部分退款</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:13px; color:#334155; margin-bottom:10px;">' +
+            '買家：<b>' + ord.buyerName + '</b> ｜ 聯絡方式：<b>' + ord.buyerContact + '</b> ｜ 電話：' + ord.buyerPhone + '<br>' +
+            '配送：' + ord.shipMethod + ' ➜ ' + ord.buyerStore + ' ｜ 備註：' + (ord.buyerNote || '無') +
+          '</div>' +
+          '<div style="background:#f1f5f9; padding:10px; border-radius:10px; margin-bottom:12px;">' +
+            '<div style="font-weight:800; font-size:12.5px; margin-bottom:6px;">📦 拆單品項出貨/採購狀態維護：</div>' +
+            itemsHtml +
+          '</div>' +
+          '<div class="admin-action-btn-row">' +
+            actionBtns +
+          '</div>' +
+        '</div>';
+      }
+      container.innerHTML = html;
     }
 
-    async function adminSubmitStatus(orderId, ordIdx, shouldNotify) {
-      const ord = adminOrdersList[ordIdx];
-      const payStatus = document.getElementById(`adm-paystatus-${orderId}`).value;
+    function adminSubmitStatus(orderId, ordIdx, shouldNotify) {
+      var ord = adminOrdersList[ordIdx];
+      var payStatus = document.getElementById('adm-paystatus-' + orderId).value;
 
-      const confirmMsg = shouldNotify 
-        ? `確定要儲存狀態並發送最新動態給買家 (${ord.buyerContact}) 嗎？${ord.buyerLineUserId ? '\n(系統將自動推播至買家的個人 LINE 聊天室)' : ''}`
-        : `確定要儲存狀態嗎？`;
+      var confirmMsg = shouldNotify 
+        ? '確定要儲存狀態並發送最新動態給買家 (' + ord.buyerContact + ') 嗎？' + (ord.buyerLineUserId ? '\n(系統將自動推播至買家的個人 LINE 聊天室)' : '')
+        : '確定要儲存狀態嗎？';
 
       if (!confirm(confirmMsg)) return;
 
-      for (let i = 0; i < ord.items.length; i++) {
-        const payNo = document.getElementById(`adm-payno-${orderId}-${i}`).value.trim();
-        const procStatus = document.getElementById(`adm-procure-${orderId}-${i}`).value;
-        const trackNo = document.getElementById(`adm-trackno-${orderId}-${i}`).value.trim();
-        const shipStatus = document.getElementById(`adm-ship-${orderId}-${i}`).value;
+      for (var i = 0; i < ord.items.length; i++) {
+        var payNo = document.getElementById('adm-payno-' + orderId + '-' + i).value.trim();
+        var procStatus = document.getElementById('adm-procure-' + orderId + '-' + i).value;
+        var trackNo = document.getElementById('adm-trackno-' + orderId + '-' + i).value.trim();
+        var shipStatus = document.getElementById('adm-ship-' + orderId + '-' + i).value;
 
-        const payload = {
+        var payload = {
           action: "updateStatus",
           orderId: orderId,
           itemName: ord.items[i].name,
@@ -2235,71 +2308,68 @@
           shouldNotify: shouldNotify
         };
 
-        try {
-          await fetch(currentGasWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-          });
-        } catch (e) {
+        fetch(currentGasWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(function(e) {
           console.warn("更新失敗：", e);
-        }
+        });
       }
 
-      alert(`✅ 訂單 ${orderId} 狀態已正式同步至試算表！${shouldNotify ? '（推播通知已發送）' : ''}`);
-      loadAdminOrders();
+      alert('✅ 訂單 ' + orderId + ' 狀態已正式同步至試算表！' + (shouldNotify ? '（推播通知已發送）' : ''));
+      setTimeout(loadAdminOrders, 1000);
     }
 
-    async function adminToggleCloseOrder(orderId, ordIdx, setClose) {
-      const actionName = setClose ? "確認結案" : "取消結案";
-      if (!confirm(`確定要將訂單 ${orderId} 進行【${actionName}】嗎？${setClose ? '結案後將無法再發送通知給客人。' : '取消結案後將恢復發送權限。'}`)) {
+    function adminToggleCloseOrder(orderId, ordIdx, setClose) {
+      var actionName = setClose ? "確認結案" : "取消結案";
+      if (!confirm('確定要將訂單 ' + orderId + ' 進行【' + actionName + '】嗎？' + (setClose ? '結案後將無法再發送通知給客人。' : '取消結案後將恢復發送權限。'))) {
         return;
       }
 
-      const payload = {
+      var payload = {
         action: "updateStatus",
         orderId: orderId,
         isClosed: setClose,
         shouldNotify: false
       };
 
-      try {
-        await fetch(currentGasWebhook, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        alert(`已成功將訂單 ${orderId} 設定為：${setClose ? '【已結案】' : '【處理中 (可編輯)】'}`);
+      fetch(currentGasWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).then(function() {
+        alert('已成功將訂單 ' + orderId + ' 設定為：' + (setClose ? '【已結案】' : '【處理中 (可編輯)】'));
         loadAdminOrders();
-      } catch (e) {
+      }).catch(function() {
         alert("操作失敗，請檢查網路連線。");
-      }
+      });
     }
 
     // ==========================================
-    // 7. 啟動與非同步 SDK 載入
+    // 7. 頁面開機初始化 (優先執行 UI)
     // ==========================================
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', function() {
       renderProducts();
       updateCartDisplay();
 
       try {
-        const savedUser = localStorage.getItem('dottodot_user');
+        var savedUser = localStorage.getItem('dottodot_user');
         if (savedUser) {
           currentUser = JSON.parse(savedUser);
           handleUserLoggedIn(currentUser, false);
         }
       } catch (e) {}
 
-      // 動態載入 LINE SDK
-      const lineScript = document.createElement('script');
+      // 動態非同步注入第三方 SDK，絕不卡住主要按鈕
+      var lineScript = document.createElement('script');
       lineScript.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-      lineScript.onload = () => {
+      lineScript.onload = function() {
         try {
-          liff.init({ liffId: MY_LIFF_ID }).then(() => {
+          liff.init({ liffId: MY_LIFF_ID }).then(function() {
             if (liff.isLoggedIn()) {
-              liff.getProfile().then(profile => {
-                const userObj = {
+              liff.getProfile().then(function(profile) {
+                var userObj = {
                   provider: 'LINE',
                   displayName: profile.displayName,
                   userId: profile.userId,
@@ -2316,10 +2386,9 @@
       };
       document.body.appendChild(lineScript);
 
-      // 動態載入 Google SDK
-      const googleScript = document.createElement('script');
+      var googleScript = document.createElement('script');
       googleScript.src = 'https://accounts.google.com/gsi/client';
-      googleScript.onload = () => {
+      googleScript.onload = function() {
         try {
           google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
@@ -2332,7 +2401,7 @@
 
     function loginWithLine() {
       try {
-        if (typeof liff !== 'undefined') {
+        if (typeof liff !== 'undefined' && liff.login) {
           if (!liff.isLoggedIn()) liff.login();
         } else {
           alert("LINE 連線中，請稍候再試。");
@@ -2352,10 +2421,10 @@
 
     function handleGoogleCredentialResponse(response) {
       try {
-        const payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1]))));
-        const realEmail = payload.email || "dottodot.onlineshop@gmail.com";
+        var payload = JSON.parse(decodeURIComponent(escape(atob(response.credential.split('.')[1]))));
+        var realEmail = payload.email || "dottodot.onlineshop@gmail.com";
 
-        const userObj = {
+        var userObj = {
           provider: 'Google',
           displayName: payload.name,
           userId: payload.sub,
