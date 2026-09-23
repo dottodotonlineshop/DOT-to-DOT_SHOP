@@ -854,15 +854,6 @@
       text-align: center;
       margin-top: auto;
     }
-    .admin-entry-link {
-      color: #888;
-      font-size: 12px;
-      margin-top: 12px;
-      display: inline-block;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .admin-entry-link:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -894,6 +885,9 @@
               <button class="mark-read-btn" onclick="markAllNotificationsRead()">✓ 全部標為已讀</button>
             </div>
           </div>
+
+          <!-- 管理員專屬入口 (預設隱藏，登入指定 Google 帳號後自動顯示) -->
+          <button id="admin-nav-btn" onclick="switchPage('admin'); loadAdminOrders();" style="display:none; background:#ccff00; color:#111; border:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:900; cursor:pointer;">⚙️ 管理後台</button>
 
           <div class="user-avatar-btn" onclick="openMemberModal()" id="user-avatar-slot" title="會員中心">
             <span id="avatar-text">會員</span>
@@ -968,7 +962,7 @@
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
-          <p class="section-subtitle">關於訂單拆單, 付款方式與海外配送時程說明</p>
+          <p class="section-subtitle">關於訂單拆單、付款方式與海外配送時程說明</p>
         </div>
         <div class="qa-box">
           <div class="qa-q">Q1：在同一張訂單買了現貨和等半年的模型，真的會分開出貨嗎？ <span>＋</span></div>
@@ -1005,6 +999,7 @@
       </div>
     </section>
 
+    <!-- 賣家專屬管理後台 -->
     <section id="page-admin" class="page-section">
       <div class="container">
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -1012,7 +1007,7 @@
             <h2 class="section-title">⚙️ 賣家管理後台 (DOT to DOT ADMIN)</h2>
             <p class="section-subtitle">上架全新商品系列、修改訂單狀態、確認推播通知與確認結案</p>
           </div>
-          <button onclick="exitAdminMode()" style="background:#475569; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer;">登出賣家後台</button>
+          <button onclick="switchPage('shop')" style="background:#475569; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer;">返回前台</button>
         </div>
 
         <div class="admin-card">
@@ -1062,7 +1057,7 @@
         <div class="admin-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
             <h3 style="font-size:17px; font-weight:900; color:var(--primary-blue);">📋 訂單採購/出貨狀態控管與發送 (連動試算表)</h3>
-            <button onclick="loadAdminOrders()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">↻ 整理即時狀態</button>
+            <button onclick="loadAdminOrders()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">↻ 重新整理試算表</button>
           </div>
           <div id="admin-orders-container">載入中...</div>
         </div>
@@ -1094,23 +1089,24 @@
     </div>
   </aside>
 
-  <!-- 結帳填單與匯款資訊填寫彈窗 -->
-  <div class="modal-overlay" id="checkout-modal">
+  <!-- 第一階段：填寫訂購與收件資料 -->
+  <div class="modal-overlay" id="checkout-modal-1">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">填寫預購與匯款回報</div>
-        <button class="drawer-close" onclick="closeCheckoutModal()">✕</button>
+        <div class="modal-title">步驟一：確認訂單與填寫收件資料</div>
+        <button class="drawer-close" onclick="closeCheckoutModal1()">✕</button>
       </div>
 
-      <!-- 你的匯款帳號資訊顯示區 -->
-      <div class="bank-info-box">
-        🏦 <b>匯款帳號資訊 (請於下單後轉帳)</b><br>
-        銀行代碼：822 (中國信託)<br>
-        匯款帳號：<b>1234-5678-9012</b><br>
-        戶名：DOT to DOT 專門店
+      <!-- 訂單品項與總金額預覽 -->
+      <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:14px;">
+        <div style="font-weight:900; font-size:13px; margin-bottom:6px; color:var(--primary-blue);">📦 您的預購品項總覽：</div>
+        <div id="checkout-preview-items" style="font-size:12.5px; color:#444; max-height:120px; overflow-y:auto; margin-bottom:8px;"></div>
+        <div style="text-align:right; font-weight:900; font-size:14px; border-top:1px dashed #cbd5e1; padding-top:6px;">
+          總預估金額：<span id="checkout-preview-total" style="color:var(--primary-blue);">NT$ 0</span>
+        </div>
       </div>
 
-      <form id="order-form" onsubmit="handleOrderSubmit(event)">
+      <form id="order-form-1" onsubmit="goToCheckoutStep2(event)">
         <div class="form-group">
           <label>買家真實姓名 / 稱呼 *</label>
           <input type="text" class="form-input" id="buyer-name" required placeholder="例如：陳大明 (請填寫證件真實姓名)">
@@ -1137,9 +1133,46 @@
           <input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)">
         </div>
 
-        <!-- 新增匯款時間與末五碼回報 -->
-        <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:12px;">
-          <div style="font-weight:800; font-size:13px; margin-bottom:8px; color:var(--primary-blue);">💳 匯款對帳回報：</div>
+        <div class="form-group">
+          <label>訂單備註 / 拆單出貨偏好</label>
+          <input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出">
+        </div>
+
+        <button type="submit" class="checkout-btn">已確認，前往下一步 (匯款資訊) ➔</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 第二階段：匯款資訊與確認送出 (送出後才寫入 Google 表格) -->
+  <div class="modal-overlay" id="checkout-modal-2">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">步驟二：匯款資訊與對帳回報</div>
+        <button class="drawer-close" onclick="closeCheckoutModal2()">✕</button>
+      </div>
+
+      <!-- 訂單編號與總金額提示 -->
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;">
+        <div style="font-size:12px; color:#1e40af;">訂單總金額：<b id="step2-total-amount" style="font-size:16px; color:var(--primary-blue);">NT$ 0</b></div>
+      </div>
+
+      <!-- 無卡匯款警告提示 -->
+      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">
+        ⚠️ <b>無卡匯款提醒：</b><br>
+        無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！
+      </div>
+
+      <!-- 匯款帳號資訊 -->
+      <div class="bank-info-box">
+        🏦 <b>匯款帳號資訊</b><br>
+        銀行代碼：822 (中國信託)<br>
+        匯款帳號：<b>1234-5678-9012</b><br>
+        戶名：DOT to DOT 專門店
+      </div>
+
+      <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
+        <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:14px;">
+          <div style="font-weight:800; font-size:13px; margin-bottom:8px; color:var(--primary-blue);">💳 請填寫您的匯款回報資訊：</div>
           <div class="form-group" style="margin-bottom:8px;">
             <label style="font-size:11.5px;">匯款日期 *</label>
             <input type="date" class="form-input" id="remit-date" required style="padding:8px;">
@@ -1154,44 +1187,41 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label>訂單備註 / 拆單出貨偏好</label>
-          <input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出">
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="checkout-btn" style="background:#64748b;" onclick="backToStep1()">⬅ 上一步</button>
+          <button type="submit" class="checkout-btn" id="final-submit-btn">確認送出並進行對帳</button>
         </div>
-        <button type="submit" class="checkout-btn" id="submit-order-btn">確認送出並前往對帳</button>
       </form>
     </div>
   </div>
 
-  <!-- 訂單對帳彈窗 (包含智慧一鍵複製並開 Threads) -->
+  <!-- 對帳訊息彈窗 -->
   <div class="modal-overlay" id="order-success-modal">
     <div class="modal-box" style="text-align: center;">
       <div style="font-size: 42px; margin-bottom: 8px;">🎉</div>
       <h3 style="font-size: 19px; font-weight: 900; margin-bottom: 4px;">訂單對帳資訊已就緒！</h3>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
-        訂單編號：<b id="success-order-id" style="color: var(--primary-blue);">ORD-XXXXXXX</b> ｜ 
+        訂單編號：<b id="success-order-id" style="color: var(--primary-blue);">ORD-2609XXXX</b> ｜ 
         總金額：<b id="success-order-total" style="color: var(--primary-blue);">NT$ 0</b>
       </p>
 
       <textarea id="order-text-content" class="order-textarea" readonly></textarea>
 
-      <button class="copy-order-btn" onclick="copyOrderDetails()">📋 一鍵複製上方訂單內容</button>
-
-      <!-- 打開 LINE 對帳 -->
+      <!-- 按鈕 1：直接傳送至官方 LINE -->
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
-        打開官方 LINE 聊天室送出對帳 ➔
+        直接傳送至官方 LINE 聊天室進行對帳 ➔
       </a>
 
-      <!-- 智慧一鍵複製並開 Threads 按鈕 -->
-      <button class="threads-direct-btn" onclick="copyAndOpenThreads()">
+      <!-- 按鈕 2：複製文字至其他官方社群 -->
+      <button class="threads-direct-btn" onclick="copyAndOpenCommunity()">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.88 12.33c-.35 1.76-1.74 2.87-3.69 2.87-2.3 0-3.95-1.58-3.95-3.82 0-2.45 1.83-4.14 4.39-4.14 2.37 0 3.79 1.42 3.79 3.55 0 .28-.02.57-.06.84h-6.24c.09 1.25.96 2.05 2.18 2.05 1.02 0 1.65-.54 1.88-1.35h1.7zm-1.84-2.48c-.04-1.02-.7-1.68-1.82-1.68-1.05 0-1.75.66-1.86 1.68h3.68z"></path></svg>
-        一鍵複製並前往 Threads 私訊對帳 ➔
+        複製文字至其他官方社群進行對帳 ➔
       </button>
 
       <div class="warning-box">
         ⚠️ <b>請務必回傳對帳！</b><br>
-        送單後請將此訂單訊息發送至官方 LINE（@154bkwlh）或 Threads。<br>
+        送單後請將此訂單訊息發送至官方 LINE 或其他社群。<br>
         <b>若未回傳進行確認對帳，將視同未下單成功！</b>
       </div>
 
@@ -1319,12 +1349,12 @@
   <footer>
     <p style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">DOT to DOT ONLINE STORE</p>
     <p>© 2026 DOT to DOT. 保留一切權利。海外代購委任服務。</p>
-    <div style="margin-top: 10px;">
-      <span class="admin-entry-link" onclick="promptAdminLogin()">🔑 賣家管理後台 (上架與狀態控管)</span>
-    </div>
   </footer>
 
   <script>
+    // 管理員設定區 (請在此處填入你的管理員 Google Email，或預設 wangpp525@gmail.com)
+    var ADMIN_EMAILS = ["wangpp525@gmail.com"];
+
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -1388,7 +1418,7 @@
       if (memModal) memModal.classList.remove('active');
     }
 
-    // 結帳檢查：未登入前強制先跳出會員登入要求
+    // 結帳檢查：未登入強制先彈出會員登入要求
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -1421,14 +1451,75 @@
         updateShipInputUI('checkout');
       }
 
+      // 計算總預覽金額與品項
+      var total = 0;
+      var previewHtml = '';
+      for (var i = 0; i < cart.length; i++) {
+        total += cart[i].price;
+        previewHtml += '• ' + cart[i].name + ' (' + cart[i].spec + ') - NT$' + cart[i].price + '<br>';
+      }
+      document.getElementById('checkout-preview-items').innerHTML = previewHtml;
+      document.getElementById('checkout-preview-total').textContent = 'NT$ ' + Number(total).toLocaleString();
+
       toggleCartDrawer(false);
-      var chkModal = document.getElementById('checkout-modal');
-      if (chkModal) chkModal.classList.add('active');
+      var chkModal1 = document.getElementById('checkout-modal-1');
+      if (chkModal1) chkModal1.classList.add('active');
     }
 
-    function closeCheckoutModal() {
-      var chkModal = document.getElementById('checkout-modal');
-      if (chkModal) chkModal.classList.remove('active');
+    function closeCheckoutModal1() {
+      var modal = document.getElementById('checkout-modal-1');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function closeCheckoutModal2() {
+      var modal = document.getElementById('checkout-modal-2');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function backToStep1() {
+      closeCheckoutModal2();
+      var chkModal1 = document.getElementById('checkout-modal-1');
+      if (chkModal1) chkModal1.classList.add('active');
+    }
+
+    // 暫存步驟一資料，進入步驟二
+    var pendingOrderData = null;
+    function goToCheckoutStep2(e) {
+      e.preventDefault();
+
+      var buyerName = document.getElementById('buyer-name').value.trim();
+      var buyerContact = document.getElementById('buyer-line').value.trim();
+      var buyerPhone = document.getElementById('buyer-phone').value.trim();
+      var buyerShipMethod = document.getElementById('buyer-ship-method').value;
+      var buyerStore = document.getElementById('buyer-store').value.trim();
+      var buyerNote = document.getElementById('buyer-note').value.trim();
+
+      if (!buyerName || !buyerPhone || !buyerStore) {
+        alert('⚠️ 請填寫所有必填欄位！');
+        return;
+      }
+
+      var totalAmount = 0;
+      for (var i = 0; i < cart.length; i++) {
+        totalAmount += cart[i].price;
+      }
+
+      pendingOrderData = {
+        buyerName: buyerName,
+        buyerContact: buyerContact,
+        buyerPhone: buyerPhone,
+        shipMethod: buyerShipMethod,
+        buyerStore: buyerStore,
+        buyerNote: buyerNote,
+        totalAmount: totalAmount,
+        items: cart
+      };
+
+      document.getElementById('step2-total-amount').textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
+
+      closeCheckoutModal1();
+      var chkModal2 = document.getElementById('checkout-modal-2');
+      if (chkModal2) chkModal2.classList.add('active');
     }
 
     function closeSuccessModal() {
@@ -1458,7 +1549,6 @@
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
     var OFFICIAL_LINE_ID = "@154bkwlh"; 
     var OFFICIAL_THREADS_URL = "https://www.threads.net"; 
-    var ADMIN_PASSWORD = "admin888"; 
 
     var DEFAULT_SERIES = [
       {
@@ -1762,6 +1852,21 @@
         profPic.src = user.pictureUrl;
       }
 
+      // 檢查是否為管理員帳號
+      var userEmail = (user.contactValue || "").trim().toLowerCase();
+      var isAdmin = false;
+      for (var i = 0; i < ADMIN_EMAILS.length; i++) {
+        if (ADMIN_EMAILS[i].toLowerCase() === userEmail) {
+          isAdmin = true;
+          break;
+        }
+      }
+
+      var adminBtn = document.getElementById('admin-nav-btn');
+      if (adminBtn) {
+        adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+      }
+
       try {
         var savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + user.userId) || '{}');
         var profName = document.getElementById('profile-name');
@@ -1981,87 +2086,42 @@
       window.location.reload();
     }
 
-    function copyOrderDetails() {
-      var textarea = document.getElementById('order-text-content');
-      if (!textarea) return;
-      textarea.select();
-      textarea.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(textarea.value).then(function() {
-        alert('📋 訂單明細已成功複製！請直接貼上傳送給官方 LINE 或 Threads 客服。');
-      }).catch(function() {
-        document.execCommand('copy');
-        alert('📋 訂單明細已成功複製！');
-      });
-    }
-
-    // 智慧一鍵複製並開啟 Threads
-    function copyAndOpenThreads() {
-      var textarea = document.getElementById('order-text-content');
-      if (textarea) {
-        textarea.select();
-        try {
-          document.execCommand('copy');
-        } catch (e) {}
-      }
-      alert('📋 訂單內容已自動複製！即將為您前往 Threads，請直接長按貼上即可。');
-      window.open(OFFICIAL_THREADS_URL, '_blank');
-    }
-
-    function handleOrderSubmit(e) {
+    // 第二階段完成：送出訂單到 Google 試算表，並開啟對帳彈窗
+    function handleFinalOrderSubmit(e) {
       e.preventDefault();
 
-      var buyerName = document.getElementById('buyer-name').value.trim();
-      var buyerContact = document.getElementById('buyer-line').value.trim();
-      var buyerPhone = document.getElementById('buyer-phone').value.trim();
-      var buyerShipMethod = document.getElementById('buyer-ship-method').value;
-      var buyerStore = document.getElementById('buyer-store').value.trim();
       var remitDate = document.getElementById('remit-date').value;
       var remitTime = document.getElementById('remit-time').value;
       var remitAccount = document.getElementById('remit-account').value.trim();
-      var buyerNote = document.getElementById('buyer-note').value.trim();
 
-      if (!buyerName || !buyerPhone || !buyerStore || !remitDate || !remitTime || !remitAccount) {
-        alert('⚠️ 請完整填寫所有必填欄位（包含匯款日期、時間與末五碼）！');
+      if (!remitDate || !remitTime || !remitAccount) {
+        alert('⚠️ 請填寫完整的匯款日期、時間與帳號末五碼！');
         return;
       }
 
-      var submitBtn = document.getElementById('submit-order-btn');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = '訂單連動送出中...';
+      var finalBtn = document.getElementById('final-submit-btn');
+      if (finalBtn) {
+        finalBtn.disabled = true;
+        finalBtn.textContent = '訂單與匯款資料連動中...';
       }
-
-      if (currentUser) {
-        var profileData = { name: buyerName, phone: buyerPhone, shipMethod: buyerShipMethod, store: buyerStore };
-        localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
-      }
-
-      var totalAmount = 0;
-      for (var i = 0; i < cart.length; i++) {
-        totalAmount += cart[i].price;
-      }
-
-      var now = new Date();
-      var yy = String(now.getFullYear()).slice(-2);
-      var mm = String(now.getMonth() + 1).padStart(2, '0');
-      var tempOrderId = 'ORD-' + yy + mm + String(Math.floor(100 + Math.random() * 900));
 
       var orderPayload = {
         orderDate: new Date().toLocaleString(),
-        buyerName: buyerName,
-        buyerContact: buyerContact,
-        buyerPhone: buyerPhone,
-        shipMethod: buyerShipMethod,
-        buyerStore: buyerStore,
+        buyerName: pendingOrderData.buyerName,
+        buyerContact: pendingOrderData.buyerContact,
+        buyerPhone: pendingOrderData.buyerPhone,
+        shipMethod: pendingOrderData.shipMethod,
+        buyerStore: pendingOrderData.buyerStore,
         remitDate: remitDate,
         remitTime: remitTime,
         remitAccount: remitAccount,
-        buyerNote: buyerNote,
-        totalAmount: totalAmount,
+        buyerNote: pendingOrderData.buyerNote,
+        totalAmount: pendingOrderData.totalAmount,
         buyerLineUserId: (currentUser && currentUser.lineUserId) ? currentUser.lineUserId : "",
-        items: cart
+        items: pendingOrderData.items
       };
 
+      var tempOrderId = 'ORD-2609' + String(Math.floor(1000 + Math.random() * 9000));
       var finalOrderId = tempOrderId;
 
       if (currentGasWebhook) {
@@ -2083,21 +2143,21 @@
       }
 
       var lineItemsText = '';
-      for (var j = 0; j < cart.length; j++) {
-        var it = cart[j];
+      for (var j = 0; j < pendingOrderData.items.length; j++) {
+        var it = pendingOrderData.items[j];
         lineItemsText += (j + 1) + '. [' + it.series + '] ' + (it.itemName || it.name) + ' (' + it.spec + ') - NT$' + it.price + '\n';
       }
 
       var orderFullText = '【DOT to DOT 預購委託單】\n' +
         '訂單編號：' + finalOrderId + '\n' +
-        '買家姓名：' + buyerName + '\n' +
-        '手機號碼：' + buyerPhone + '\n' +
-        '配送方式：' + (buyerShipMethod === 'home' ? '宅配' : '7-11') + ' (' + buyerStore + ')\n' +
+        '買家姓名：' + pendingOrderData.buyerName + '\n' +
+        '手機號碼：' + pendingOrderData.buyerPhone + '\n' +
+        '配送方式：' + (pendingOrderData.shipMethod === 'home' ? '宅配' : '7-11') + ' (' + pendingOrderData.buyerStore + ')\n' +
         '匯款回報：' + remitDate + ' ' + remitTime + ' (末五碼:' + remitAccount + ')\n' +
-        '同單總金額：NT$ ' + Number(totalAmount).toLocaleString() + '\n' +
+        '同單總金額：NT$ ' + Number(pendingOrderData.totalAmount).toLocaleString() + '\n' +
         '---------------------\n' +
         '品項明細：\n' + lineItemsText +
-        '備註：' + (buyerNote || '無') + '\n' +
+        '備註：' + (pendingOrderData.buyerNote || '無') + '\n' +
         '已下單匯款完畢，請協助確認對帳，謝謝！';
 
       var textContent = document.getElementById('order-text-content');
@@ -2108,22 +2168,20 @@
       var lineDirectEl = document.getElementById('line-direct-link');
       if (lineDirectEl) lineDirectEl.href = directLineLink;
 
-      var threadsEl = document.getElementById('threads-direct-link');
-      if (threadsEl) threadsEl.href = OFFICIAL_THREADS_URL;
-
       var successId = document.getElementById('success-order-id');
       var successTot = document.getElementById('success-order-total');
       if (successId) successId.textContent = finalOrderId;
-      if (successTot) successTot.textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
+      if (successTot) successTot.textContent = 'NT$ ' + Number(pendingOrderData.totalAmount).toLocaleString();
 
       cart = [];
       updateCartDisplay();
-      closeCheckoutModal();
-      document.getElementById('order-form').reset();
+      closeCheckoutModal2();
+      document.getElementById('order-form-1').reset();
+      document.getElementById('order-form-2').reset();
 
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '確認送出並前往對帳';
+      if (finalBtn) {
+        finalBtn.disabled = false;
+        finalBtn.textContent = '確認送出並進行對帳';
       }
 
       var succModal = document.getElementById('order-success-modal');
@@ -2134,14 +2192,16 @@
       }
     }
 
-    function promptAdminLogin() {
-      var pwd = prompt('請輸入賣家後台管理員密碼：');
-      if (pwd === ADMIN_PASSWORD) {
-        switchPage('admin');
-        loadAdminOrders();
-      } else if (pwd !== null) {
-        alert('密碼錯誤！無法進入賣家管理後台。');
+    // 對帳彈窗按鈕 2：智慧一鍵複製文字並前往社群
+    function copyAndOpenCommunity() {
+      var textarea = document.getElementById('order-text-content');
+      if (textarea) {
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
       }
+      alert('📋 訂單內容已自動複製！即將為您前往官方社群，請直接長按貼上即可。');
     }
 
     function exitAdminMode() {
@@ -2384,12 +2444,11 @@
     }
 
     // ==========================================
-    // 7. 啟動、LINE 與全平台跳轉式 Google 登入
+    // 7. 啟動與 SDK 載入
     // ==========================================
     window.addEventListener('DOMContentLoaded', function() {
       renderProducts();
       updateCartDisplay();
-
       handleGoogleOAuthRedirectCallback();
 
       try {
@@ -2438,9 +2497,7 @@
         } else {
           alert("LINE SDK 連線中，請稍候重試。");
         }
-      } catch (e) {
-        alert("LINE 登入遇到問題，請重新整理頁面。");
-      }
+      } catch (e) {}
     }
 
     function loginWithGoogle() {
@@ -2482,9 +2539,7 @@
               localStorage.setItem('dottodot_user', JSON.stringify(userObj));
               window.history.replaceState({}, document.title, window.location.pathname);
               handleUserLoggedIn(userObj, true);
-            }).catch(function(err) {
-              console.warn("取得 Google 用戶資料失敗：", err);
-            });
+            }).catch(function(err) {});
           }
         }
       } catch (e) {}
