@@ -260,12 +260,11 @@
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
-        <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物、明星個人品牌及同款代購。有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨</p>
+        <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物, 明星個人品牌及同款代購。有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨</p>
         <button class="cta-button" onclick="switchPage('shop')">SHOP ALL ➔</button>
       </div>
 
       <div class="container">
-        <!-- 輕鬆下單 7 步驟流程 -->
         <div style="margin-top: 10px;">
           <div class="section-header" style="text-align: center;">
             <h2 class="section-title">📦 輕鬆下單 7 步驟流程</h2>
@@ -309,7 +308,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -476,15 +474,15 @@
 
       <form id="order-form-1" onsubmit="goToCheckoutStep2(event)">
         <div class="form-group"><label>買家真實姓名 / 稱呼 *</label><input type="text" class="form-input" id="buyer-name" required placeholder="例如：陳大明 (請填寫證件真實姓名)"></div>
-        <div class="form-group"><label>聯絡方式 (LINE 暱稱 / Gmail) *</label><input type="text" class="form-input" id="buyer-line" required placeholder="例如：dottodot.onlineshop@gmail.com"></div>
+        <div class="form-group"><label>聯絡方式 (自動記錄) *</label><input type="text" class="form-input" id="buyer-line" required readonly style="background:#f8fafc; color:#555;"></div>
         <div class="form-group"><label>手機號碼 *</label><input type="tel" class="form-input" id="buyer-phone" required placeholder="0912-345-678"></div>
         <div class="form-group"><label>配送方式 *</label>
-          <select class="form-select" id="buyer-ship-method" onchange="updateShipInputUI('checkout')">
+          <select class="form-select" id="buyer-ship-method" onchange="updateShipInputUI()">
             <option value="711">7-11 賣貨便（超商取貨）</option>
             <option value="home">宅配到府（郵寄 / 黑貓）</option>
           </select>
         </div>
-        <div class="form-group"><label id="buyer-address-label">收件 7-11 門市名稱與店號 *</label><input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)"></div>
+        <div class="form-group"><label id="buyer-address-label">收件門市(賣貨便) *</label><input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)"></div>
         <div class="form-group"><label>訂單備註 / 拆單出貨偏好</label><input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出"></div>
         <button type="submit" class="checkout-btn">已確認，前往下一步 (匯款資訊) ➔</button>
       </form>
@@ -621,7 +619,7 @@
             <div class="form-group"><label>真實收件人姓名 (選填)</label><input type="text" class="form-input" id="profile-name" placeholder="請填寫證件真實姓名"></div>
             <div class="form-group"><label>聯絡手機號碼 (選填)</label><input type="tel" class="form-input" id="profile-phone" placeholder="0912-345-678"></div>
             <div class="form-group"><label>常用預設配送方式</label>
-              <select class="form-select" id="profile-ship-method" onchange="updateShipInputUI('profile')">
+              <select class="form-select" id="profile-ship-method" onchange="updateShipInputUI()">
                 <option value="711">7-11 賣貨便（超商取貨）</option>
                 <option value="home">宅配到府（郵寄 / 黑貓）</option>
               </select>
@@ -763,7 +761,6 @@
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
-    // 定義全域互動函式，確保所有按鈕 100% 有效
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -855,6 +852,12 @@
       document.getElementById('checkout-preview-items').innerHTML = previewHtml;
       document.getElementById('checkout-preview-total').textContent = 'NT$ ' + Number(total).toLocaleString();
 
+      // 自動載入登入使用者的聯絡方式 (Google 載入 Gmail，LINE 載入 LINE 暱稱)
+      var contactInput = document.getElementById('buyer-line');
+      if (contactInput && currentUser) {
+        contactInput.value = currentUser.contactValue || currentUser.displayName || '';
+      }
+
       toggleCartDrawer(false);
       var chkModal1 = document.getElementById('checkout-modal-1');
       if (chkModal1) chkModal1.classList.add('active');
@@ -863,6 +866,19 @@
     function closeCheckoutModal1() { document.getElementById('checkout-modal-1').classList.remove('active'); }
     function closeCheckoutModal2() { document.getElementById('checkout-modal-2').classList.remove('active'); }
     function closeSuccessModal() { document.getElementById('order-success-modal').classList.remove('active'); }
+
+    function updateShipInputUI() {
+      var method = document.getElementById('buyer-ship-method').value;
+      var labelEl = document.getElementById('buyer-address-label');
+      var inputEl = document.getElementById('buyer-store');
+      if (method === 'home') {
+        if (labelEl) labelEl.textContent = '收件地址 (宅配) *';
+        if (inputEl) inputEl.placeholder = '例如：台北市信義區市府路 45 號';
+      } else {
+        if (labelEl) labelEl.textContent = '收件門市 (賣貨便) *';
+        if (inputEl) inputEl.placeholder = '例如：7-11 鑫東門市 (123456)';
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', function() {
       fetchCMSFromCloud();
@@ -1775,6 +1791,51 @@
       window.location.reload();
     }
 
+    // 步驟一提交防呆跳轉並進入步驟二
+    var pendingOrderData = null;
+    function goToCheckoutStep2(e) {
+      e.preventDefault(); // 防止表單預設重新整理跳轉首頁
+
+      var buyerName = document.getElementById('buyer-name').value.trim();
+      var buyerContact = document.getElementById('buyer-line').value.trim();
+      var buyerPhone = document.getElementById('buyer-phone').value.trim();
+      var buyerShipMethod = document.getElementById('buyer-ship-method').value;
+      var buyerStore = document.getElementById('buyer-store').value.trim();
+      var buyerNote = document.getElementById('buyer-note').value.trim();
+
+      if (!buyerName || !buyerPhone || !buyerStore) {
+        alert('⚠️ 請填寫所有必填欄位！');
+        return;
+      }
+
+      var checkedItems = [];
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].selected !== false) checkedItems.push(cart[i]);
+      }
+
+      var totalAmount = 0;
+      for (var c = 0; c < checkedItems.length; c++) {
+        totalAmount += (checkedItems[c].price * checkedItems[c].quantity);
+      }
+
+      pendingOrderData = {
+        buyerName: buyerName,
+        buyerContact: buyerContact,
+        buyerPhone: buyerPhone,
+        shipMethod: buyerShipMethod,
+        buyerStore: buyerStore,
+        buyerNote: buyerNote,
+        totalAmount: totalAmount,
+        items: checkedItems
+      };
+
+      document.getElementById('step2-total-amount').textContent = '請匯款訂單總金額:$ ' + Number(totalAmount).toLocaleString();
+
+      closeCheckoutModal1();
+      var chkModal2 = document.getElementById('checkout-modal-2');
+      if (chkModal2) chkModal2.classList.add('active');
+    }
+
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
       var remitDate = document.getElementById('remit-date').value;
@@ -1786,15 +1847,11 @@
         return;
       }
 
-      var checkedItems = [];
+      var checkedItems = pendingOrderData.items;
       var uncheckedItems = [];
       for (var i = 0; i < cart.length; i++) {
-        if (cart[i].selected !== false) checkedItems.push(cart[i]);
-        else uncheckedItems.push(cart[i]);
+        if (cart[i].selected === false) uncheckedItems.push(cart[i]);
       }
-
-      var totalAmount = 0;
-      for (var c = 0; c < checkedItems.length; c++) totalAmount += (checkedItems[c].price * checkedItems[c].quantity);
 
       var orderPayload = {
         orderDate: new Date().toLocaleString(),
@@ -1807,7 +1864,7 @@
         remitTime: remitTime,
         remitAccount: remitAccount,
         buyerNote: pendingOrderData.buyerNote,
-        totalAmount: totalAmount,
+        totalAmount: pendingOrderData.totalAmount,
         buyerLineUserId: (currentUser && currentUser.lineUserId) ? currentUser.lineUserId : "",
         items: checkedItems
       };
@@ -1838,7 +1895,7 @@
         '手機號碼：' + pendingOrderData.buyerPhone + '\n' +
         '配送方式：' + (pendingOrderData.shipMethod === 'home' ? '宅配' : '7-11') + ' (' + pendingOrderData.buyerStore + ')\n' +
         '匯款回報：' + remitDate + ' ' + remitTime + ' (末五碼:' + remitAccount + ')\n' +
-        '同單總金額：NT$ ' + Number(totalAmount).toLocaleString() + '\n' +
+        '同單總金額：NT$ ' + Number(pendingOrderData.totalAmount).toLocaleString() + '\n' +
         '---------------------\n' +
         '品項明細：\n' + lineItemsText +
         '備註：' + (pendingOrderData.buyerNote || '無') + '\n' +
@@ -1846,7 +1903,7 @@
 
       document.getElementById('order-text-content').value = orderFullText;
       document.getElementById('line-direct-link').href = 'https://line.me/R/oaMessage/%40154bkwlh/?' + encodeURIComponent(orderFullText);
-      document.getElementById('success-order-total').textContent = 'NT$ ' + Number(totalAmount).toLocaleString();
+      document.getElementById('success-order-total').textContent = 'NT$ ' + Number(pendingOrderData.totalAmount).toLocaleString();
 
       cart = uncheckedItems;
       saveCartToLocalStorage();
