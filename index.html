@@ -38,7 +38,6 @@
       overflow-x: hidden;
     }
 
-    /* 頂部導覽列 */
     .header-banner {
       background-color: var(--primary-blue);
       color: #ffffff;
@@ -210,7 +209,6 @@
       font-weight: 900;
     }
 
-    /* 鈴鐺 Popover */
     .bell-wrapper {
       position: relative;
     }
@@ -279,7 +277,6 @@
       margin-top: 4px;
     }
 
-    /* 路由分頁 */
     main {
       flex: 1;
       width: 100%;
@@ -305,7 +302,6 @@
       padding: 36px 20px;
     }
 
-    /* ABOUT US */
     .hero-container {
       background-color: var(--primary-blue);
       color: #ffffff;
@@ -370,7 +366,6 @@
       line-height: 1.65;
     }
 
-    /* SHOP ALL */
     .section-header {
       margin-bottom: 24px;
     }
@@ -499,7 +494,6 @@
       cursor: pointer;
     }
 
-    /* NOTICE, QA, BLOG */
     .notice-item {
       background: #fff;
       border: 1px solid var(--border-color);
@@ -521,7 +515,6 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
 
-    /* 購物車抽屜 */
     .cart-drawer-overlay {
       position: fixed;
       inset: 0;
@@ -597,7 +590,6 @@
       cursor: pointer;
     }
 
-    /* 彈窗 */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -1297,7 +1289,7 @@
 
   <script>
     // ==========================================
-    // 1. 全域 UI 控制函式
+    // 1. 全域 UI 控制函式 (保證不受任何 SDK 影響)
     // ==========================================
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
@@ -1425,10 +1417,10 @@
     }
 
     // ==========================================
-    // 2. 常數與商品資料庫
+    // 2. 帳號設定與商品資料庫
     // ==========================================
     var MY_LIFF_ID = "2011693279-1eGSgIL6"; 
-    var GOOGLE_CLIENT_ID = "316886708858-jjj47jvpngr2t7lm4c6ht4meqpq81rt4.apps.googleusercontent.com";
+    var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
     var OFFICIAL_LINE_ID = "@154bkwlh"; 
     var OFFICIAL_THREADS_URL = "https://www.threads.net"; 
@@ -1491,9 +1483,6 @@
       }
     });
 
-    // ==========================================
-    // 3. 商品與購物車功能
-    // ==========================================
     function renderProducts() {
       var container = document.getElementById('product-grid-container');
       if (!container) return;
@@ -1712,9 +1701,6 @@
       }
     }
 
-    // ==========================================
-    // 4. 會員與訂單資料
-    // ==========================================
     function handleUserLoggedIn(user, isFirstTime) {
       currentUser = user;
 
@@ -1974,9 +1960,6 @@
       });
     }
 
-    // ==========================================
-    // 5. 送出訂單
-    // ==========================================
     function handleOrderSubmit(e) {
       e.preventDefault();
 
@@ -2043,7 +2026,7 @@
             if (succId) succId.textContent = finalOrderId;
           }
         }).catch(function(err) {
-          console.warn('非同步備份模式送出：', err);
+          console.warn('非同步模式送出：', err);
         });
       }
 
@@ -2098,9 +2081,6 @@
       }
     }
 
-    // ==========================================
-    // 6. 賣家管理後台邏輯
-    // ==========================================
     function promptAdminLogin() {
       var pwd = prompt('請輸入賣家後台管理員密碼：');
       if (pwd === ADMIN_PASSWORD) {
@@ -2185,9 +2165,13 @@
         var ord = adminOrdersList[ordIdx];
         var closedClass = ord.isClosed ? 'closed-order' : '';
         var closedBadge = ord.isClosed ? '<span class="admin-badge-closed" style="margin-left:6px;">● 已結案</span>' : '';
-        var lineTag = ord.buyerLineUserId 
-          ? '<span style="background:#e6f9ed; color:#06C755; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">LINE 已綁定 (可推播)</span>'
-          : '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">Google/社群用戶</span>';
+        
+        var lineTag = '';
+        if (ord.buyerLineUserId) {
+          lineTag = '<span style="background:#e6f9ed; color:#06C755; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">LINE 已綁定 (可推播)</span>';
+        } else {
+          lineTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:4px;">Google/社群用戶</span>';
+        }
 
         var itemsHtml = '';
         for (var itemIdx = 0; itemIdx < ord.items.length; itemIdx++) {
@@ -2347,7 +2331,7 @@
     }
 
     // ==========================================
-    // 7. 頁面開機初始化 (優先執行 UI)
+    // 7. 啟動與外部 SDK 非同步載入
     // ==========================================
     window.addEventListener('DOMContentLoaded', function() {
       renderProducts();
@@ -2361,28 +2345,33 @@
         }
       } catch (e) {}
 
-      // 動態非同步注入第三方 SDK，絕不卡住主要按鈕
+      setTimeout(loadExternalSDKs, 300);
+    });
+
+    function loadExternalSDKs() {
       var lineScript = document.createElement('script');
       lineScript.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
       lineScript.onload = function() {
         try {
-          liff.init({ liffId: MY_LIFF_ID }).then(function() {
-            if (liff.isLoggedIn()) {
-              liff.getProfile().then(function(profile) {
-                var userObj = {
-                  provider: 'LINE',
-                  displayName: profile.displayName,
-                  userId: profile.userId,
-                  lineUserId: profile.userId,
-                  contactValue: profile.displayName,
-                  pictureUrl: profile.pictureUrl
-                };
-                localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-                handleUserLoggedIn(userObj, true);
-              });
-            }
-          });
-        } catch (err) {}
+          if (typeof liff !== 'undefined') {
+            liff.init({ liffId: MY_LIFF_ID }).then(function() {
+              if (liff.isLoggedIn()) {
+                liff.getProfile().then(function(profile) {
+                  var userObj = {
+                    provider: 'LINE',
+                    displayName: profile.displayName,
+                    userId: profile.userId,
+                    lineUserId: profile.userId,
+                    contactValue: profile.displayName,
+                    pictureUrl: profile.pictureUrl
+                  };
+                  localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+                  handleUserLoggedIn(userObj, true);
+                });
+              }
+            }).catch(function(e) {});
+          }
+        } catch (e) {}
       };
       document.body.appendChild(lineScript);
 
@@ -2390,23 +2379,28 @@
       googleScript.src = 'https://accounts.google.com/gsi/client';
       googleScript.onload = function() {
         try {
-          google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleCredentialResponse
-          });
-        } catch (err) {}
+          if (window.google && window.google.accounts) {
+            google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: handleGoogleCredentialResponse,
+              auto_select: false
+            });
+          }
+        } catch (e) {}
       };
       document.body.appendChild(googleScript);
-    });
+    }
 
     function loginWithLine() {
       try {
         if (typeof liff !== 'undefined' && liff.login) {
           if (!liff.isLoggedIn()) liff.login();
         } else {
-          alert("LINE 連線中，請稍候再試。");
+          alert("LINE SDK 連線中，請稍候重試。");
         }
-      } catch (e) {}
+      } catch (e) {
+        alert("LINE 登入遇到問題，請重新整理頁面。");
+      }
     }
 
     function loginWithGoogle() {
@@ -2414,9 +2408,11 @@
         if (window.google && window.google.accounts) {
           google.accounts.id.prompt();
         } else {
-          alert("Google 登入功能連線中，請稍候重試。");
+          alert("Google 登入連線中，請稍候重試。");
         }
-      } catch (e) {}
+      } catch (e) {
+        alert("Google 登入啟動失敗，請稍候重試。");
+      }
     }
 
     function handleGoogleCredentialResponse(response) {
