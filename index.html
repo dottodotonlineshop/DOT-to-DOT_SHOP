@@ -1086,7 +1086,7 @@
     </div>
   </aside>
 
-  <!-- 步驟一：確認訂單詳情與填寫聯絡/收件資料 -->
+  <!-- 步驟一：確認訂單與填寫收件資料 -->
   <div class="modal-overlay" id="checkout-modal-1">
     <div class="modal-box">
       <div class="modal-head">
@@ -1139,7 +1139,7 @@
     </div>
   </div>
 
-  <!-- 步驟二：匯款資訊與確認送出 (送出後才寫入 Google 表格) -->
+  <!-- 步驟二：匯款資訊與送出對帳 (送出後才寫入 Google 表格) -->
   <div class="modal-overlay" id="checkout-modal-2">
     <div class="modal-box">
       <div class="modal-head">
@@ -1182,7 +1182,7 @@
 
         <div style="display:flex; gap:10px;">
           <button type="button" class="checkout-btn" style="background:#64748b;" onclick="backToStep1()">⬅ 上一步</button>
-          <button type="submit" class="checkout-btn" id="final-submit-btn">確認送出並進行對帳</button>
+          <button type="submit" class="checkout-btn" id="final-submit-btn">送出對帳</button>
         </div>
       </form>
     </div>
@@ -1200,7 +1200,7 @@
 
       <textarea id="order-text-content" class="order-textarea" readonly></textarea>
 
-      <!-- 按鈕 1：直接傳送至官方 LINE 聊天室 -->
+      <!-- 按鈕 1：直接傳送至官方 LINE -->
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
         直接傳送至官方 LINE 聊天室進行對帳 ➔
@@ -1298,12 +1298,12 @@
           <button onclick="handleLogout()" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; cursor: pointer;">登出</button>
         </div>
 
-        <!-- 管理員專屬模式切換面板 -->
+        <!-- 賣家管理員專屬切換面板 -->
         <div id="admin-mode-switch-box" style="display:none; background:#fef08a; border:1px solid #facc15; padding:10px; border-radius:8px; margin-bottom:14px; text-align:center;">
-          <div style="font-size:12px; font-weight:800; color:#854d0e; margin-bottom:6px;">👑 偵測到您是最高管理員</div>
+          <div style="font-size:12px; font-weight:800; color:#854d0e; margin-bottom:6px;">👑 最高管理員專屬通道</div>
           <div style="display:flex; gap:8px; justify-content:center;">
-            <button onclick="switchPage('shop'); closeMemberModal();" style="background:#fff; border:1px solid #ca8a04; color:#854d0e; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">🏠 切換至一般會員模式</button>
-            <button onclick="switchPage('admin'); loadAdminOrders(); closeMemberModal();" style="background:#111; color:#ccff00; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">⚙️ 切換至賣家管理模式</button>
+            <button onclick="switchPage('shop'); closeMemberModal();" style="background:#fff; border:1px solid #ca8a04; color:#854d0e; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">🏠 一般會員模式</button>
+            <button onclick="switchPage('admin'); loadAdminOrders(); closeMemberModal();" style="background:#111; color:#ccff00; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">⚙️ 進入賣家後台</button>
           </div>
         </div>
 
@@ -1354,7 +1354,7 @@
   </footer>
 
   <script>
-    // 最高管理員信箱設定 (已設定為 dottodot.onlineshop@gmail.com)
+    // 管理員 Google 信箱設定 (已設定為 dottodot.onlineshop@gmail.com)
     var ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"];
 
     function switchPage(pageId) {
@@ -1420,7 +1420,7 @@
       if (memModal) memModal.classList.remove('active');
     }
 
-    // 結帳檢查：未登入前強制要求先登入
+    // 結帳檢查：未登入強制先彈出會員登入要求
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -1852,7 +1852,7 @@
         profPic.src = user.pictureUrl;
       }
 
-      // 檢查是否為管理員信箱 (dottodot.onlineshop@gmail.com)
+      // 檢查是否為管理員 (dottodot.onlineshop@gmail.com)
       var userEmail = (user.contactValue || "").trim().toLowerCase();
       var isAdmin = false;
       for (var i = 0; i < ADMIN_EMAILS.length; i++) {
@@ -1923,7 +1923,7 @@
       var notifItems = [];
       for (var i = 0; i < orders.length; i++) {
         var order = orders[i];
-        if (order.payStatus && order.payStatus !== '尚未對帳') {
+        if (order.payStatus && order.payStatus !== '等待對帳中') {
           notifItems.push({
             type: 'pay',
             title: '訂單 ' + order.orderId + ' 對帳更新',
@@ -1932,14 +1932,14 @@
         }
         for (var j = 0; j < order.items.length; j++) {
           var item = order.items[j];
-          if (item.trackingNo || (item.shipStatus && item.shipStatus !== '等待到貨')) {
+          if (item.trackingNo || (item.shipStatus && item.shipStatus !== '')) {
             notifItems.push({
               type: 'ship',
               title: '📦 ' + item.name + ' 出貨進度',
               desc: '狀態：' + item.shipStatus + (item.trackingNo ? ' (單號: ' + item.trackingNo + ')' : '')
             });
           }
-          if (item.payBatchNo || (item.procureStatus && item.procureStatus !== '未採購')) {
+          if (item.payBatchNo || (item.procureStatus && item.procureStatus !== '')) {
             notifItems.push({
               type: 'procure',
               title: '✈️ ' + item.name + ' 採購進度',
@@ -2037,8 +2037,8 @@
         var itemsHtml = '';
         for (var j = 0; j < order.items.length; j++) {
           var it = order.items[j];
-          var shipColorBg = (it.shipStatus === '已寄出') ? '#e6f9ed' : '#fef3c7';
-          var shipColorTxt = (it.shipStatus === '已寄出') ? '#06C755' : '#b45309';
+          var shipColorBg = (it.shipStatus === '已出貨') ? '#e6f9ed' : '#fef3c7';
+          var shipColorTxt = (it.shipStatus === '已出貨') ? '#06C755' : '#b45309';
 
           itemsHtml += '<div style="background:#fafbff; border-radius:8px; padding:10px; margin-bottom:8px; font-size:13px; border:1px solid #f0f3f8;">' +
             '<div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:2px;">' +
@@ -2049,10 +2049,10 @@
             '<div style="font-size:11.5px; color:#555; margin-bottom:6px;">規格：' + it.spec + '</div>' +
             '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
               '<span style="background:#eef2ff; color:#4338ca; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">' +
-                '採購：' + (it.procureStatus || '未採購') + (it.payBatchNo ? ' (' + it.payBatchNo + ')' : '') +
+                '採購：' + (it.procureStatus || '尚無紀錄') + (it.payBatchNo ? ' (' + it.payBatchNo + ')' : '') +
               '</span>' +
               '<span style="background:' + shipColorBg + '; color:' + shipColorTxt + '; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px;">' +
-                '出貨：' + (it.shipStatus || '等待到貨') + (it.trackingNo ? ' (' + it.trackingNo + ')' : '') +
+                '出貨：' + (it.shipStatus || '尚無紀錄') + (it.trackingNo ? ' (' + it.trackingNo + ')' : '') +
               '</span>' +
             '</div>' +
           '</div>';
@@ -2064,7 +2064,7 @@
             '<div>' +
               closedBadge +
               '<span style="background:#eff6ff; color:var(--primary-blue); font-weight:800; padding:2px 8px; border-radius:4px;">' +
-                '對帳：' + (order.payStatus || '尚未對帳') +
+                '對帳：' + (order.payStatus || '等待對帳中') +
               '</span>' +
             '</div>' +
           '</div>' +
@@ -2086,7 +2086,7 @@
       window.location.reload();
     }
 
-    // 步驟二完成：正式寫入 Google 試算表，並開啟對帳彈窗
+    // 第二階段完成：此時才正式寫入 Google 試算表，並開啟對帳彈窗
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
 
@@ -2181,7 +2181,7 @@
 
       if (finalBtn) {
         finalBtn.disabled = false;
-        finalBtn.textContent = '確認送出並進行對帳';
+        finalBtn.textContent = '送出對帳';
       }
 
       var succModal = document.getElementById('order-success-modal');
@@ -2192,7 +2192,6 @@
       }
     }
 
-    // 對帳彈窗按鈕 2：智慧一鍵複製文字並前往其他社群
     function copyAndOpenCommunity() {
       var textarea = document.getElementById('order-text-content');
       if (textarea) {
@@ -2289,6 +2288,27 @@
         var itemsHtml = '';
         for (var itemIdx = 0; itemIdx < ord.items.length; itemIdx++) {
           var it = ord.items[itemIdx];
+
+          // 下拉選單選項對齊需求
+          var payOpts = '<option value="等待對帳中" ' + (ord.payStatus === '等待對帳中' ? 'selected' : '') + '>等待對帳中</option>' +
+                        '<option value="已對帳完成" ' + (ord.payStatus === '已對帳完成' ? 'selected' : '') + '>已對帳完成</option>' +
+                        '<option value="對帳失敗" ' + (ord.payStatus === '對帳失敗' ? 'selected' : '') + '>對帳失敗</option>' +
+                        '<option value="對帳異常 請聯絡客服" ' + (ord.payStatus === '對帳異常 請聯絡客服' ? 'selected' : '') + '>對帳異常 請聯絡客服</option>';
+
+          var procOpts = '<option value="" ' + (!it.procureStatus ? 'selected' : '') + '>(無)</option>' +
+                         '<option value="已進行採購流程" ' + (it.procureStatus === '已進行採購流程' ? 'selected' : '') + '>已進行採購流程</option>' +
+                         '<option value="已採購完畢" ' + (it.procureStatus === '已採購完畢' ? 'selected' : '') + '>已採購完畢</option>' +
+                         '<option value="部分未採購成功" ' + (it.procureStatus === '部分未採購成功' ? 'selected' : '') + '>部分未採購成功</option>' +
+                         '<option value="已完成退款" ' + (it.procureStatus === '已完成退款' ? 'selected' : '') + '>已完成退款</option>';
+
+          var shipOpts = '<option value="" ' + (!it.shipStatus ? 'selected' : '') + '>(無)</option>' +
+                         '<option value="抵台理貨中" ' + (it.shipStatus === '抵台理貨中' ? 'selected' : '') + '>抵台理貨中</option>' +
+                         '<option value="已封包" ' + (it.shipStatus === '已封包' ? 'selected' : '') + '>已封包</option>' +
+                         '<option value="已出貨" ' + (it.shipStatus === '已出貨' ? 'selected' : '') + '>已出貨</option>' +
+                         '<option value="合併出貨" ' + (it.shipStatus === '合併出貨' ? 'selected' : '') + '>合併出貨</option>' +
+                         '<option value="售後處理中" ' + (it.shipStatus === '售後處理中' ? 'selected' : '') + '>售後處理中</option>' +
+                         '<option value="售後處理完畢" ' + (it.shipStatus === '售後處理完畢' ? 'selected' : '') + '>售後處理完畢</option>';
+
           itemsHtml += '<div style="background:#ffffff; border-radius:8px; padding:10px; margin-bottom:8px; border:1px solid #cbd5e1;">' +
             '<div style="display:flex; justify-content:space-between; font-weight:800; font-size:13px; margin-bottom:4px;">' +
               '<span>' + it.name + ' <span style="font-size:11px; color:#64748b;">(' + it.spec + ')</span></span>' +
@@ -2297,50 +2317,33 @@
             '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">' +
               '<div>' +
                 '<label class="spec-label">支付批次單號</label>' +
-                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.payBatchNo || '') + '" placeholder="例: BATCH-01" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.payBatchNo || '') + '" placeholder="例: BATCH-01">' +
               '</div>' +
               '<div>' +
                 '<label class="spec-label">採購狀態</label>' +
-                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-' + ord.orderId + '-' + itemIdx + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
-                  '<option value="未採購" ' + (it.procureStatus === '未採購' ? 'selected' : '') + '>未採購</option>' +
-                  '<option value="已下單海外廠商" ' + (it.procureStatus === '已下單海外廠商' ? 'selected' : '') + '>已下單海外廠商</option>' +
-                  '<option value="國際航班直飛中" ' + (it.procureStatus === '國際航班直飛中' ? 'selected' : '') + '>國際航班直飛中</option>' +
-                  '<option value="抵台清關中" ' + (it.procureStatus === '抵台清關中' ? 'selected' : '') + '>抵台清關中</option>' +
-                '</select>' +
+                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-' + ord.orderId + '-' + itemIdx + '">' + procOpts + '</select>' +
               '</div>' +
               '<div>' +
                 '<label class="spec-label">物流寄件單號</label>' +
-                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.trackingNo || '') + '" placeholder="例: 711-928371" ' + (ord.isClosed ? 'disabled' : '') + '>' +
+                '<input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.trackingNo || '') + '" placeholder="例: 711-928371">' +
               '</div>' +
               '<div>' +
                 '<label class="spec-label">出貨狀態</label>' +
-                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-' + ord.orderId + '-' + itemIdx + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
-                  '<option value="等待到貨" ' + (it.shipStatus === '等待到貨' ? 'selected' : '') + '>等待到貨</option>' +
-                  '<option value="倉庫包裝中" ' + (it.shipStatus === '倉庫包裝中' ? 'selected' : '') + '>倉庫包裝中</option>' +
-                  '<option value="已寄出" ' + (it.shipStatus === '已寄出' ? 'selected' : '') + '>已寄出</option>' +
-                  '<option value="買家已取件" ' + (it.shipStatus === '買家已取件' ? 'selected' : '') + '>買家已取件</option>' +
-                '</select>' +
+                '<select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-' + ord.orderId + '-' + itemIdx + '">' + shipOpts + '</select>' +
               '</div>' +
             '</div>' +
           '</div>';
         }
 
-        var actionBtns = '';
-        if (!ord.isClosed) {
-          actionBtns = '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\', ' + ordIdx + ', true)">' +
-            '📨 核對無誤，確認發送最新狀態給客人' +
+        // 結案按鈕：支援隨時解鎖切換（處理中 ⇄ 已結案）
+        var closeToggleBtn = ord.isClosed
+          ? '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', false)">🔓 解除結案 (恢復處理)</button>'
+          : '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', true)">🔒 確認結案</button>';
+
+        var actionBtns = '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\', ' + ordIdx + ', true)">' +
+            '📨 確認發送最新狀態給客人' +
           '</button>' +
-          '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', true)">' +
-            '🔒 確認結案 (出貨對帳完畢)' +
-          '</button>';
-        } else {
-          actionBtns = '<span style="font-size:13px; color:#64748b; font-weight:800; align-self:center;">' +
-            '✅ 此訂單已結案，按鈕已鎖定無法再推播通知。' +
-          '</span>' +
-          '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', false)">' +
-            '🔓 取消結案 (重新開啟編輯)' +
-          '</button>';
-        }
+          closeToggleBtn;
 
         html += '<div class="admin-card ' + closedClass + '" id="admin-card-' + ord.orderId + '">' +
           '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">' +
@@ -2352,11 +2355,7 @@
             '</div>' +
             '<div>' +
               '<label style="font-size:12px; font-weight:800; margin-right:4px;">對帳狀態：</label>' +
-              '<select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-' + ord.orderId + '" ' + (ord.isClosed ? 'disabled' : '') + '>' +
-                '<option value="尚未對帳" ' + (ord.payStatus === '尚未對帳' ? 'selected' : '') + '>尚未對帳</option>' +
-                '<option value="已對帳 (款項確認)" ' + (ord.payStatus === '已對帳 (款項確認)' ? 'selected' : '') + '>已對帳 (款項確認)</option>' +
-                '<option value="部分退款" ' + (ord.payStatus === '部分退款' ? 'selected' : '') + '>部分退款</option>' +
-              '</select>' +
+              '<select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-' + ord.orderId + '">' + payOpts + '</select>' +
             '</div>' +
           '</div>' +
           '<div style="font-size:13px; color:#334155; margin-bottom:10px;">' +
@@ -2419,8 +2418,8 @@
     }
 
     function adminToggleCloseOrder(orderId, ordIdx, setClose) {
-      var actionName = setClose ? "確認結案" : "取消結案";
-      if (!confirm('確定要將訂單 ' + orderId + ' 進行【' + actionName + '】嗎？' + (setClose ? '結案後將無法再發送通知給客人。' : '取消結案後將恢復發送權限。'))) {
+      var actionName = setClose ? "確認結案" : "解除結案";
+      if (!confirm('確定要將訂單 ' + orderId + ' 進行【' + actionName + '】嗎？')) {
         return;
       }
 
@@ -2436,7 +2435,7 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       }).then(function() {
-        alert('已成功將訂單 ' + orderId + ' 設定為：' + (setClose ? '【已結案】' : '【處理中 (可編輯)】'));
+        alert('已成功將訂單 ' + orderId + ' 設定為：' + (setClose ? '【已結案】' : '【處理中】'));
         loadAdminOrders();
       }).catch(function() {
         alert("操作失敗，請檢查網路連線。");
@@ -2444,7 +2443,7 @@
     }
 
     // ==========================================
-    // 7. 啟動與 SDK 載入
+    // 8. 啟動與 SDK 載入
     // ==========================================
     window.addEventListener('DOMContentLoaded', function() {
       renderProducts();
