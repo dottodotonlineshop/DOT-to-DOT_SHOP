@@ -705,6 +705,17 @@
       text-align: left;
     }
 
+    .bank-info-box {
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: #166534;
+      line-height: 1.6;
+    }
+
     .auth-btn-group {
       display: flex;
       flex-direction: column;
@@ -957,7 +968,7 @@
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
-          <p class="section-subtitle">關於訂單拆單、付款方式與海外配送時程說明</p>
+          <p class="section-subtitle">關於訂單拆單, 付款方式與海外配送時程說明</p>
         </div>
         <div class="qa-box">
           <div class="qa-q">Q1：在同一張訂單買了現貨和等半年的模型，真的會分開出貨嗎？ <span>＋</span></div>
@@ -1083,11 +1094,20 @@
     </div>
   </aside>
 
+  <!-- 結帳填單與匯款資訊填寫彈窗 -->
   <div class="modal-overlay" id="checkout-modal">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">預購委託確認</div>
+        <div class="modal-title">填寫預購與匯款回報</div>
         <button class="drawer-close" onclick="closeCheckoutModal()">✕</button>
+      </div>
+
+      <!-- 你的匯款帳號資訊顯示區 -->
+      <div class="bank-info-box">
+        🏦 <b>匯款帳號資訊 (請於下單後轉帳)</b><br>
+        銀行代碼：822 (中國信託)<br>
+        匯款帳號：<b>1234-5678-9012</b><br>
+        戶名：DOT to DOT 專門店
       </div>
 
       <form id="order-form" onsubmit="handleOrderSubmit(event)">
@@ -1117,19 +1137,37 @@
           <input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)">
         </div>
 
+        <!-- 新增匯款時間與末五碼回報 -->
+        <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:12px;">
+          <div style="font-weight:800; font-size:13px; margin-bottom:8px; color:var(--primary-blue);">💳 匯款對帳回報：</div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11.5px;">匯款日期 *</label>
+            <input type="date" class="form-input" id="remit-date" required style="padding:8px;">
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11.5px;">匯款時間 (大約幾點) *</label>
+            <input type="time" class="form-input" id="remit-time" required style="padding:8px;">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label style="font-size:11.5px;">匯款帳號後五碼 *</label>
+            <input type="text" class="form-input" id="remit-account" required maxlength="5" placeholder="例如：12345" style="padding:8px;">
+          </div>
+        </div>
+
         <div class="form-group">
           <label>訂單備註 / 拆單出貨偏好</label>
           <input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出">
         </div>
-        <button type="submit" class="checkout-btn" id="submit-order-btn">確認送出預購單</button>
+        <button type="submit" class="checkout-btn" id="submit-order-btn">確認送出並前往對帳</button>
       </form>
     </div>
   </div>
 
+  <!-- 訂單對帳彈窗 (包含智慧一鍵複製並開 Threads) -->
   <div class="modal-overlay" id="order-success-modal">
     <div class="modal-box" style="text-align: center;">
       <div style="font-size: 42px; margin-bottom: 8px;">🎉</div>
-      <h3 style="font-size: 19px; font-weight: 900; margin-bottom: 4px;">預購訂單已送出！</h3>
+      <h3 style="font-size: 19px; font-weight: 900; margin-bottom: 4px;">訂單對帳資訊已就緒！</h3>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
         訂單編號：<b id="success-order-id" style="color: var(--primary-blue);">ORD-XXXXXXX</b> ｜ 
         總金額：<b id="success-order-total" style="color: var(--primary-blue);">NT$ 0</b>
@@ -1139,15 +1177,17 @@
 
       <button class="copy-order-btn" onclick="copyOrderDetails()">📋 一鍵複製上方訂單內容</button>
 
+      <!-- 打開 LINE 對帳 -->
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">
         <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
         打開官方 LINE 聊天室送出對帳 ➔
       </a>
 
-      <a id="threads-direct-link" href="https://www.threads.net" target="_blank" class="threads-direct-btn">
+      <!-- 智慧一鍵複製並開 Threads 按鈕 -->
+      <button class="threads-direct-btn" onclick="copyAndOpenThreads()">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.88 12.33c-.35 1.76-1.74 2.87-3.69 2.87-2.3 0-3.95-1.58-3.95-3.82 0-2.45 1.83-4.14 4.39-4.14 2.37 0 3.79 1.42 3.79 3.55 0 .28-.02.57-.06.84h-6.24c.09 1.25.96 2.05 2.18 2.05 1.02 0 1.65-.54 1.88-1.35h1.7zm-1.84-2.48c-.04-1.02-.7-1.68-1.82-1.68-1.05 0-1.75.66-1.86 1.68h3.68z"></path></svg>
-        前往 Threads 私訊對帳 (請先複製上方文字) ➔
-      </a>
+        一鍵複製並前往 Threads 私訊對帳 ➔
+      </button>
 
       <div class="warning-box">
         ⚠️ <b>請務必回傳對帳！</b><br>
@@ -1155,7 +1195,7 @@
         <b>若未回傳進行確認對帳，將視同未下單成功！</b>
       </div>
 
-      <button class="checkout-btn" style="background:#64748b; margin-top: 4px;" onclick="closeSuccessModal()">關閉視窗</button>
+      <button class="checkout-btn" style="background:#64748b; margin-top: 4px;" onclick="closeSuccessModal()">確定已送出對帳資訊</button>
     </div>
   </div>
 
@@ -1223,9 +1263,6 @@
             使用 Google 帳戶登入 (全平台跳轉)
           </button>
         </div>
-        <p style="font-size:11.5px; color:#888; margin-top:12px;">
-          * Google 登入者下單後需手動將訂單傳送至官方 LINE 或 Threads 對帳。
-        </p>
       </div>
 
       <div id="auth-logged" style="display: none;">
@@ -1288,9 +1325,6 @@
   </footer>
 
   <script>
-    // ==========================================
-    // 1. 全域 UI 控制函式
-    // ==========================================
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -1354,33 +1388,36 @@
       if (memModal) memModal.classList.remove('active');
     }
 
+    // 結帳檢查：未登入前強制先跳出會員登入要求
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
         return;
       }
 
-      if (currentUser) {
-        try {
-          var savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
-          var buyerName = document.getElementById('buyer-name');
-          var buyerLine = document.getElementById('buyer-line');
-          var buyerPhone = document.getElementById('buyer-phone');
-          var buyerMethod = document.getElementById('buyer-ship-method');
-          var buyerStore = document.getElementById('buyer-store');
+      if (!currentUser) {
+        alert('⚠️ 結帳前請先登入會員，建立您的帳戶資料以便追蹤訂單與出貨進度！');
+        openMemberModal();
+        return;
+      }
 
-          if (buyerName) buyerName.value = savedProfile.name || currentUser.displayName || '';
-          if (buyerLine) buyerLine.value = currentUser.contactValue || (currentUser.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : currentUser.displayName);
-          if (buyerPhone) buyerPhone.value = savedProfile.phone || '';
-          if (buyerMethod && savedProfile.shipMethod) {
-            buyerMethod.value = savedProfile.shipMethod;
-          }
-          updateShipInputUI('checkout');
-          if (buyerStore) buyerStore.value = savedProfile.store || '';
-        } catch (e) {
-          updateShipInputUI('checkout');
+      try {
+        var savedProfile = JSON.parse(localStorage.getItem('dottodot_profile_' + currentUser.userId) || '{}');
+        var buyerName = document.getElementById('buyer-name');
+        var buyerLine = document.getElementById('buyer-line');
+        var buyerPhone = document.getElementById('buyer-phone');
+        var buyerMethod = document.getElementById('buyer-ship-method');
+        var buyerStore = document.getElementById('buyer-store');
+
+        if (buyerName) buyerName.value = savedProfile.name || currentUser.displayName || '';
+        if (buyerLine) buyerLine.value = currentUser.contactValue || (currentUser.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : currentUser.displayName);
+        if (buyerPhone) buyerPhone.value = savedProfile.phone || '';
+        if (buyerMethod && savedProfile.shipMethod) {
+          buyerMethod.value = savedProfile.shipMethod;
         }
-      } else {
+        updateShipInputUI('checkout');
+        if (buyerStore) buyerStore.value = savedProfile.store || '';
+      } catch (e) {
         updateShipInputUI('checkout');
       }
 
@@ -1416,9 +1453,6 @@
       if (tabOrd) tabOrd.style.display = tab === 'orders' ? 'block' : 'none';
     }
 
-    // ==========================================
-    // 2. 帳號設定與商品資料庫
-    // ==========================================
     var MY_LIFF_ID = "2011693279-1eGSgIL6"; 
     var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
@@ -1960,6 +1994,19 @@
       });
     }
 
+    // 智慧一鍵複製並開啟 Threads
+    function copyAndOpenThreads() {
+      var textarea = document.getElementById('order-text-content');
+      if (textarea) {
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
+      }
+      alert('📋 訂單內容已自動複製！即將為您前往 Threads，請直接長按貼上即可。');
+      window.open(OFFICIAL_THREADS_URL, '_blank');
+    }
+
     function handleOrderSubmit(e) {
       e.preventDefault();
 
@@ -1968,11 +2015,13 @@
       var buyerPhone = document.getElementById('buyer-phone').value.trim();
       var buyerShipMethod = document.getElementById('buyer-ship-method').value;
       var buyerStore = document.getElementById('buyer-store').value.trim();
+      var remitDate = document.getElementById('remit-date').value;
+      var remitTime = document.getElementById('remit-time').value;
+      var remitAccount = document.getElementById('remit-account').value.trim();
       var buyerNote = document.getElementById('buyer-note').value.trim();
 
-      if (!buyerName || !buyerPhone || !buyerStore) {
-        var targetDesc = (buyerShipMethod === 'home') ? '宅配收件地址' : '超商門市名稱與店號';
-        alert('⚠️ 下單必填提醒：真實姓名、電話與' + targetDesc + '皆為必填項目！');
+      if (!buyerName || !buyerPhone || !buyerStore || !remitDate || !remitTime || !remitAccount) {
+        alert('⚠️ 請完整填寫所有必填欄位（包含匯款日期、時間與末五碼）！');
         return;
       }
 
@@ -2004,6 +2053,9 @@
         buyerPhone: buyerPhone,
         shipMethod: buyerShipMethod,
         buyerStore: buyerStore,
+        remitDate: remitDate,
+        remitTime: remitTime,
+        remitAccount: remitAccount,
         buyerNote: buyerNote,
         totalAmount: totalAmount,
         buyerLineUserId: (currentUser && currentUser.lineUserId) ? currentUser.lineUserId : "",
@@ -2041,11 +2093,12 @@
         '買家姓名：' + buyerName + '\n' +
         '手機號碼：' + buyerPhone + '\n' +
         '配送方式：' + (buyerShipMethod === 'home' ? '宅配' : '7-11') + ' (' + buyerStore + ')\n' +
+        '匯款回報：' + remitDate + ' ' + remitTime + ' (末五碼:' + remitAccount + ')\n' +
         '同單總金額：NT$ ' + Number(totalAmount).toLocaleString() + '\n' +
         '---------------------\n' +
         '品項明細：\n' + lineItemsText +
         '備註：' + (buyerNote || '無') + '\n' +
-        '已下單完畢，煩請確認對帳，謝謝！';
+        '已下單匯款完畢，請協助確認對帳，謝謝！';
 
       var textContent = document.getElementById('order-text-content');
       if (textContent) textContent.value = orderFullText;
@@ -2070,7 +2123,7 @@
 
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = '確認送出預購單';
+        submitBtn.textContent = '確認送出並前往對帳';
       }
 
       var succModal = document.getElementById('order-success-modal');
@@ -2337,7 +2390,6 @@
       renderProducts();
       updateCartDisplay();
 
-      // 檢查是否為 Google OAuth 重新導向返回的帶 token 網址
       handleGoogleOAuthRedirectCallback();
 
       try {
@@ -2391,7 +2443,6 @@
       }
     }
 
-    // 全平台通用的跳轉式 Google 登入 (支援 iOS Safari / 所有手機瀏覽器)
     function loginWithGoogle() {
       var redirectUri = window.location.origin + window.location.pathname;
       var googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
@@ -2403,7 +2454,6 @@
       window.location.href = googleAuthUrl;
     }
 
-    // 解析 Google 跳轉回來帶在網址 hash 裡的 Token
     function handleGoogleOAuthRedirectCallback() {
       try {
         var hash = window.location.hash;
@@ -2416,7 +2466,6 @@
 
           var accessToken = params['access_token'];
           if (accessToken) {
-            // 用 Access Token 抓取 Google 用戶基本資料
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
               headers: { 'Authorization': 'Bearer ' + accessToken }
             }).then(function(res) {
@@ -2431,10 +2480,7 @@
                 pictureUrl: userInfo.picture
               };
               localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-              
-              // 清除網址上的 token 參數保持乾淨
               window.history.replaceState({}, document.title, window.location.pathname);
-              
               handleUserLoggedIn(userObj, true);
             }).catch(function(err) {
               console.warn("取得 Google 用戶資料失敗：", err);
