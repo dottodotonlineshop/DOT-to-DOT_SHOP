@@ -260,7 +260,7 @@
     <section id="page-about" class="page-section active">
       <div class="hero-container">
         <h1 class="hero-title">DOT to DOT</h1>
-        <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物, 明星個人品牌及同款代購。有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨</p>
+        <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物、明星個人品牌及同款代購。<br>架上商品歡迎直接選購下單<br>有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨 #提供售後</p>
         <button class="cta-button" onclick="switchPage('shop')">SHOP ALL ➔</button>
       </div>
 
@@ -418,7 +418,17 @@
             <option value="已對帳完成">已對帳完成</option>
             <option value="對帳失敗">對帳失敗</option>
             <option value="對帳異常 請聯絡客服">對帳異常 請聯絡客服</option>
+            <option value="已刪單">已刪單</option>
           </select>
+        </div>
+
+        <!-- 雲端同步發布控制列 -->
+        <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:14px; padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h4 style="font-size:15px; font-weight:900; color:var(--primary-blue);">☁️ 雲端全站內容同步控制</h4>
+            <p style="font-size:12.5px; color:#475569; margin-top:2px;">當您在後台新增商品、公告、Q&A 或發布新貼文後，請點擊右側按鈕立即同步至雲端，所有買家將即時更新！</p>
+          </div>
+          <button onclick="manualSyncCMSData()" style="background:var(--primary-blue); color:#fff; border:none; padding:10px 20px; border-radius:10px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 4px 12px rgba(0,68,204,0.25);">🚀 確認發布並同步至全站</button>
         </div>
 
         <div class="admin-card">
@@ -778,6 +788,12 @@
       if (targetBtn) targetBtn.classList.add('active');
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 每次切換分頁時主動向雲端拉取最新資料，解決同步時間差
+      fetchCMSFromCloud();
+      if (pageId === 'admin') {
+        loadAdminOrders();
+      }
     }
 
     function toggleCartDrawer(open) {
@@ -789,6 +805,8 @@
       var overlay = document.getElementById('cart-overlay');
       if (drawer && overlay) {
         if (open) {
+          // 每次打開購物車時主動向雲端同步最新商品狀態，防範下架後的隱形庫存問題
+          fetchCMSFromCloud();
           drawer.classList.add('active');
           overlay.classList.add('active');
         } else {
@@ -802,19 +820,28 @@
       if (isAdminMode) return;
       if (e) e.stopPropagation();
       var popover = document.getElementById('bell-popover');
-      if (popover) popover.classList.toggle('active');
+      if (popover) {
+        popover.classList.toggle('active');
+        if (popover.classList.contains('active') && currentUser) {
+          syncOrdersFromSheet();
+        }
+      }
     }
 
     function markAllNotificationsRead() {
-      var popover = document.getElementById('bell-popover');
+      var popoverContent = document.getElementById('bell-popover-content');
       var badge = document.getElementById('bell-badge');
       if (badge) {
         badge.style.display = 'none';
         badge.textContent = '0';
       }
+      if (popoverContent) {
+        popoverContent.innerHTML = '<div class="pop-item"><div style="color: var(--text-muted);">目前尚無未讀通知</div></div>';
+      }
       if (currentUser) {
         localStorage.setItem('dottodot_read_notifs_' + currentUser.userId, 'true');
       }
+      var popover = document.getElementById('bell-popover');
       if (popover) popover.classList.remove('active');
     }
 
@@ -827,6 +854,26 @@
     function closeMemberModal() {
       var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.remove('active');
+    }
+
+    function switchMemberTab(tabName) {
+      var btnProf = document.getElementById('tab-btn-profile');
+      var btnOrd = document.getElementById('tab-btn-orders');
+      var tabProf = document.getElementById('member-tab-profile');
+      var tabOrd = document.getElementById('member-tab-orders');
+
+      if (tabName === 'profile') {
+        if (btnProf) btnProf.classList.add('active');
+        if (btnOrd) btnOrd.classList.remove('active');
+        if (tabProf) tabProf.style.display = 'block';
+        if (tabOrd) tabOrd.style.display = 'none';
+      } else {
+        if (btnOrd) btnOrd.classList.add('active');
+        if (btnProf) btnProf.classList.remove('active');
+        if (tabOrd) tabOrd.style.display = 'block';
+        if (tabProf) tabProf.style.display = 'none';
+        syncOrdersFromSheet();
+      }
     }
 
     function openCheckoutModal() {
@@ -852,7 +899,6 @@
       document.getElementById('checkout-preview-items').innerHTML = previewHtml;
       document.getElementById('checkout-preview-total').textContent = 'NT$ ' + Number(total).toLocaleString();
 
-      // 自動載入登入使用者的聯絡方式 (Google 載入 Gmail，LINE 載入 LINE 暱稱)
       var contactInput = document.getElementById('buyer-line');
       if (contactInput && currentUser) {
         contactInput.value = currentUser.contactValue || currentUser.displayName || '';
@@ -928,7 +974,7 @@
       });
     }
 
-    function syncCMSToCloud() {
+    function manualSyncCMSData() {
       if (!currentGasWebhook) return;
       var payload = {
         action: "syncCMS",
@@ -936,13 +982,24 @@
         notices: noticeData,
         qas: qaData,
         posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: localStorage.getItem('dottodot_about_text') || '本店提供泰韓選物、明星個人品牌及同款代購。'
+        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。'
       };
+
       fetch(currentGasWebhook, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
-      }).catch(function(e) {});
+      }).then(function(resp) {
+        return resp.json();
+      }).then(function(res) {
+        if (res && res.status === 'success') {
+          alert('🚀 全站內容已成功發布並同步至 Google 試算表雲端！');
+        } else {
+          alert('⚠️ 同步完成，但伺服器回傳異常。');
+        }
+      }).catch(function(err) {
+        alert('❌ 同步失敗：' + err.message);
+      });
     }
 
     var DEFAULT_SERIES = [
@@ -1397,14 +1454,12 @@
       if (!confirm('確定要刪除此公告項目嗎？')) return;
       noticeData.splice(index, 1);
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      syncCMSToCloud();
       renderNotices();
     }
     function adminDeleteQa(index) {
       if (!confirm('確定要刪除此 Q&A 嗎？')) return;
       qaData.splice(index, 1);
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      syncCMSToCloud();
       renderQas();
     }
     function adminDeletePost(index) {
@@ -1412,7 +1467,6 @@
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       posts.splice(index, 1);
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-      syncCMSToCloud();
       renderPosts();
     }
     function adminDeleteProduct(seriesId) {
@@ -1423,7 +1477,6 @@
       }
       productSeriesData = newSer;
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
       renderProducts();
     }
     function adminToggleProductClose(seriesId) {
@@ -1434,7 +1487,6 @@
         }
       }
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
       renderProducts();
     }
 
@@ -1475,7 +1527,6 @@
         noticeData.push({ title: t, desc: d });
       }
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      syncCMSToCloud();
       renderNotices();
       closeNoticeModal();
     }
@@ -1488,7 +1539,6 @@
       var a = document.getElementById('adm-qa-a').value.trim();
       qaData.push({ q: q, a: a });
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      syncCMSToCloud();
       renderQas();
       closeQaModal();
       e.target.reset();
@@ -1547,7 +1597,6 @@
           posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgBase64 || '', date: new Date().toLocaleDateString() });
         }
         localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-        syncCMSToCloud();
         renderPosts();
         closePostModal();
         e.target.reset();
@@ -1649,11 +1698,10 @@
 
         productSeriesData.unshift(newSeries);
         localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-        syncCMSToCloud();
         renderProducts();
         closeProductModal();
         e.target.reset();
-        alert('🎉 商品系列與多品項已成功上架！');
+        alert('🎉 商品系列與多品項已成功上架！記得點擊上方「確認發布並同步至全站」同步至雲端！');
       }
     }
 
@@ -1743,6 +1791,8 @@
         if (!isRead) {
           badge.textContent = notifItems.length;
           badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
         }
       }
     }
@@ -1791,10 +1841,9 @@
       window.location.reload();
     }
 
-    // 步驟一提交防呆跳轉並進入步驟二
     var pendingOrderData = null;
     function goToCheckoutStep2(e) {
-      e.preventDefault(); // 防止表單預設重新整理跳轉首頁
+      e.preventDefault();
 
       var buyerName = document.getElementById('buyer-name').value.trim();
       var buyerContact = document.getElementById('buyer-line').value.trim();
@@ -1834,6 +1883,12 @@
       closeCheckoutModal1();
       var chkModal2 = document.getElementById('checkout-modal-2');
       if (chkModal2) chkModal2.classList.add('active');
+    }
+
+    function backToStep1() {
+      closeCheckoutModal2();
+      var chkModal1 = document.getElementById('checkout-modal-1');
+      if (chkModal1) chkModal1.classList.add('active');
     }
 
     function handleFinalOrderSubmit(e) {
@@ -1972,13 +2027,15 @@
           var payOpts = '<option value="等待對帳中" ' + (ord.payStatus === '等待對帳中' ? 'selected' : '') + '>等待對帳中</option>' +
                         '<option value="已對帳完成" ' + (ord.payStatus === '已對帳完成' ? 'selected' : '') + '>已對帳完成</option>' +
                         '<option value="對帳失敗" ' + (ord.payStatus === '對帳失敗' ? 'selected' : '') + '>對帳失敗</option>' +
-                        '<option value="對帳異常 請聯絡客服" ' + (ord.payStatus === '對帳異常 請聯絡客服' ? 'selected' : '') + '>對帳異常 請聯絡客服</option>';
+                        '<option value="對帳異常 請聯絡客服" ' + (ord.payStatus === '對帳異常 請聯絡客服' ? 'selected' : '') + '>對帳異常 請聯絡客服</option>' +
+                        '<option value="已刪單" ' + (ord.payStatus === '已刪單' ? 'selected' : '') + '>已刪單</option>';
 
           var procOpts = '<option value="" ' + (!it.procureStatus ? 'selected' : '') + '>(無)</option>' +
-                         '<option value="已進行採購流程" ' + (it.procureStatus === '已進行採購流程' ? 'selected' : '') + '>已進行採購流程</option>' +
+                         '<option value="已進入採購流程" ' + (it.procureStatus === '已進入採購流程' ? 'selected' : '') + '>已進入採購流程</option>' +
                          '<option value="已採購完畢" ' + (it.procureStatus === '已採購完畢' ? 'selected' : '') + '>已採購完畢</option>' +
-                         '<option value="部分未採購成功" ' + (it.procureStatus === '部分未採購成功' ? 'selected' : '') + '>部分未採購成功</option>' +
-                         '<option value="已完成退款" ' + (it.procureStatus === '已完成退款' ? 'selected' : '') + '>已完成退款</option>';
+                         '<option value="未採購成功" ' + (it.procureStatus === '未採購成功' ? 'selected' : '') + '>未採購成功</option>' +
+                         '<option value="已完成退款" ' + (it.procureStatus === '已完成退款' ? 'selected' : '') + '>已完成退款</option>' +
+                         '<option value="等待退款" ' + (it.procureStatus === '等待退款' ? 'selected' : '') + '>等待退款</option>';
 
           var shipOpts = '<option value="" ' + (!it.shipStatus ? 'selected' : '') + '>(無)</option>' +
                          '<option value="抵台理貨中" ' + (it.shipStatus === '抵台理貨中' ? 'selected' : '') + '>抵台理貨中</option>' +
@@ -1986,7 +2043,8 @@
                          '<option value="已出貨" ' + (it.shipStatus === '已出貨' ? 'selected' : '') + '>已出貨</option>' +
                          '<option value="合併出貨" ' + (it.shipStatus === '合併出貨' ? 'selected' : '') + '>合併出貨</option>' +
                          '<option value="售後處理中" ' + (it.shipStatus === '售後處理中' ? 'selected' : '') + '>售後處理中</option>' +
-                         '<option value="售後處理完畢" ' + (it.shipStatus === '售後處理完畢' ? 'selected' : '') + '>售後處理完畢</option>';
+                         '<option value="售後處理完畢" ' + (it.shipStatus === '售後處理完畢' ? 'selected' : '') + '>售後處理完畢</option>' +
+                         '<option value="已取消" ' + (it.shipStatus === '已取消' ? 'selected' : '') + '>已取消</option>';
 
           itemsHtml += '<div style="background:#ffffff; border-radius:8px; padding:10px; margin-bottom:8px; border:1px solid #cbd5e1;">' +
             '<div style="display:flex; justify-content:space-between; font-weight:800; font-size:13px; margin-bottom:4px;">' +
@@ -2024,7 +2082,7 @@
     function adminSubmitStatus(orderId, ordIdx, shouldNotify) {
       var ord = adminOrdersList[ordIdx];
       var payStatus = document.getElementById('adm-paystatus-' + orderId).value;
-      if (!confirm('確定要儲存狀態並發送最新動態給買家嗎？')) return;
+      if (!confirm('確定要儲存狀態並發送最新動態給客人嗎？')) return;
 
       for (var i = 0; i < ord.items.length; i++) {
         var payNo = document.getElementById('adm-payno-' + orderId + '-' + i).value.trim();
