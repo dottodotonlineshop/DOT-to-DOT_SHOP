@@ -319,7 +319,10 @@
             <h2 class="section-title">NOTICE & ANNOUNCEMENTS</h2>
             <p class="section-subtitle">羊點一線｜訂購需知與最新公告</p>
           </div>
-          <button id="admin-add-notice-btn" onclick="openNoticeModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增公告/須知項目</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="admin-add-notice-btn" onclick="openNoticeModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增公告項目</button>
+            <button id="admin-sync-notice-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步公告</button>
+          </div>
         </div>
         <div id="dynamic-notice-container"></div>
       </div>
@@ -333,7 +336,10 @@
             <h2 class="section-title">FREQUENTLY ASKED QUESTIONS</h2>
             <p class="section-subtitle">關於訂單拆單、付款方式與海外配送時程說明</p>
           </div>
-          <button id="admin-add-qa-btn" onclick="openQaModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增 Q&A 問題</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="admin-add-qa-btn" onclick="openQaModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增 Q&A 問題</button>
+            <button id="admin-sync-qa-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步 Q&A</button>
+          </div>
         </div>
         <div id="dynamic-qa-container"></div>
       </div>
@@ -347,7 +353,10 @@
             <h2 class="section-title">BUYER'S LOG & JOURNAL</h2>
             <p class="section-subtitle">品牌分享、現場連線實拍與開團公告</p>
           </div>
-          <button id="admin-add-post-btn" onclick="openPostModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 發布新貼文/公告</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="admin-add-post-btn" onclick="openPostModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 發布新貼文</button>
+            <button id="admin-sync-post-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步貼文</button>
+          </div>
         </div>
         <div id="dynamic-blog-container"></div>
       </div>
@@ -361,7 +370,10 @@
             <h2 class="section-title">ALL PRE-ORDER PRODUCTS</h2>
             <p class="section-subtitle">瀏覽熱門選品，使用關鍵字或多重條件快速篩選</p>
           </div>
-          <button id="admin-add-product-btn" onclick="openProductModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">📦 上架新商品系列</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="admin-add-product-btn" onclick="openProductModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">📦 上架新商品系列</button>
+            <button id="admin-sync-product-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步商品</button>
+          </div>
         </div>
 
         <div class="filter-bar-wrapper">
@@ -420,15 +432,6 @@
             <option value="對帳異常 請聯絡客服">對帳異常 請聯絡客服</option>
             <option value="已刪單">已刪單</option>
           </select>
-        </div>
-
-        <!-- 雲端同步發布控制列 -->
-        <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:14px; padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-          <div>
-            <h4 style="font-size:15px; font-weight:900; color:var(--primary-blue);">☁️ 雲端全站內容同步控制</h4>
-            <p style="font-size:12.5px; color:#475569; margin-top:2px;">當您在後台新增商品、公告、Q&A 或發布新貼文後，請點擊右側按鈕立即同步至雲端，所有買家將即時更新！</p>
-          </div>
-          <button onclick="manualSyncCMSData()" style="background:var(--primary-blue); color:#fff; border:none; padding:10px 20px; border-radius:10px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 4px 12px rgba(0,68,204,0.25);">🚀 確認發布並同步至全站</button>
         </div>
 
         <div class="admin-card">
@@ -938,7 +941,7 @@
       } catch (e) {}
 
       setTimeout(loadLineSDK, 300);
-      setInterval(fetchCMSFromCloud, 5000); // 縮短為5秒自動同步
+      setInterval(fetchCMSFromCloud, 5000);
     });
 
     function fetchCMSFromCloud() {
@@ -1005,7 +1008,7 @@
         return resp.json();
       }).then(function(res) {
         if (res && res.status === 'success') {
-          alert('🚀 全站內容已成功發布並同步至 Google 試算表雲端！');
+          alert('🚀 內容已成功發布並同步至全站雲端！');
         } else {
           alert('⚠️ 同步完成，但伺服器回傳異常。');
         }
@@ -1466,14 +1469,12 @@
       if (!confirm('確定要刪除此公告項目嗎？')) return;
       noticeData.splice(index, 1);
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      manualSyncCMSData();
       renderNotices();
     }
     function adminDeleteQa(index) {
       if (!confirm('確定要刪除此 Q&A 嗎？')) return;
       qaData.splice(index, 1);
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      manualSyncCMSData();
       renderQas();
     }
     function adminDeletePost(index) {
@@ -1481,7 +1482,6 @@
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       posts.splice(index, 1);
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-      manualSyncCMSData();
       renderPosts();
     }
     function adminDeleteProduct(seriesId) {
@@ -1492,7 +1492,6 @@
       }
       productSeriesData = newSer;
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      manualSyncCMSData();
       renderProducts();
     }
     function adminToggleProductClose(seriesId) {
@@ -1503,7 +1502,6 @@
         }
       }
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      manualSyncCMSData();
       renderProducts();
     }
 
@@ -1544,7 +1542,6 @@
         noticeData.push({ title: t, desc: d });
       }
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      manualSyncCMSData();
       renderNotices();
       closeNoticeModal();
     }
@@ -1586,7 +1583,6 @@
         qaData.push({ q: q, a: a });
       }
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      manualSyncCMSData();
       renderQas();
       closeQaModal();
     }
@@ -1644,7 +1640,6 @@
         posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgUrl, date: new Date().toLocaleDateString() });
       }
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-      manualSyncCMSData();
       renderPosts();
       closePostModal();
       e.target.reset();
@@ -1710,11 +1705,10 @@
 
       productSeriesData.unshift(newSeries);
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      manualSyncCMSData();
       renderProducts();
       closeProductModal();
       e.target.reset();
-      alert('🎉 商品系列與多品項已成功上架並同步至雲端！');
+      alert('🎉 商品系列已暫存！記得點擊右上角的「發布並同步商品」按鈕同步至全站！');
     }
 
     function handleUserLoggedIn(user, isFirstTime) {
@@ -1822,7 +1816,6 @@
       alert('常用收件資料已儲存！');
     }
 
-    // 歷史訂單列表與展開詳情
     function renderMemberOrders(ordersList) {
       if (!currentUser) return;
       var listContainer = document.getElementById('member-orders-list');
@@ -1926,7 +1919,6 @@
       if (chkModal1) chkModal1.classList.add('active');
     }
 
-    // 送出對帳按鈕按下時立即寫入 Google 試算表表單
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
       var remitDate = document.getElementById('remit-date').value;
@@ -2256,6 +2248,10 @@
       var addQaBtn = document.getElementById('admin-add-qa-btn');
       var addPostBtn = document.getElementById('admin-add-post-btn');
       var addProdBtn = document.getElementById('admin-add-product-btn');
+      var syncNoticeBtn = document.getElementById('admin-sync-notice-btn');
+      var syncQaBtn = document.getElementById('admin-sync-qa-btn');
+      var syncPostBtn = document.getElementById('admin-sync-post-btn');
+      var syncProdBtn = document.getElementById('admin-sync-product-btn');
 
       if (active) {
         if (dot) dot.classList.add('active');
@@ -2266,6 +2262,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
         switchPage('admin');
         loadAdminOrders();
       } else {
@@ -2277,6 +2277,10 @@
         if (addQaBtn) addQaBtn.style.display = 'none';
         if (addPostBtn) addPostBtn.style.display = 'none';
         if (addProdBtn) addProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
         switchPage('shop');
       }
       renderProducts();
@@ -2291,7 +2295,7 @@
         setAdminMode(true);
         closeMemberModal();
       } else if (pwd !== null) {
-        alert('密碼錯誤！無法進入賣家後台。。');
+        alert('密碼錯誤！無法進入賣家後台。');
       }
     }
   </script>
