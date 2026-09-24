@@ -519,8 +519,7 @@
       <div class="bank-info-box">
         🏦 <b>匯款帳號資訊</b><br>
         銀行：兆豐銀行（017）<br>
-        帳號：<b>07764002939</b><br>
-        戶名：DOT to DOT 專門店
+        帳號：<b>07764002939</b>
       </div>
 
       <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
@@ -621,7 +620,7 @@
 
         <div class="member-tabs">
           <button class="member-tab-btn active" id="tab-btn-profile" onclick="switchMemberTab('profile')">常用收件資料</button>
-          <button class="member-tab-btn" id="tab-btn-orders" onclick="switchMemberTab('orders')">歷史訂單與拆單進度</button>
+          <button class="member-tab-btn" id="tab-btn-orders" onclick="switchMemberTab('orders')">歷史訂單與進度</button>
         </div>
 
         <div id="member-tab-profile">
@@ -670,13 +669,14 @@
   <div class="modal-overlay" id="qa-modal">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">新增 Q&A 問題</div>
+        <div class="modal-title" id="qa-modal-title">新增 Q&A 問題</div>
         <button class="drawer-close" onclick="closeQaModal()">✕</button>
       </div>
-      <form onsubmit="handleAdminAddQa(event)">
+      <form onsubmit="handleAdminSaveQa(event)">
+        <input type="hidden" id="adm-qa-edit-index" value="-1">
         <div class="form-group"><label>問題 (Q) *</label><input type="text" class="form-input" id="adm-qa-q" required placeholder="Q：..."></div>
         <div class="form-group"><label>解答 (A) *</label><textarea class="form-textarea" id="adm-qa-a" required placeholder="A：..."></textarea></div>
-        <button type="submit" class="checkout-btn">確認新增</button>
+        <button type="submit" class="checkout-btn" id="qa-submit-btn">確認新增</button>
       </form>
     </div>
   </div>
@@ -694,7 +694,7 @@
         <div class="form-group"><label>標籤 *</label><input type="text" class="form-input" id="adm-post-tag" required placeholder="例如：現場連線實況"></div>
         <div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required placeholder="詳細內文..."></textarea></div>
         <div class="form-group"><label>外部連結 URL (選填)</label><input type="url" class="form-input" id="adm-post-link" placeholder="https://..."></div>
-        <div class="form-group"><label>配圖檔案 (內嵌上傳)</label><input type="file" class="form-input" id="adm-post-file" accept="image/*"></div>
+        <div class="form-group"><label>配圖圖片網址 (URL)</label><input type="url" class="form-input" id="adm-post-file" placeholder="https://raw.githubusercontent.com/.../image.jpg"></div>
         <button type="submit" class="checkout-btn" id="post-submit-btn">發布貼文</button>
       </form>
     </div>
@@ -709,7 +709,7 @@
       </div>
       <form onsubmit="handleAdminAddProduct(event)">
         <div class="form-group"><label>商品系列名稱 *</label><input type="text" class="form-input" id="adm-series-name" required placeholder="例如：泰國明星同款連線"></div>
-        <div class="form-group"><label>系列宣傳圖片 (上傳本機圖片) *</label><input type="file" class="form-input" id="adm-series-file" accept="image/*" required></div>
+        <div class="form-group"><label>系列宣傳圖片網址 (URL) *</label><input type="url" class="form-input" id="adm-series-file" required placeholder="https://raw.githubusercontent.com/.../image.jpg"></div>
         <div class="form-group" style="display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="adm-series-is-preorder" style="width:18px; height:18px; cursor:pointer;">
           <label for="adm-series-is-preorder" style="margin-bottom:0; cursor:pointer; font-weight:800;">是否為預購 (勾選將顯示 PRE-ORDER)</label>
@@ -739,7 +739,7 @@
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>
-            <div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片 (上傳本機圖片)</label><input type="file" class="form-input sub-file" accept="image/*"></div>
+            <div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>
           </div>
         </div>
 
@@ -789,7 +789,6 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // 每次切換分頁時主動向雲端拉取最新資料，解決同步時間差
       fetchCMSFromCloud();
       if (pageId === 'admin') {
         loadAdminOrders();
@@ -805,7 +804,6 @@
       var overlay = document.getElementById('cart-overlay');
       if (drawer && overlay) {
         if (open) {
-          // 每次打開購物車時主動向雲端同步最新商品狀態，防範下架後的隱形庫存問題
           fetchCMSFromCloud();
           drawer.classList.add('active');
           overlay.classList.add('active');
@@ -940,7 +938,7 @@
       } catch (e) {}
 
       setTimeout(loadLineSDK, 300);
-      setInterval(fetchCMSFromCloud, 10000);
+      setInterval(fetchCMSFromCloud, 5000); // 縮短為5秒自動同步
     });
 
     function fetchCMSFromCloud() {
@@ -949,13 +947,26 @@
         return resp.json();
       }).then(function(data) {
         if (data) {
-          productSeriesData = (data.products && data.products.length > 0) ? data.products : DEFAULT_SERIES;
-          noticeData = (data.notices && data.notices.length > 0) ? data.notices : DEFAULT_NOTICES;
-          qaData = (data.qas && data.qas.length > 0) ? data.qas : DEFAULT_QAS;
+          if (data.products && data.products.length > 0) {
+            productSeriesData = data.products;
+            localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+          }
+          if (data.notices && data.notices.length > 0) {
+            noticeData = data.notices;
+            localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
+          }
+          if (data.qas && data.qas.length > 0) {
+            qaData = data.qas;
+            localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
+          }
+          if (data.posts && data.posts.length > 0) {
+            localStorage.setItem('dottodot_custom_posts', JSON.stringify(data.posts));
+          }
           
           if (data.about) {
             var descEl = document.getElementById('about-us-desc-text');
             if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>');
+            localStorage.setItem('dottodot_about_text', data.about);
           }
 
           renderProducts();
@@ -976,13 +987,14 @@
 
     function manualSyncCMSData() {
       if (!currentGasWebhook) return;
+      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
       var payload = {
         action: "syncCMS",
         products: productSeriesData,
         notices: noticeData,
         qas: qaData,
         posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。'
+        about: aboutText
       };
 
       fetch(currentGasWebhook, {
@@ -1393,11 +1405,11 @@
       var html = '';
       for (var i = 0; i < qaData.length; i++) {
         var q = qaData[i];
-        var adminDel = isAdminMode ? '<div style="padding:0 20px 12px;"><button onclick="adminDeleteQa(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除此問題</button></div>' : '';
+        var adminBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="openQaModal(' + i + ')" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeleteQa(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除此問題</button></div>' : '';
         html += '<div class="qa-box">' +
           '<div class="qa-q">' + q.q + ' <span>＋</span></div>' +
           '<div class="qa-a">' + q.a.replace(/\n/g, '<br>') + '</div>' +
-          adminDel +
+          adminBtns +
         '</div>';
       }
       container.innerHTML = html;
@@ -1454,12 +1466,14 @@
       if (!confirm('確定要刪除此公告項目嗎？')) return;
       noticeData.splice(index, 1);
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
+      manualSyncCMSData();
       renderNotices();
     }
     function adminDeleteQa(index) {
       if (!confirm('確定要刪除此 Q&A 嗎？')) return;
       qaData.splice(index, 1);
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
+      manualSyncCMSData();
       renderQas();
     }
     function adminDeletePost(index) {
@@ -1467,6 +1481,7 @@
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       posts.splice(index, 1);
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
+      manualSyncCMSData();
       renderPosts();
     }
     function adminDeleteProduct(seriesId) {
@@ -1477,6 +1492,7 @@
       }
       productSeriesData = newSer;
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+      manualSyncCMSData();
       renderProducts();
     }
     function adminToggleProductClose(seriesId) {
@@ -1487,6 +1503,7 @@
         }
       }
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+      manualSyncCMSData();
       renderProducts();
     }
 
@@ -1527,21 +1544,51 @@
         noticeData.push({ title: t, desc: d });
       }
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
+      manualSyncCMSData();
       renderNotices();
       closeNoticeModal();
     }
 
-    function openQaModal() { document.getElementById('qa-modal').classList.add('active'); }
+    function openQaModal(editIndex) {
+      var modal = document.getElementById('qa-modal');
+      var titleEl = document.getElementById('qa-modal-title');
+      var submitBtn = document.getElementById('qa-submit-btn');
+      var editIdxInput = document.getElementById('adm-qa-edit-index');
+
+      if (editIndex !== undefined && editIndex >= 0) {
+        var q = qaData[editIndex];
+        titleEl.textContent = '編輯 Q&A 問題';
+        submitBtn.textContent = '儲存修改';
+        editIdxInput.value = editIndex;
+        document.getElementById('adm-qa-q').value = q.q;
+        document.getElementById('adm-qa-a').value = q.a;
+      } else {
+        titleEl.textContent = '新增 Q&A 問題';
+        submitBtn.textContent = '確認新增';
+        editIdxInput.value = '-1';
+        document.getElementById('adm-qa-q').value = '';
+        document.getElementById('adm-qa-a').value = '';
+      }
+      modal.classList.add('active');
+    }
     function closeQaModal() { document.getElementById('qa-modal').classList.remove('active'); }
-    function handleAdminAddQa(e) {
+
+    function handleAdminSaveQa(e) {
       e.preventDefault();
       var q = document.getElementById('adm-qa-q').value.trim();
       var a = document.getElementById('adm-qa-a').value.trim();
-      qaData.push({ q: q, a: a });
+      var editIdx = parseInt(document.getElementById('adm-qa-edit-index').value, 10);
+
+      if (editIdx >= 0) {
+        qaData[editIdx].q = q;
+        qaData[editIdx].a = a;
+      } else {
+        qaData.push({ q: q, a: a });
+      }
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
+      manualSyncCMSData();
       renderQas();
       closeQaModal();
-      e.target.reset();
     }
 
     function openPostModal(editIndex) {
@@ -1560,6 +1607,7 @@
         document.getElementById('adm-post-tag').value = p.tag;
         document.getElementById('adm-post-desc').value = p.desc;
         document.getElementById('adm-post-link').value = p.link || '';
+        document.getElementById('adm-post-file').value = p.img || '';
       } else {
         titleEl.textContent = '發布 NEW POST 貼文';
         submitBtn.textContent = '發布貼文';
@@ -1581,35 +1629,25 @@
       var tag = document.getElementById('adm-post-tag').value.trim();
       var desc = document.getElementById('adm-post-desc').value.trim();
       var link = document.getElementById('adm-post-link').value.trim();
-      var fileInput = document.getElementById('adm-post-file');
+      var imgUrl = document.getElementById('adm-post-file').value.trim();
       var editIdx = parseInt(document.getElementById('adm-post-edit-index').value, 10);
 
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
 
-      function savePostData(imgBase64) {
-        if (editIdx >= 0) {
-          posts[editIdx].title = title;
-          posts[editIdx].tag = tag;
-          posts[editIdx].desc = desc;
-          posts[editIdx].link = link;
-          if (imgBase64) posts[editIdx].img = imgBase64;
-        } else {
-          posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgBase64 || '', date: new Date().toLocaleDateString() });
-        }
-        localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-        renderPosts();
-        closePostModal();
-        e.target.reset();
-      }
-
-      if (fileInput.files && fileInput.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(evt) { savePostData(evt.target.result); };
-        reader.readAsDataURL(fileInput.files[0]);
+      if (editIdx >= 0) {
+        posts[editIdx].title = title;
+        posts[editIdx].tag = tag;
+        posts[editIdx].desc = desc;
+        posts[editIdx].link = link;
+        if (imgUrl) posts[editIdx].img = imgUrl;
       } else {
-        var existingImg = (editIdx >= 0) ? posts[editIdx].img : '';
-        savePostData(existingImg);
+        posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgUrl, date: new Date().toLocaleDateString() });
       }
+      localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
+      manualSyncCMSData();
+      renderPosts();
+      closePostModal();
+      e.target.reset();
     }
 
     function openProductModal() { document.getElementById('product-modal').classList.add('active'); }
@@ -1626,7 +1664,7 @@
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
-        '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片 (上傳本機圖片)</label><input type="file" class="form-input sub-file" accept="image/*"></div>';
+        '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
       container.appendChild(div);
     }
 
@@ -1638,71 +1676,45 @@
       var region = document.getElementById('adm-series-region').value;
       var category = document.getElementById('adm-series-category').value;
       var eta = document.getElementById('adm-series-eta').value.trim();
-      var seriesFile = document.getElementById('adm-series-file');
+      var seriesImgUrl = document.getElementById('adm-series-file').value.trim();
 
-      if (!seriesFile.files || !seriesFile.files[0]) {
-        alert('請上傳系列宣傳圖片！');
-        return;
-      }
+      var subBlocks = document.querySelectorAll('.sub-item-block');
+      var itemsArr = [];
 
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        var seriesImgBase64 = evt.target.result;
-        var subBlocks = document.querySelectorAll('.sub-item-block');
-        var itemsArr = [];
-        var processedCount = 0;
+      subBlocks.forEach(function(block) {
+        var name = block.querySelector('.sub-name').value.trim();
+        var price = parseInt(block.querySelector('.sub-price').value, 10);
+        var rawColors = block.querySelector('.sub-colors').value.split(',');
+        var rawSizes = block.querySelector('.sub-sizes').value.split(',');
+        var imgUrl = block.querySelector('.sub-file').value.trim();
 
-        subBlocks.forEach(function(block) {
-          var name = block.querySelector('.sub-name').value.trim();
-          var price = parseInt(block.querySelector('.sub-price').value, 10);
-          var rawColors = block.querySelector('.sub-colors').value.split(',');
-          var rawSizes = block.querySelector('.sub-sizes').value.split(',');
-          var fileInput = block.querySelector('.sub-file');
+        var colors = [];
+        for (var c = 0; c < rawColors.length; c++) colors.push(rawColors[c].trim());
+        var sizes = [];
+        for (var sz = 0; sz < rawSizes.length; sz++) sizes.push(rawSizes[sz].trim());
 
-          var colors = [];
-          for (var c = 0; c < rawColors.length; c++) colors.push(rawColors[c].trim());
-          var sizes = [];
-          for (var sz = 0; sz < rawSizes.length; sz++) sizes.push(rawSizes[sz].trim());
+        itemsArr.push({ name: name, price: price, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
+      });
 
-          function finalizeSubItem(imgData) {
-            itemsArr.push({ name: name, price: price, colors: colors, sizes: sizes, img: imgData || seriesImgBase64 });
-            processedCount++;
-            if (processedCount === subBlocks.length) {
-              saveNewSeriesToStorage(seriesImgBase64, itemsArr);
-            }
-          }
-
-          if (fileInput.files && fileInput.files[0]) {
-            var subReader = new FileReader();
-            subReader.onload = function(subEvt) { finalizeSubItem(subEvt.target.result); };
-            subReader.readAsDataURL(fileInput.files[0]);
-          } else {
-            finalizeSubItem(seriesImgBase64);
-          }
-        });
+      var newSeries = {
+        id: 'custom_' + Date.now(),
+        seriesName: seriesName,
+        img: seriesImgUrl,
+        eta: eta,
+        stockType: stockType,
+        region: region,
+        category: category,
+        isClosed: false,
+        items: itemsArr
       };
-      reader.readAsDataURL(seriesFile.files[0]);
 
-      function saveNewSeriesToStorage(imgBase64, itemsArr) {
-        var newSeries = {
-          id: 'custom_' + Date.now(),
-          seriesName: seriesName,
-          img: imgBase64,
-          eta: eta,
-          stockType: stockType,
-          region: region,
-          category: category,
-          isClosed: false,
-          items: itemsArr
-        };
-
-        productSeriesData.unshift(newSeries);
-        localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-        renderProducts();
-        closeProductModal();
-        e.target.reset();
-        alert('🎉 商品系列與多品項已成功上架！記得點擊上方「確認發布並同步至全站」同步至雲端！');
-      }
+      productSeriesData.unshift(newSeries);
+      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+      manualSyncCMSData();
+      renderProducts();
+      closeProductModal();
+      e.target.reset();
+      alert('🎉 商品系列與多品項已成功上架並同步至雲端！');
     }
 
     function handleUserLoggedIn(user, isFirstTime) {
@@ -1810,6 +1822,7 @@
       alert('常用收件資料已儲存！');
     }
 
+    // 歷史訂單列表與展開詳情
     function renderMemberOrders(ordersList) {
       if (!currentUser) return;
       var listContainer = document.getElementById('member-orders-list');
@@ -1824,15 +1837,37 @@
       var html = '';
       for (var i = 0; i < allOrders.length; i++) {
         var order = allOrders[i];
-        html += '<div style="border:1.5px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:10px; font-size:12.5px;">' +
-          '<div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:6px;">' +
-            '<span>編號：' + order.orderId + '</span>' +
+        var detailId = 'order-detail-' + order.orderId;
+
+        var itemsDetailHtml = '';
+        for (var j = 0; j < order.items.length; j++) {
+          var it = order.items[j];
+          itemsDetailHtml += '<div style="background:#f8fafc; padding:8px; border-radius:6px; margin-top:6px; border:1px solid #e2e8f0; font-size:12px;">' +
+            '<div><b>' + it.name + '</b> (' + it.spec + ') x ' + it.quantity + ' ｜ NT$' + Number(it.price * it.quantity).toLocaleString() + '</div>' +
+            '<div style="color:#64748b; margin-top:3px;">批次：' + (it.payBatchNo || '無') + ' ｜ 採購：' + (it.procureStatus || '未採購') + ' ｜ 出貨：' + (it.shipStatus || '等待到貨') + (it.trackingNo ? ' (單號:' + it.trackingNo + ')' : '') + '</div>' +
+          '</div>';
+        }
+
+        html += '<div style="border:1.5px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:10px; font-size:12.5px; cursor:pointer;" onclick="toggleOrderDetail(\'' + detailId + '\')">' +
+          '<div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:4px;">' +
+            '<span>編號：' + order.orderId + ' (點擊展開詳情)</span>' +
             '<span style="color:var(--primary-blue);">對帳：' + order.payStatus + '</span>' +
           '</div>' +
           '<div style="color:#666;">總金額：NT$ ' + Number(order.totalAmount).toLocaleString() + ' ｜ 配送：' + order.shipMethod + '</div>' +
+          '<div id="' + detailId + '" style="display:none; margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:8px;">' +
+            '<div style="font-weight:800; color:var(--primary-blue); margin-bottom:4px;">📦 商品詳細狀態：</div>' +
+            itemsDetailHtml +
+          '</div>' +
         '</div>';
       }
       listContainer.innerHTML = html;
+    }
+
+    function toggleOrderDetail(detailId) {
+      var el = document.getElementById(detailId);
+      if (el) {
+        el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+      }
     }
 
     function handleLogout() {
@@ -1891,6 +1926,7 @@
       if (chkModal1) chkModal1.classList.add('active');
     }
 
+    // 送出對帳按鈕按下時立即寫入 Google 試算表表單
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
       var remitDate = document.getElementById('remit-date').value;
@@ -2255,7 +2291,7 @@
         setAdminMode(true);
         closeMemberModal();
       } else if (pwd !== null) {
-        alert('密碼錯誤！無法進入賣家後台。');
+        alert('密碼錯誤！無法進入賣家後台。。');
       }
     }
   </script>
