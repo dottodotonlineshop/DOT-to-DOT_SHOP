@@ -90,8 +90,10 @@
     .section-title { font-size: clamp(22px, 6vw, 28px); font-weight: 900; letter-spacing: -1px; text-transform: uppercase; color: var(--accent-black); }
     .section-subtitle { font-size: clamp(12px, 3.5vw, 13px); color: var(--text-muted); margin-top: 4px; }
 
-    .filter-bar-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-    .search-input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 12px; font-size: 13.5px; outline: none; background: #fff; }
+    .filter-bar-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .search-input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 12px; font-size: 13.5px; outline: none; background: #fff; min-width: 200px; }
+    .price-range-box { display: flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--border-color); padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; color: #555; }
+    .price-range-input { width: 75px; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; text-align: center; outline: none; }
     .filter-toggle-btn { background: var(--primary-blue); color: #ffffff; border: none; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,68,204,0.2); }
     .filter-toggle-btn svg { width: 20px; height: 20px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; }
     .filter-dropdown-panel { background: var(--accent-gray); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 20px; display: none; flex-direction: column; gap: 10px; }
@@ -103,6 +105,7 @@
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
     .product-card { background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
     .product-card.closed-product { background: #f1f5f9; opacity: 0.75; border-color: #cbd5e1; filter: grayscale(100%); }
+    .product-card.inactive-product { background: #f8fafc; opacity: 0.6; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card:hover { transform: translateY(-4px); border-color: var(--primary-blue); }
     .product-img-wrap { width: 100%; height: 220px; background: #f1f3f7; position: relative; }
     .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -378,6 +381,12 @@
 
         <div class="filter-bar-wrapper">
           <input type="text" class="search-input" id="search-keyword-input" placeholder="🔍 搜尋商品名稱或系列..." oninput="applyFilters()">
+          <div class="price-range-box">
+            <span>價格區間：</span>
+            <input type="number" class="price-range-input" id="filter-min-price" placeholder="最低價" oninput="applyFilters()">
+            <span>-</span>
+            <input type="number" class="price-range-input" id="filter-max-price" placeholder="最高價" oninput="applyFilters()">
+          </div>
           <button class="filter-toggle-btn" onclick="toggleFilterPanel()" title="進階篩選">
             <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="17" x2="13" y2="17"></line></svg>
           </button>
@@ -398,16 +407,14 @@
             <button class="filter-chip" onclick="setFilter('category', '在地品牌', this)">在地品牌</button>
             <button class="filter-chip" onclick="setFilter('category', '民生用品', this)">民生用品</button>
           </div>
-          <div class="filter-row" id="filter-price-chips">
-            <span style="font-size:12px; font-weight:800; color:var(--text-muted); width:50px;">預算：</span>
-            <button class="filter-chip active" onclick="setFilter('price', 'all', this)">不限金額</button>
-            <button class="filter-chip" onclick="setFilter('price', '1000', this)">1,000 元以下</button>
-            <button class="filter-chip" onclick="setFilter('price', '3000', this)">3,000 元以下</button>
-            <button class="filter-chip" onclick="setFilter('price', '5000', this)">5,000 元以下</button>
-          </div>
         </div>
 
         <div class="product-grid" id="product-grid-container"></div>
+        <div id="inactive-product-section" style="display:none; margin-top:40px;">
+          <hr style="border:0; border-top:2px dashed #cbd5e1; margin-bottom:20px;">
+          <h3 style="font-size:16px; font-weight:900; color:#64748b; margin-bottom:14px;">📦 已下架商品專區</h3>
+          <div class="product-grid" id="inactive-product-grid-container"></div>
+        </div>
       </div>
     </section>
 
@@ -642,8 +649,9 @@
         </div>
 
         <div id="member-tab-orders" style="display: none;">
-          <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
-            <button onclick="syncOrdersFromSheet()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">↻ 整理即時狀態</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-size:12px; color:#64748b;">點擊下方按鈕手動整理最新對帳與出貨狀態</span>
+            <button id="sync-status-btn" onclick="syncOrdersFromSheetWithFeedback()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">↻ 整理即時狀態</button>
           </div>
           <div id="member-orders-list"></div>
         </div>
@@ -703,14 +711,15 @@
     </div>
   </div>
 
-  <!-- 上架新商品系列彈窗 -->
+  <!-- 上架/編輯新商品系列彈窗 -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">上架全新商品系列</div>
+        <div class="modal-title" id="product-modal-title">上架全新商品系列</div>
         <button class="drawer-close" onclick="closeProductModal()">✕</button>
       </div>
-      <form onsubmit="handleAdminAddProduct(event)">
+      <form onsubmit="handleAdminSaveProduct(event)">
+        <input type="hidden" id="adm-product-edit-id" value="">
         <div class="form-group"><label>商品系列名稱 *</label><input type="text" class="form-input" id="adm-series-name" required placeholder="例如：泰國明星同款連線"></div>
         <div class="form-group"><label>系列宣傳圖片網址 (URL) *</label><input type="url" class="form-input" id="adm-series-file" required placeholder="https://raw.githubusercontent.com/.../image.jpg"></div>
         <div class="form-group" style="display:flex; align-items:center; gap:8px;">
@@ -748,7 +757,7 @@
 
         <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:12px;">＋ 新增下一個品項</button>
 
-        <button type="submit" class="checkout-btn">確認完整上架商品系列</button>
+        <button type="submit" class="checkout-btn" id="product-modal-submit-btn">確認儲存商品系列</button>
       </form>
     </div>
   </div>
@@ -792,9 +801,10 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      fetchCMSFromCloud();
       if (pageId === 'admin') {
         loadAdminOrders();
+      } else {
+        fetchCMSFromCloud();
       }
     }
 
@@ -877,6 +887,24 @@
       }
     }
 
+    function syncOrdersFromSheetWithFeedback() {
+      var btn = document.getElementById('sync-status-btn');
+      if (btn) {
+        btn.textContent = '⏳ 正在同步...';
+        btn.disabled = true;
+      }
+      syncOrdersFromSheet();
+      setTimeout(function() {
+        if (btn) {
+          btn.textContent = '✓ 已更新至最新狀態';
+          setTimeout(function() {
+            btn.textContent = '↻ 整理即時狀態';
+            btn.disabled = false;
+          }, 1500);
+        }
+      }, 800);
+    }
+
     function openCheckoutModal() {
       if (cart.length === 0) {
         alert('購物車內尚無商品！');
@@ -941,7 +969,6 @@
       } catch (e) {}
 
       setTimeout(loadLineSDK, 300);
-      setInterval(fetchCMSFromCloud, 5000);
     });
 
     function fetchCMSFromCloud() {
@@ -1027,6 +1054,7 @@
         region: '韓國商品',
         category: '明星同款',
         isClosed: false,
+        isActive: true,
         items: [
           { name: '潮流金屬工裝外套', price: 3280, colors: ['金屬黑', '軍綠色'], sizes: ['S', 'M', 'L', 'XL'], img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80' }
         ]
@@ -1051,7 +1079,6 @@
 
     var currentFilterRegion = 'all';
     var currentFilterCategory = 'all';
-    var currentFilterPrice = 'all';
     var currentSearchKeyword = '';
 
     document.addEventListener('click', function(e) {
@@ -1077,9 +1104,6 @@
       } else if (type === 'category') {
         currentFilterCategory = value;
         containerId = 'filter-category-chips';
-      } else if (type === 'price') {
-        currentFilterPrice = value;
-        containerId = 'filter-price-chips';
       }
 
       var container = document.getElementById(containerId);
@@ -1099,26 +1123,37 @@
 
     function renderProducts() {
       var container = document.getElementById('product-grid-container');
-      if (!container) return;
+      var inactiveContainer = document.getElementById('inactive-product-grid-container');
+      var inactiveSection = document.getElementById('inactive-product-section');
+      if (!container || !inactiveContainer) return;
 
-      var html = '';
-      var visibleCount = 0;
+      var activeHtml = '';
+      var inactiveHtml = '';
+      var activeCount = 0;
+      var inactiveCount = 0;
+
+      var minPriceInput = document.getElementById('filter-min-price');
+      var maxPriceInput = document.getElementById('filter-max-price');
+      var minP = minPriceInput && minPriceInput.value !== '' ? parseFloat(minPriceInput.value) : null;
+      var maxP = maxPriceInput && maxPriceInput.value !== '' ? parseFloat(maxPriceInput.value) : null;
 
       for (var i = 0; i < productSeriesData.length; i++) {
         var s = productSeriesData[i];
+        var isActive = (s.isActive !== false); // 預設為 true
 
         if (currentFilterRegion !== 'all' && s.region !== currentFilterRegion) continue;
         if (currentFilterCategory !== 'all' && s.category !== currentFilterCategory) continue;
 
         var matchesPrice = true;
-        if (currentFilterPrice !== 'all') {
-          var maxP = parseInt(currentFilterPrice, 10);
-          var minPriceInSeries = Infinity;
-          for (var p = 0; p < s.items.length; p++) {
-            if (s.items[p].price < minPriceInSeries) minPriceInSeries = s.items[p].price;
-          }
-          if (minPriceInSeries > maxP) matchesPrice = false;
+        var minPriceInSeries = Infinity;
+        var maxPriceInSeries = -Infinity;
+        for (var p = 0; p < s.items.length; p++) {
+          if (s.items[p].price < minPriceInSeries) minPriceInSeries = s.items[p].price;
+          if (s.items[p].price > maxPriceInSeries) maxPriceInSeries = s.items[p].price;
         }
+
+        if (minP !== null && maxPriceInSeries < minP) matchesPrice = false;
+        if (maxP !== null && minPriceInSeries > maxP) matchesPrice = false;
         if (!matchesPrice) continue;
 
         if (currentSearchKeyword) {
@@ -1129,7 +1164,6 @@
           if (!matchKw) continue;
         }
 
-        visibleCount++;
         var firstItem = s.items[0];
         var isPre = (s.stockType === 'PRE-ORDER');
         var badgeHtml = isPre ? '<span class="preorder-badge">PRE-ORDER</span>' : '';
@@ -1152,56 +1186,62 @@
         }
 
         var currentImg = firstItem.img || s.img;
-        var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px;"><button onclick="adminDeleteProduct(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 結單') + '</button></div>' : '';
 
-        var cartBtnHtml = s.isClosed ? '' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>';
+        if (isActive) {
+          activeCount++;
+          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 結單') + '</button></div>' : '';
+          var cartBtnHtml = s.isClosed ? '' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>';
 
-        html += '<div class="product-card ' + closedClass + '" id="card-' + s.id + '">' +
-          '<div class="product-img-wrap">' +
-            badgeHtml +
-            closedBadgeTag +
-            '<img id="img-display-' + s.id + '" src="' + currentImg + '" alt="' + s.seriesName + '">' +
-          '</div>' +
-          '<div class="product-content">' +
-            '<div class="product-series">' + s.seriesName + '</div>' +
-            '<div class="product-eta">⏱ ' + s.eta + '</div>' +
-            '<div style="margin-bottom: 8px;">' +
-              '<label class="spec-label">選取品項：</label>' +
-              '<select class="spec-select" id="item-select-' + s.id + '" onchange="handleItemChange(\'' + s.id + '\')">' +
-                itemOptions +
-              '</select>' +
-            '</div>' +
-            '<div class="form-row-spec">' +
-              '<div class="spec-field">' +
-                '<label class="spec-label">顏色 / 款式：</label>' +
-                '<select class="spec-select" id="color-select-' + s.id + '">' +
-                  colorOptions +
-                '</select>' +
+          activeHtml += '<div class="product-card ' + closedClass + '" id="card-' + s.id + '">' +
+            '<div class="product-img-wrap">' + badgeHtml + closedBadgeTag + '<img id="img-display-' + s.id + '" src="' + currentImg + '" alt="' + s.seriesName + '"></div>' +
+            '<div class="product-content">' +
+              '<div class="product-series">' + s.seriesName + '</div>' +
+              '<div class="product-eta">⏱ ' + s.eta + '</div>' +
+              '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="handleItemChange(\'' + s.id + '\')">' + itemOptions + '</select></div>' +
+              '<div class="form-row-spec">' +
+                '<div class="spec-field"><label class="spec-label">顏色 / 款式：</label><select class="spec-select" id="color-select-' + s.id + '">' + colorOptions + '</select></div>' +
+                '<div class="spec-field"><label class="spec-label">尺寸 / 規格：</label><select class="spec-select" id="size-select-' + s.id + '">' + sizeOptions + '</select></div>' +
+                '<div style="width: 60px;"><label class="spec-label">數量：</label><input type="number" class="qty-input" id="qty-input-' + s.id + '" value="1" min="1" max="99"></div>' +
               '</div>' +
-              '<div class="spec-field">' +
-                '<label class="spec-label">尺寸 / 規格：</label>' +
-                '<select class="spec-select" id="size-select-' + s.id + '">' +
-                  sizeOptions +
-                '</select>' +
+              '<div class="product-foot">' +
+                '<div class="product-price" id="price-display-' + s.id + '">NT$ ' + Number(firstItem.price).toLocaleString() + '</div>' +
+                cartBtnHtml +
               '</div>' +
-              '<div style="width: 60px;">' +
-                '<label class="spec-label">數量：</label>' +
-                '<input type="number" class="qty-input" id="qty-input-' + s.id + '" value="1" min="1" max="99">' +
+              adminActionBtn +
+            '</div>' +
+          '</div>';
+        } else {
+          inactiveCount++;
+          var inactiveAdminBtn = isAdminMode ? '<div style="margin-top:8px;"><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#16a34a; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🔄 恢復上架</button></div>' : '';
+
+          inactiveHtml += '<div class="product-card inactive-product">' +
+            '<div class="product-img-wrap"><img src="' + currentImg + '" alt="' + s.seriesName + '"></div>' +
+            '<div class="product-content">' +
+              '<div class="product-series">' + s.seriesName + ' (已下架)</div>' +
+              '<div class="product-eta">⏱ ' + s.eta + '</div>' +
+              '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" disabled>' + itemOptions + '</select></div>' +
+              '<div class="form-row-spec">' +
+                '<div class="spec-field"><label class="spec-label">顏色 / 款式：</label><select class="spec-select" disabled>' + colorOptions + '</select></div>' +
+                '<div class="spec-field"><label class="spec-label">尺寸 / 規格：</label><select class="spec-select" disabled>' + sizeOptions + '</select></div>' +
+                '<div style="width: 60px;"><label class="spec-label">數量：</label><input type="number" class="qty-input" value="1" disabled></div>' +
               '</div>' +
+              '<div class="product-foot">' +
+                '<div class="product-price">NT$ ' + Number(firstItem.price).toLocaleString() + '</div>' +
+                '<button class="add-cart-btn" disabled style="opacity:0.4; cursor:not-allowed;">已下架</button>' +
+              '</div>' +
+              inactiveAdminBtn +
             '</div>' +
-            '<div class="product-foot">' +
-              '<div class="product-price" id="price-display-' + s.id + '">NT$ ' + Number(firstItem.price).toLocaleString() + '</div>' +
-              cartBtnHtml +
-            '</div>' +
-            adminActionBtn +
-          '</div>' +
-        '</div>';
+          '</div>';
+        }
       }
 
-      if (visibleCount === 0) {
-        container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的商品系列</div>';
+      container.innerHTML = (activeCount === 0) ? '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的上架商品</div>' : activeHtml;
+
+      if (inactiveCount > 0 && isAdminMode) {
+        inactiveContainer.innerHTML = inactiveHtml;
+        if (inactiveSection) inactiveSection.style.display = 'block';
       } else {
-        container.innerHTML = html;
+        if (inactiveSection) inactiveSection.style.display = 'none';
       }
     }
 
@@ -1258,7 +1298,7 @@
           break;
         }
       }
-      if (!series || series.isClosed) return;
+      if (!series || series.isClosed || series.isActive === false) return;
 
       var selectEl = document.getElementById('item-select-' + seriesId);
       var itemIdx = parseInt(selectEl.value, 10);
@@ -1484,13 +1524,13 @@
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
       renderPosts();
     }
-    function adminDeleteProduct(seriesId) {
-      if (!confirm('確定要下架此商品系列嗎？')) return;
-      var newSer = [];
+    function adminToggleProductActive(seriesId) {
       for (var i = 0; i < productSeriesData.length; i++) {
-        if (productSeriesData[i].id !== seriesId) newSer.push(productSeriesData[i]);
+        if (productSeriesData[i].id === seriesId) {
+          productSeriesData[i].isActive = (productSeriesData[i].isActive === false) ? true : false;
+          break;
+        }
       }
-      productSeriesData = newSer;
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       renderProducts();
     }
@@ -1645,7 +1685,66 @@
       e.target.reset();
     }
 
-    function openProductModal() { document.getElementById('product-modal').classList.add('active'); }
+    function openProductModal(seriesId) {
+      var modal = document.getElementById('product-modal');
+      var titleEl = document.getElementById('product-modal-title');
+      var submitBtn = document.getElementById('product-modal-submit-btn');
+      var editIdInput = document.getElementById('adm-product-edit-id');
+      var container = document.getElementById('sub-items-container');
+
+      if (seriesId) {
+        var series = null;
+        for (var i = 0; i < productSeriesData.length; i++) {
+          if (productSeriesData[i].id === seriesId) {
+            series = productSeriesData[i];
+            break;
+          }
+        }
+        if (!series) return;
+
+        titleEl.textContent = '編輯商品系列';
+        submitBtn.textContent = '儲存修改';
+        editIdInput.value = series.id;
+        document.getElementById('adm-series-name').value = series.seriesName;
+        document.getElementById('adm-series-file').value = series.img;
+        document.getElementById('adm-series-is-preorder').checked = (series.stockType === 'PRE-ORDER');
+        document.getElementById('adm-series-region').value = series.region || '泰國商品';
+        document.getElementById('adm-series-category').value = series.category || '明星個人品牌';
+        document.getElementById('adm-series-eta').value = series.eta;
+
+        var subHtml = '';
+        for (var j = 0; j < series.items.length; j++) {
+          var it = series.items[j];
+          subHtml += '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
+            '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
+            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div>' +
+            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div>' +
+            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + it.colors.join(', ') + '"></div>' +
+            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + it.sizes.join(', ') + '"></div>' +
+            '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div>' +
+          '</div>';
+        }
+        container.innerHTML = subHtml;
+      } else {
+        titleEl.textContent = '上架全新商品系列';
+        submitBtn.textContent = '確認完整上架商品系列';
+        editIdInput.value = '';
+        document.getElementById('adm-series-name').value = '';
+        document.getElementById('adm-series-file').value = '';
+        document.getElementById('adm-series-is-preorder').checked = false;
+        document.getElementById('adm-series-eta').value = '';
+        container.innerHTML = '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
+          '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
+          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
+          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
+          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
+          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
+          '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>' +
+        '</div>';
+      }
+      modal.classList.add('active');
+    }
+
     function closeProductModal() { document.getElementById('product-modal').classList.remove('active'); }
 
     function addSubItemBlock() {
@@ -1663,8 +1762,9 @@
       container.appendChild(div);
     }
 
-    function handleAdminAddProduct(e) {
+    function handleAdminSaveProduct(e) {
       e.preventDefault();
+      var editId = document.getElementById('adm-product-edit-id').value;
       var seriesName = document.getElementById('adm-series-name').value.trim();
       var isPre = document.getElementById('adm-series-is-preorder').checked;
       var stockType = isPre ? 'PRE-ORDER' : '';
@@ -1691,19 +1791,35 @@
         itemsArr.push({ name: name, price: price, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
       });
 
-      var newSeries = {
-        id: 'custom_' + Date.now(),
-        seriesName: seriesName,
-        img: seriesImgUrl,
-        eta: eta,
-        stockType: stockType,
-        region: region,
-        category: category,
-        isClosed: false,
-        items: itemsArr
-      };
+      if (editId) {
+        for (var i = 0; i < productSeriesData.length; i++) {
+          if (productSeriesData[i].id === editId) {
+            productSeriesData[i].seriesName = seriesName;
+            productSeriesData[i].img = seriesImgUrl;
+            productSeriesData[i].eta = eta;
+            productSeriesData[i].stockType = stockType;
+            productSeriesData[i].region = region;
+            productSeriesData[i].category = category;
+            productSeriesData[i].items = itemsArr;
+            break;
+          }
+        }
+      } else {
+        var newSeries = {
+          id: 'custom_' + Date.now(),
+          seriesName: seriesName,
+          img: seriesImgUrl,
+          eta: eta,
+          stockType: stockType,
+          region: region,
+          category: category,
+          isClosed: false,
+          isActive: true,
+          items: itemsArr
+        };
+        productSeriesData.unshift(newSeries);
+      }
 
-      productSeriesData.unshift(newSeries);
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       renderProducts();
       closeProductModal();
@@ -1837,7 +1953,7 @@
           var it = order.items[j];
           itemsDetailHtml += '<div style="background:#f8fafc; padding:8px; border-radius:6px; margin-top:6px; border:1px solid #e2e8f0; font-size:12px;">' +
             '<div><b>' + it.name + '</b> (' + it.spec + ') x ' + it.quantity + ' ｜ NT$' + Number(it.price * it.quantity).toLocaleString() + '</div>' +
-            '<div style="color:#64748b; margin-top:3px;">批次：' + (it.payBatchNo || '無') + ' ｜ 採購：' + (it.procureStatus || '未採購') + ' ｜ 出貨：' + (it.shipStatus || '等待到貨') + (it.trackingNo ? ' (單號:' + it.trackingNo + ')' : '') + '</div>' +
+            '<div style="color:#64748b; margin-top:3px;">採購狀態：' + (it.procureStatus || '未採購') + ' ｜ 出貨狀態：' + (it.shipStatus || '等待到貨') + '</div>' +
           '</div>';
         }
 
