@@ -324,7 +324,7 @@
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <button id="admin-add-notice-btn" onclick="openNoticeModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增公告項目</button>
-            <button id="admin-sync-notice-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步公告</button>
+            <button id="admin-sync-notice-btn" onclick="manualSyncCMSData(this)" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步公告</button>
           </div>
         </div>
         <div id="dynamic-notice-container"></div>
@@ -341,7 +341,7 @@
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <button id="admin-add-qa-btn" onclick="openQaModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 新增 Q&A 問題</button>
-            <button id="admin-sync-qa-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步 Q&A</button>
+            <button id="admin-sync-qa-btn" onclick="manualSyncCMSData(this)" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步 Q&A</button>
           </div>
         </div>
         <div id="dynamic-qa-container"></div>
@@ -358,7 +358,7 @@
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <button id="admin-add-post-btn" onclick="openPostModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">➕ 發布新貼文</button>
-            <button id="admin-sync-post-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步貼文</button>
+            <button id="admin-sync-post-btn" onclick="manualSyncCMSData(this)" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步貼文</button>
           </div>
         </div>
         <div id="dynamic-blog-container"></div>
@@ -375,7 +375,7 @@
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <button id="admin-add-product-btn" onclick="openProductModal()" style="display:none; background:var(--primary-blue); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">📦 上架新商品系列</button>
-            <button id="admin-sync-product-btn" onclick="manualSyncCMSData()" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步商品</button>
+            <button id="admin-sync-product-btn" onclick="manualSyncCMSData(this)" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步商品</button>
           </div>
         </div>
 
@@ -743,12 +743,14 @@
         <div class="form-group"><label>預計到貨時程 (ETA) *</label><input type="text" class="form-input" id="adm-series-eta" required placeholder="例如：預計 10-14 天抵台出貨"></div>
 
         <hr style="margin:14px 0; border:0; border-top:1px dashed var(--border-color);">
-        <div style="font-weight:900; font-size:13.5px; color:var(--primary-blue); margin-bottom:8px;">📦 子品項規格設定：</div>
+        <div style="font-weight:900; font-size:13.5px; color:var(--primary-blue); margin-bottom:8px;">📦 子品項規格與庫存設定：</div>
         
         <div id="sub-items-container">
-          <div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px;">
+          <div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">
+            <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>
+            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>
             <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>
             <div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>
@@ -783,7 +785,10 @@
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
+    var currentPostDetailIndex = null; // 鎖定貼文詳情，防止自動刷新覆蓋
+
     function switchPage(pageId) {
+      currentPostDetailIndex = null; // 切換分頁時重置貼文詳情鎖定
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
       
@@ -817,6 +822,7 @@
       var overlay = document.getElementById('cart-overlay');
       if (drawer && overlay) {
         if (open) {
+          validateCartStockAndStatus(); // 開啟購物車時進行庫存與下架複審
           fetchCMSFromCloud();
           drawer.classList.add('active');
           overlay.classList.add('active');
@@ -824,6 +830,66 @@
           drawer.classList.remove('active');
           overlay.classList.remove('active');
         }
+      }
+    }
+
+    // 購物車庫存與下架狀態複審機制
+    function validateCartStockAndStatus() {
+      if (cart.length === 0) return;
+      var updatedCart = [];
+      var removedOrChanged = false;
+      var alertMsg = "";
+
+      for (var i = 0; i < cart.length; i++) {
+        var it = cart[i];
+        var foundSeries = null;
+        for (var s = 0; s < productSeriesData.length; s++) {
+          if (productSeriesData[s].seriesName === it.series) {
+            foundSeries = productSeriesData[s];
+            break;
+          }
+        }
+
+        if (!foundSeries || foundSeries.isActive === false || foundSeries.isClosed) {
+          removedOrChanged = true;
+          alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 已下架或結單，已從購物車移除。\n";
+          continue;
+        }
+
+        var foundSubItem = null;
+        for (var sub = 0; sub < foundSeries.items.length; sub++) {
+          if (foundSeries.items[sub].name === it.itemName) {
+            foundSubItem = foundSeries.items[sub];
+            break;
+          }
+        }
+
+        if (!foundSubItem) {
+          removedOrChanged = true;
+          alertMsg += "• 【" + it.name + "】 已無此規格，已自購物車移除。\n";
+          continue;
+        }
+
+        var stock = foundSubItem.stock !== undefined ? foundSubItem.stock : 99;
+        if (it.quantity > stock) {
+          removedOrChanged = true;
+          if (stock <= 0) {
+            alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 已無庫存，已自購物車移除。\n";
+            continue;
+          } else {
+            alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 庫存不足（僅剩 " + stock + " 件），已為您調整數量。\n";
+            it.quantity = stock;
+          }
+        }
+
+        updatedCart.push(it);
+      }
+
+      if (removedOrChanged) {
+        cart = updatedCart;
+        saveCartToLocalStorage();
+        updateCartDisplay();
+        alert("⚠️ 購物車商品異動通知：\n" + alertMsg);
       }
     }
 
@@ -906,8 +972,9 @@
     }
 
     function openCheckoutModal() {
+      validateCartStockAndStatus();
       if (cart.length === 0) {
-        alert('購物車內尚無商品！');
+        alert('購物車內尚無有效商品可供結帳！');
         return;
       }
 
@@ -1002,7 +1069,9 @@
           renderProducts();
           renderNotices();
           renderQas();
-          renderPosts();
+          if (currentPostDetailIndex === null) {
+            renderPosts();
+          }
         }
       }).catch(function(err) {
         productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || JSON.stringify(DEFAULT_SERIES));
@@ -1011,12 +1080,22 @@
         renderProducts();
         renderNotices();
         renderQas();
-        renderPosts();
+        if (currentPostDetailIndex === null) {
+          renderPosts();
+        }
       });
     }
 
-    function manualSyncCMSData() {
+    // 附帶點擊視覺回饋特效的發布同步函式
+    function manualSyncCMSData(btnEl) {
       if (!currentGasWebhook) return;
+      var originalText = btnEl ? btnEl.textContent : '';
+      if (btnEl) {
+        btnEl.textContent = '⏳ 正在同步...';
+        btnEl.disabled = true;
+        btnEl.style.opacity = '0.7';
+      }
+
       var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
       var payload = {
         action: "syncCMS",
@@ -1035,11 +1114,29 @@
         return resp.json();
       }).then(function(res) {
         if (res && res.status === 'success') {
+          if (btnEl) {
+            btnEl.textContent = '✓ 同步成功！';
+            setTimeout(function() {
+              btnEl.textContent = originalText;
+              btnEl.disabled = false;
+              btnEl.style.opacity = '1';
+            }, 1500);
+          }
           alert('🚀 內容已成功發布並同步至全站雲端！');
         } else {
+          if (btnEl) {
+            btnEl.textContent = originalText;
+            btnEl.disabled = false;
+            btnEl.style.opacity = '1';
+          }
           alert('⚠️ 同步完成，但伺服器回傳異常。');
         }
       }).catch(function(err) {
+        if (btnEl) {
+          btnEl.textContent = originalText;
+          btnEl.disabled = false;
+          btnEl.style.opacity = '1';
+        }
         alert('❌ 同步失敗：' + err.message);
       });
     }
@@ -1056,7 +1153,7 @@
         isClosed: false,
         isActive: true,
         items: [
-          { name: '潮流金屬工裝外套', price: 3280, colors: ['金屬黑', '軍綠色'], sizes: ['S', 'M', 'L', 'XL'], img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80' }
+          { name: '潮流金屬工裝外套', price: 3280, stock: 99, colors: ['金屬黑', '軍綠色'], sizes: ['S', 'M', 'L', 'XL'], img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80' }
         ]
       }
     ];
@@ -1067,7 +1164,7 @@
       { title: "【商品定價與收單原則】", desc: "• 本店商品若無特別標註，報價皆已包含國際運費（免二補）。若為特殊商品（如易碎品、重物等）如有需二補或有成團標準之商品，皆會於官網商品頁面完整說明。\n• 收單期限依各品牌官方發售日程訂定，並視採購額度彈性調整；若有提前截單或延長，將透過官方帳號推播通知。\n• 如遇海外品牌方臨時調整售價，本店保留於主動告知後調整報價或取消該筆委託之權利。" },
       { title: "【預購與現貨】", desc: "• 現貨商品將於商品名稱特別標註「現貨」字樣，未標記者一律為「預購」。\n• 現貨貨況以及各商品的預估到貨與出貨時間均清楚刊登於官網頁面，敬請確認可接受等待時間後再行下單。" },
       { title: "【下單與付款規範】", desc: "• 完成付款並於官網送出訂單後，請將系統自動生成之回傳資訊傳送至官方 LINE 或社群，我們將於 2 個工作天內完成人工對帳。\n• 本店一律採「確認收到款項後啟動採購」，恕不提供代墊或未付款代購服務。\n• 匯款金額請務必核對正確：如有多匯金額需退款，將扣除 35 元跨行轉帳與處理手續費；無卡存款整數多匯者，恕不退還差額。\n• 訂單款項核對無誤並進入海外採購流程後，恕無法變更訂單內容（尺寸、顏色、款式）或中途取消。" },
-      { title: "【缺貨、訂單更動處理】", desc: "• 海外商品因流動快速或具限量搶購特性，下單後仍可能遇品牌方缺貨、斷貨或限購。如遇特定品項未成功購入，我們將主動通知並辦理該商品退款；同單中已採購成功之其餘商品仍會正常出貨，無法整筆連帶取消。" },
+      { title: "【缺貨、訂單更動處理】", desc: "• 海外商品因流動快速或具限量搶購特性，下單後仍可能遇品牌方缺貨, 斷貨或限購。如遇特定品項未成功購入，我們將主動通知並辦理該商品退款；同單中已採購成功之其餘商品仍會正常出貨，無法整筆連帶取消。" },
       { title: "【國際物流與配送時間】", desc: "• 預購商品到貨時間受各品牌官方出貨期影響。\n• 國內配送時效：超商取貨（7-11 賣貨便）約 3～5 個工作天；宅配約 1～3 個工作天。\n• 運費計算：本店預設採 7-11 賣貨便寄送，商品定價已預先折抵賣貨便最低下單金額 20 元；若改選宅配，結帳運費將以實際宅配費用另加補回原折抵之 20 元差額計收。" },
       { title: "【售後服務與開箱錄影】", desc: "★ 拆封請全程錄影一鏡到底（須清楚拍到寄件面單、未拆封之外箱狀態，以及商品拆檢過程）；若未提供完整開箱影片，恕不受理回報。\n★ 如遇品項寄錯或缺件，請於簽收／超商取件後 12 小時內提供開箱影片與清晰照片聯絡客服。" }
     ];
@@ -1139,7 +1236,7 @@
 
       for (var i = 0; i < productSeriesData.length; i++) {
         var s = productSeriesData[i];
-        var isActive = (s.isActive !== false); // 預設為 true
+        var isActive = (s.isActive !== false);
 
         if (currentFilterRegion !== 'all' && s.region !== currentFilterRegion) continue;
         if (currentFilterCategory !== 'all' && s.category !== currentFilterCategory) continue;
@@ -1172,7 +1269,8 @@
 
         var itemOptions = '';
         for (var j = 0; j < s.items.length; j++) {
-          itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
+          var stockText = s.items[j].stock !== undefined ? ' (庫存:' + s.items[j].stock + ')' : '';
+          itemOptions += '<option value="' + j + '">' + s.items[j].name + stockText + '</option>';
         }
 
         var colorOptions = '';
@@ -1489,12 +1587,13 @@
     }
 
     function viewPostDetail(index) {
+      currentPostDetailIndex = index; // 鎖定目前瀏覽的貼文索引，防止背景刷新干擾
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       var p = posts[index];
       if (!p) return;
 
       var container = document.getElementById('dynamic-blog-container');
-      container.innerHTML = '<button onclick="renderPosts()" style="background:#475569; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; margin-bottom:16px;">⬅ 返回貼文總覽</button>' +
+      container.innerHTML = '<button onclick="currentPostDetailIndex=null; renderPosts();" style="background:#475569; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; margin-bottom:16px;">⬅ 返回貼文總覽</button>' +
         '<div class="blog-card" style="display:block; cursor:default;">' +
           '<span class="blog-tag">' + p.tag + '</span>' +
           '<div style="font-size:11px; color:#888; margin-bottom:6px;">發布日期：' + p.date + '</div>' +
@@ -1715,10 +1814,12 @@
         var subHtml = '';
         for (var j = 0; j < series.items.length; j++) {
           var it = series.items[j];
+          var stk = it.stock !== undefined ? it.stock : 99;
           subHtml += '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
             '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
             '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div>' +
             '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div>' +
+            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="' + stk + '"></div>' +
             '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + it.colors.join(', ') + '"></div>' +
             '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + it.sizes.join(', ') + '"></div>' +
             '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div>' +
@@ -1737,6 +1838,7 @@
           '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
           '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
           '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
+          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>' +
           '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
           '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
           '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>' +
@@ -1756,6 +1858,7 @@
       div.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
+        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
         '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
@@ -1779,6 +1882,7 @@
       subBlocks.forEach(function(block) {
         var name = block.querySelector('.sub-name').value.trim();
         var price = parseInt(block.querySelector('.sub-price').value, 10);
+        var stock = parseInt(block.querySelector('.sub-stock').value, 10);
         var rawColors = block.querySelector('.sub-colors').value.split(',');
         var rawSizes = block.querySelector('.sub-sizes').value.split(',');
         var imgUrl = block.querySelector('.sub-file').value.trim();
@@ -1788,7 +1892,7 @@
         var sizes = [];
         for (var sz = 0; sz < rawSizes.length; sz++) sizes.push(rawSizes[sz].trim());
 
-        itemsArr.push({ name: name, price: price, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
+        itemsArr.push({ name: name, price: price, stock: isNaN(stock) ? 99 : stock, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
       });
 
       if (editId) {
