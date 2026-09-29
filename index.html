@@ -220,7 +220,7 @@
 
             <div class="bell-popover-box" id="bell-popover">
               <div class="pop-head">
-                <span>🔔 訂單狀態與出貨通知</span>
+                <span>🔔 最新通知</span>
                 <span style="font-size: 11px; color: #888;">即時同步</span>
               </div>
               <div id="bell-popover-content">
@@ -429,15 +429,20 @@
           <button onclick="setAdminMode(false)" style="background:#475569; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer;">返回前台</button>
         </div>
 
+        <!-- 更新後的過濾與排序選單 -->
         <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="renderAdminOrdersUI()" style="flex:1; min-width:220px;">
-          <select class="form-select" id="admin-status-filter" onchange="renderAdminOrdersUI()" style="width:auto;">
+          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminCurrentPage=1; renderAdminOrdersUI()" style="flex:1; min-width:220px;">
+          <select class="form-select" id="admin-status-filter" onchange="adminCurrentPage=1; renderAdminOrdersUI()" style="width:auto;">
             <option value="all">全部對帳狀態</option>
             <option value="等待對帳中">等待對帳中</option>
             <option value="已對帳完成">已對帳完成</option>
             <option value="對帳失敗">對帳失敗</option>
             <option value="對帳異常 請聯絡客服">對帳異常 請聯絡客服</option>
             <option value="已刪單">已刪單</option>
+          </select>
+          <select class="form-select" id="admin-sort-filter" onchange="adminCurrentPage=1; renderAdminOrdersUI()" style="width:auto;">
+            <option value="newest">時間：由新到舊</option>
+            <option value="oldest">時間：由舊到新</option>
           </select>
         </div>
 
@@ -453,6 +458,7 @@
     </section>
   </main>
 
+  <!-- 購物車與結帳模組 -->
   <div class="cart-drawer-overlay" id="cart-overlay" onclick="toggleCartDrawer(false)"></div>
   <aside class="cart-drawer" id="cart-drawer">
     <div class="drawer-head">
@@ -461,7 +467,7 @@
     </div>
     <div class="drawer-body" id="cart-items-container"></div>
     <div class="drawer-foot">
-      <div class="split-ship-tip">
+      <div class="split-ship-tip" style="font-size:12px; color:#64748b; margin-bottom:8px;">
         💡 提示：本單品項到貨期不同時將「自動拆單出貨」，提早到的包裹會優先寄發！
       </div>
       <div class="foot-row">
@@ -601,7 +607,7 @@
             使用 LINE 帳號一鍵登入 (建議)
           </button>
 
-          <div class="auth-divider">或使用其他方式登入</div>
+          <div class="auth-divider" style="font-size: 12px; color: #888; margin: 8px 0;">或使用其他方式登入</div>
 
           <button class="auth-common-btn google-custom-btn" onclick="loginWithGoogle()">
             <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
@@ -660,7 +666,7 @@
     </div>
   </div>
 
-  <!-- 新增 NOTICE 彈窗 -->
+  <!-- 其他 CMS 相關管理彈窗 (Notice, QA, Post, Product) -->
   <div class="modal-overlay" id="notice-modal">
     <div class="modal-box">
       <div class="modal-head">
@@ -676,7 +682,6 @@
     </div>
   </div>
 
-  <!-- 新增 Q&A 彈窗 -->
   <div class="modal-overlay" id="qa-modal">
     <div class="modal-box">
       <div class="modal-head">
@@ -692,7 +697,6 @@
     </div>
   </div>
 
-  <!-- 發布 NEW POST 彈窗 -->
   <div class="modal-overlay" id="post-modal">
     <div class="modal-box">
       <div class="modal-head">
@@ -711,7 +715,6 @@
     </div>
   </div>
 
-  <!-- 上架/編輯新商品系列彈窗 -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head">
@@ -745,17 +748,7 @@
         <hr style="margin:14px 0; border:0; border-top:1px dashed var(--border-color);">
         <div style="font-weight:900; font-size:13.5px; color:var(--primary-blue); margin-bottom:8px;">📦 子品項規格與庫存設定：</div>
         
-        <div id="sub-items-container">
-          <div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">
-            <button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>
-            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>
-            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>
-            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>
-            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>
-            <div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>
-            <div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>
-          </div>
-        </div>
+        <div id="sub-items-container"></div>
 
         <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:12px;">＋ 新增下一個品項</button>
 
@@ -779,16 +772,21 @@
     var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var MY_LIFF_ID = "2011693279-1eGSgIL6";
 
+    // 新增：分頁與訂單全域變數
+    var adminCurrentPage = 1;       
+    var adminOrdersPerPage = 5;     
+    var adminOrdersList = [];       
+
     var productSeriesData = [];
     var noticeData = [];
     var qaData = [];
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
-    var currentPostDetailIndex = null; // 鎖定貼文詳情，防止自動刷新覆蓋
+    var currentPostDetailIndex = null;
 
     function switchPage(pageId) {
-      currentPostDetailIndex = null; // 切換分頁時重置貼文詳情鎖定
+      currentPostDetailIndex = null;
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
       
@@ -822,7 +820,7 @@
       var overlay = document.getElementById('cart-overlay');
       if (drawer && overlay) {
         if (open) {
-          validateCartStockAndStatus(); // 開啟購物車時進行庫存與下架複審
+          validateCartStockAndStatus();
           fetchCMSFromCloud();
           drawer.classList.add('active');
           overlay.classList.add('active');
@@ -833,7 +831,6 @@
       }
     }
 
-    // 購物車庫存與下架狀態複審機制
     function validateCartStockAndStatus() {
       if (cart.length === 0) return;
       var updatedCart = [];
@@ -894,29 +891,99 @@
     }
 
     function toggleNotificationPopover(e) {
-      if (isAdminMode) return;
       if (e) e.stopPropagation();
       var popover = document.getElementById('bell-popover');
       if (popover) {
         popover.classList.toggle('active');
-        if (popover.classList.contains('active') && currentUser) {
-          syncOrdersFromSheet();
+        if (popover.classList.contains('active')) {
+          if (isAdminMode) {
+             buildBellNotifications(adminOrdersList);
+          } else if (currentUser) {
+             syncOrdersFromSheet();
+          }
         }
       }
     }
 
-    function markAllNotificationsRead() {
+    // 核心更新：賣家/買家 獨立鈴鐺通知邏輯
+    function buildBellNotifications(orders) {
+      if (!orders || orders.length === 0) return;
+      var notifItems = [];
+
+      if (isAdminMode) {
+        // 賣家模式：偵測新訂單
+        var seenOrders = JSON.parse(localStorage.getItem('dottodot_seen_orders') || '[]');
+        for (var i = 0; i < orders.length; i++) {
+          if (seenOrders.indexOf(orders[i].orderId) === -1) {
+            notifItems.push({ type: 'new_order', title: '🌟 新訂單成立', desc: '收到來自 <b>' + orders[i].buyerName + '</b> 的新訂單 (' + orders[i].orderId + ')' });
+          }
+        }
+      } else {
+        // 買家模式：全面追蹤對帳、採購、出貨狀態
+        for (var i = 0; i < orders.length; i++) {
+          var order = orders[i];
+          if (order.payStatus && order.payStatus !== '等待對帳中') {
+            notifItems.push({ type: 'pay', title: '💰 訂單 ' + order.orderId, desc: '對帳狀態更新為：【' + order.payStatus + '】' });
+          }
+          for (var j = 0; j < order.items.length; j++) {
+            var item = order.items[j];
+            if (item.procureStatus && item.procureStatus !== '') {
+              notifItems.push({ type: 'procure', title: '🛍️ ' + (item.itemName || item.name) + ' (採購)', desc: '狀態：' + item.procureStatus });
+            }
+            if (item.shipStatus && item.shipStatus !== '') {
+              notifItems.push({ type: 'ship', title: '📦 ' + (item.itemName || item.name) + ' (出貨)', desc: '狀態：' + item.shipStatus });
+            }
+          }
+        }
+      }
+
       var popoverContent = document.getElementById('bell-popover-content');
       var badge = document.getElementById('bell-badge');
-      if (badge) {
-        badge.style.display = 'none';
-        badge.textContent = '0';
+      if (notifItems.length > 0 && popoverContent && badge) {
+        var html = '';
+        for (var k = 0; k < notifItems.length; k++) {
+          var n = notifItems[k];
+          html += '<div class="pop-item"><strong style="color:var(--primary-blue);">● ' + n.title + '</strong><div>' + n.desc + '</div></div>';
+        }
+        popoverContent.innerHTML = html;
+
+        var badgeCount = notifItems.length;
+        if (isAdminMode) {
+          badge.textContent = badgeCount;
+          badge.style.display = 'flex';
+        } else {
+          var isRead = localStorage.getItem('dottodot_read_notifs_' + (currentUser ? currentUser.userId : ''));
+          if (!isRead) {
+            badge.textContent = badgeCount;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      } else {
+        if (badge) badge.style.display = 'none';
+        if (popoverContent) popoverContent.innerHTML = '<div class="pop-item"><div style="color: var(--text-muted);">目前尚無未讀通知</div></div>';
       }
-      if (popoverContent) {
-        popoverContent.innerHTML = '<div class="pop-item"><div style="color: var(--text-muted);">目前尚無未讀通知</div></div>';
-      }
-      if (currentUser) {
+    }
+
+    // 核心更新：標記已讀功能分離買賣家
+    function markAllNotificationsRead() {
+      if (isAdminMode) {
+        // 賣家標記所有新訂單為已讀
+        var seenOrders = JSON.parse(localStorage.getItem('dottodot_seen_orders') || '[]');
+        for (var i = 0; i < adminOrdersList.length; i++) {
+          if (seenOrders.indexOf(adminOrdersList[i].orderId) === -1) {
+            seenOrders.push(adminOrdersList[i].orderId);
+          }
+        }
+        localStorage.setItem('dottodot_seen_orders', JSON.stringify(seenOrders));
+        renderAdminOrdersUI();
+        buildBellNotifications(adminOrdersList);
+      } else if (currentUser) {
+        // 買家標記通知為已讀
         localStorage.setItem('dottodot_read_notifs_' + currentUser.userId, 'true');
+        var cachedOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + currentUser.userId) || '[]');
+        buildBellNotifications(cachedOrders);
       }
       var popover = document.getElementById('bell-popover');
       if (popover) popover.classList.remove('active');
@@ -989,7 +1056,7 @@
       for (var i = 0; i < cart.length; i++) {
         if (cart[i].selected !== false) {
           total += (cart[i].price * cart[i].quantity);
-          previewHtml += '• ' + cart[i].name + ' (' + cart[i].spec + ') x ' + cart[i].quantity + ' - NT$' + (cart[i].price * cart[i].quantity) + '<br>';
+          previewHtml += '• ' + (cart[i].itemName || cart[i].name) + ' (' + cart[i].spec + ') x ' + cart[i].quantity + ' - NT$' + (cart[i].price * cart[i].quantity) + '<br>';
         }
       }
       document.getElementById('checkout-preview-items').innerHTML = previewHtml;
@@ -1073,20 +1140,9 @@
             renderPosts();
           }
         }
-      }).catch(function(err) {
-        productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || JSON.stringify(DEFAULT_SERIES));
-        noticeData = JSON.parse(localStorage.getItem('dottodot_custom_notice') || JSON.stringify(DEFAULT_NOTICES));
-        qaData = JSON.parse(localStorage.getItem('dottodot_custom_qa') || JSON.stringify(DEFAULT_QAS));
-        renderProducts();
-        renderNotices();
-        renderQas();
-        if (currentPostDetailIndex === null) {
-          renderPosts();
-        }
-      });
+      }).catch(function(err) {});
     }
 
-    // 附帶點擊視覺回饋特效的發布同步函式
     function manualSyncCMSData(btnEl) {
       if (!currentGasWebhook) return;
       var originalText = btnEl ? btnEl.textContent : '';
@@ -1096,7 +1152,7 @@
         btnEl.style.opacity = '0.7';
       }
 
-      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
+      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '';
       var payload = {
         action: "syncCMS",
         products: productSeriesData,
@@ -1129,7 +1185,6 @@
             btnEl.disabled = false;
             btnEl.style.opacity = '1';
           }
-          alert('⚠️ 同步完成，但伺服器回傳異常。');
         }
       }).catch(function(err) {
         if (btnEl) {
@@ -1140,39 +1195,6 @@
         alert('❌ 同步失敗：' + err.message);
       });
     }
-
-    var DEFAULT_SERIES = [
-      {
-        id: 's1',
-        seriesName: '日本原宿限定系列',
-        img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80',
-        eta: '預計 14-21 天抵台出貨',
-        stockType: 'PRE-ORDER',
-        region: '韓國商品',
-        category: '明星同款',
-        isClosed: false,
-        isActive: true,
-        items: [
-          { name: '潮流金屬工裝外套', price: 3280, stock: 99, colors: ['金屬黑', '軍綠色'], sizes: ['S', 'M', 'L', 'XL'], img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80' }
-        ]
-      }
-    ];
-
-    var DEFAULT_NOTICES = [
-      { title: "🐑【羊點一線｜訂購需知】", desc: "下單前請先閱讀以下內容，完成訂購即視為同意相關規則💕" },
-      { title: "【代購性質與鑑賞期規範】", desc: "• 本店提供海外代購服務，非商品製造商或代理經銷商，係受買家委任進行之客製化給付。\n• 依《通訊交易解除權合理例外情事適用準則》第 2 條第 2 款規定，客製化給付不適用消保法 7 日無條件猶豫期（鑑賞期）。訂單成立並付款後，恕無法受理因個人喜好、尺寸挑選錯誤或色差等因素申請取消、退款或換貨。" },
-      { title: "【商品定價與收單原則】", desc: "• 本店商品若無特別標註，報價皆已包含國際運費（免二補）。若為特殊商品（如易碎品、重物等）如有需二補或有成團標準之商品，皆會於官網商品頁面完整說明。\n• 收單期限依各品牌官方發售日程訂定，並視採購額度彈性調整；若有提前截單或延長，將透過官方帳號推播通知。\n• 如遇海外品牌方臨時調整售價，本店保留於主動告知後調整報價或取消該筆委託之權利。" },
-      { title: "【預購與現貨】", desc: "• 現貨商品將於商品名稱特別標註「現貨」字樣，未標記者一律為「預購」。\n• 現貨貨況以及各商品的預估到貨與出貨時間均清楚刊登於官網頁面，敬請確認可接受等待時間後再行下單。" },
-      { title: "【下單與付款規範】", desc: "• 完成付款並於官網送出訂單後，請將系統自動生成之回傳資訊傳送至官方 LINE 或社群，我們將於 2 個工作天內完成人工對帳。\n• 本店一律採「確認收到款項後啟動採購」，恕不提供代墊或未付款代購服務。\n• 匯款金額請務必核對正確：如有多匯金額需退款，將扣除 35 元跨行轉帳與處理手續費；無卡存款整數多匯者，恕不退還差額。\n• 訂單款項核對無誤並進入海外採購流程後，恕無法變更訂單內容（尺寸、顏色、款式）或中途取消。" },
-      { title: "【缺貨、訂單更動處理】", desc: "• 海外商品因流動快速或具限量搶購特性，下單後仍可能遇品牌方缺貨, 斷貨或限購。如遇特定品項未成功購入，我們將主動通知並辦理該商品退款；同單中已採購成功之其餘商品仍會正常出貨，無法整筆連帶取消。" },
-      { title: "【國際物流與配送時間】", desc: "• 預購商品到貨時間受各品牌官方出貨期影響。\n• 國內配送時效：超商取貨（7-11 賣貨便）約 3～5 個工作天；宅配約 1～3 個工作天。\n• 運費計算：本店預設採 7-11 賣貨便寄送，商品定價已預先折抵賣貨便最低下單金額 20 元；若改選宅配，結帳運費將以實際宅配費用另加補回原折抵之 20 元差額計收。" },
-      { title: "【售後服務與開箱錄影】", desc: "★ 拆封請全程錄影一鏡到底（須清楚拍到寄件面單、未拆封之外箱狀態，以及商品拆檢過程）；若未提供完整開箱影片，恕不受理回報。\n★ 如遇品項寄錯或缺件，請於簽收／超商取件後 12 小時內提供開箱影片與清晰照片聯絡客服。" }
-    ];
-
-    var DEFAULT_QAS = [
-      { q: "Q1：在同一張訂單買了現貨和等半年的模型，真的會分開出貨嗎？", a: "會的！我們的後台系統會將您的購物車自動拆解為「獨立品項行」。只要商品提早抵台，我們便會先行包裝出貨，不需等待其他長期待貨品項。" },
-      { q: "Q2：如果其中一樣商品在國外斷貨，會整筆取消嗎？", a: "不會。我們只會將該斷貨品項單獨退款處理，其餘已採購到的預購商品正常留存等待出貨，不會強制整單取消。" }
-    ];
 
     var currentFilterRegion = 'all';
     var currentFilterCategory = 'all';
@@ -1244,9 +1266,11 @@
         var matchesPrice = true;
         var minPriceInSeries = Infinity;
         var maxPriceInSeries = -Infinity;
-        for (var p = 0; p < s.items.length; p++) {
-          if (s.items[p].price < minPriceInSeries) minPriceInSeries = s.items[p].price;
-          if (s.items[p].price > maxPriceInSeries) maxPriceInSeries = s.items[p].price;
+        if(s.items && s.items.length > 0){
+           for (var p = 0; p < s.items.length; p++) {
+             if (s.items[p].price < minPriceInSeries) minPriceInSeries = s.items[p].price;
+             if (s.items[p].price > maxPriceInSeries) maxPriceInSeries = s.items[p].price;
+           }
         }
 
         if (minP !== null && maxPriceInSeries < minP) matchesPrice = false;
@@ -1262,6 +1286,7 @@
         }
 
         var firstItem = s.items[0];
+        if(!firstItem) continue;
         var isPre = (s.stockType === 'PRE-ORDER');
         var badgeHtml = isPre ? '<span class="preorder-badge">PRE-ORDER</span>' : '';
         var closedClass = s.isClosed ? 'closed-product' : '';
@@ -1274,13 +1299,17 @@
         }
 
         var colorOptions = '';
-        for (var k = 0; k < firstItem.colors.length; k++) {
-          colorOptions += '<option value="' + firstItem.colors[k] + '">' + firstItem.colors[k] + '</option>';
+        if(firstItem.colors){
+           for (var k = 0; k < firstItem.colors.length; k++) {
+             colorOptions += '<option value="' + firstItem.colors[k] + '">' + firstItem.colors[k] + '</option>';
+           }
         }
 
         var sizeOptions = '';
-        for (var l = 0; l < firstItem.sizes.length; l++) {
-          sizeOptions += '<option value="' + firstItem.sizes[l] + '">' + firstItem.sizes[l] + '</option>';
+        if(firstItem.sizes){
+           for (var l = 0; l < firstItem.sizes.length; l++) {
+             sizeOptions += '<option value="' + firstItem.sizes[l] + '">' + firstItem.sizes[l] + '</option>';
+           }
         }
 
         var currentImg = firstItem.img || s.img;
@@ -1587,7 +1616,7 @@
     }
 
     function viewPostDetail(index) {
-      currentPostDetailIndex = index; // 鎖定目前瀏覽的貼文索引，防止背景刷新干擾
+      currentPostDetailIndex = index;
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       var p = posts[index];
       if (!p) return;
@@ -1988,41 +2017,6 @@
       }).catch(function() {});
     }
 
-    function buildBellNotifications(orders) {
-      if (!orders || orders.length === 0) return;
-      var notifItems = [];
-      for (var i = 0; i < orders.length; i++) {
-        var order = orders[i];
-        if (order.payStatus && order.payStatus !== '等待對帳中') {
-          notifItems.push({ type: 'pay', title: '訂單 ' + order.orderId + ' 對帳更新', desc: '狀態已更新為：【' + order.payStatus + '】' });
-        }
-        for (var j = 0; j < order.items.length; j++) {
-          var item = order.items[j];
-          if (item.trackingNo || (item.shipStatus && item.shipStatus !== '')) {
-            notifItems.push({ type: 'ship', title: '📦 ' + item.name + ' 出貨進度', desc: '狀態：' + item.shipStatus });
-          }
-        }
-      }
-
-      var popoverContent = document.getElementById('bell-popover-content');
-      var badge = document.getElementById('bell-badge');
-      if (notifItems.length > 0 && popoverContent && badge) {
-        var html = '';
-        for (var k = 0; k < notifItems.length; k++) {
-          var n = notifItems[k];
-          html += '<div class="pop-item"><strong style="color:var(--primary-blue);">● ' + n.title + '</strong><div>' + n.desc + '</div></div>';
-        }
-        popoverContent.innerHTML = html;
-        var isRead = localStorage.getItem('dottodot_read_notifs_' + currentUser.userId);
-        if (!isRead) {
-          badge.textContent = notifItems.length;
-          badge.style.display = 'flex';
-        } else {
-          badge.style.display = 'none';
-        }
-      }
-    }
-
     function handleSaveProfile(e, mode) {
       e.preventDefault();
       if (!currentUser) return;
@@ -2227,7 +2221,7 @@
       alert('📋 訂單內容已自動複製！即將為您前往官方社群，請直接長按貼上即可。');
     }
 
-    var adminOrdersList = [];
+    // 核心更新：賣家後台拉取資料與渲染
     function loadAdminOrders() {
       var container = document.getElementById('admin-orders-container');
       if (!container) return;
@@ -2238,17 +2232,20 @@
       }).then(function(data) {
         adminOrdersList = data.orders || [];
         renderAdminOrdersUI();
+        buildBellNotifications(adminOrdersList); 
       }).catch(function(err) {
         container.innerHTML = '<div style="color:red; padding:20px;">載入失敗：' + err.message + '</div>';
       });
     }
 
+    // 核心更新：賣家後台分頁、排序、反灰防呆、NEW標籤
     function renderAdminOrdersUI() {
       var container = document.getElementById('admin-orders-container');
       if (!container) return;
 
       var searchKw = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.trim().toLowerCase() : '';
       var statusFilter = document.getElementById('admin-status-filter') ? document.getElementById('admin-status-filter').value : 'all';
+      var sortFilter = document.getElementById('admin-sort-filter') ? document.getElementById('admin-sort-filter').value : 'newest';
 
       var filtered = [];
       for (var f = 0; f < adminOrdersList.length; f++) {
@@ -2258,26 +2255,43 @@
         if (matchStatus && matchKw) filtered.push(ord);
       }
 
+      // 處理時間排序 
+      if (sortFilter === 'oldest') {
+        filtered.reverse();
+      }
+
+      // 處理分頁
+      var totalPages = Math.ceil(filtered.length / adminOrdersPerPage) || 1;
+      if (adminCurrentPage > totalPages) adminCurrentPage = totalPages;
+      if (adminCurrentPage < 1) adminCurrentPage = 1;
+      var startIndex = (adminCurrentPage - 1) * adminOrdersPerPage;
+      var paginatedOrders = filtered.slice(startIndex, startIndex + adminOrdersPerPage);
+
       if (filtered.length === 0) {
         container.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">沒有找到符合條件的訂單。</div>';
         return;
       }
 
+      var seenOrders = JSON.parse(localStorage.getItem('dottodot_seen_orders') || '[]');
       var html = '';
-      for (var ordIdx = 0; ordIdx < filtered.length; ordIdx++) {
-        var ord = filtered[ordIdx];
+
+      for (var pIdx = 0; pIdx < paginatedOrders.length; pIdx++) {
+        var ord = paginatedOrders[pIdx];
+        var originalIdx = adminOrdersList.indexOf(ord);
+        
+        var isNew = (seenOrders.indexOf(ord.orderId) === -1);
+        var newBadgeHtml = isNew ? '<span style="background:var(--danger-red); color:#fff; font-size:11px; padding:3px 8px; border-radius:12px; margin-left:8px; font-weight:900;">NEW</span> <button onclick="markOrderAsSeen(\'' + ord.orderId + '\')" style="background:var(--accent-lime); color:#000; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; margin-left:4px;">✔ 標示已讀</button>' : '';
+
         var closedClass = ord.isClosed ? 'closed-order' : '';
         var closedBadge = ord.isClosed ? '<span class="admin-badge-closed" style="margin-left:6px;">● 已鎖定</span>' : '';
+        
+        // 鎖定訂單後所有欄位反灰且不可編輯
+        var disabledAttr = ord.isClosed ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : '';
         
         var itemsHtml = '';
         for (var itemIdx = 0; itemIdx < ord.items.length; itemIdx++) {
           var it = ord.items[itemIdx];
-          var payOpts = '<option value="等待對帳中" ' + (ord.payStatus === '等待對帳中' ? 'selected' : '') + '>等待對帳中</option>' +
-                        '<option value="已對帳完成" ' + (ord.payStatus === '已對帳完成' ? 'selected' : '') + '>已對帳完成</option>' +
-                        '<option value="對帳失敗" ' + (ord.payStatus === '對帳失敗' ? 'selected' : '') + '>對帳失敗</option>' +
-                        '<option value="對帳異常 請聯絡客服" ' + (ord.payStatus === '對帳異常 請聯絡客服' ? 'selected' : '') + '>對帳異常 請聯絡客服</option>' +
-                        '<option value="已刪單" ' + (ord.payStatus === '已刪單' ? 'selected' : '') + '>已刪單</option>';
-
+          
           var procOpts = '<option value="" ' + (!it.procureStatus ? 'selected' : '') + '>(無)</option>' +
                          '<option value="已進入採購流程" ' + (it.procureStatus === '已進入採購流程' ? 'selected' : '') + '>已進入採購流程</option>' +
                          '<option value="已採購完畢" ' + (it.procureStatus === '已採購完畢' ? 'selected' : '') + '>已採購完畢</option>' +
@@ -2300,31 +2314,67 @@
               '<span style="color:var(--primary-blue);">NT$ ' + Number(it.price * (it.quantity || 1)).toLocaleString() + '</span>' +
             '</div>' +
             '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">' +
-              '<div><label class="spec-label">支付批次單號</label><input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.payBatchNo || '') + '" placeholder="例: BATCH-01"></div>' +
-              '<div><label class="spec-label">採購狀態</label><select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-' + ord.orderId + '-' + itemIdx + '">' + procOpts + '</select></div>' +
-              '<div><label class="spec-label">物流寄件單號</label><input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.trackingNo || '') + '" placeholder="例: 711-928371"></div>' +
-              '<div><label class="spec-label">出貨狀態</label><select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-' + ord.orderId + '-' + itemIdx + '">' + shipOpts + '</select></div>' +
+              '<div><label class="spec-label">支付批次單號</label><input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-payno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.payBatchNo || '') + '" placeholder="例: BATCH-01" ' + disabledAttr + '></div>' +
+              '<div><label class="spec-label">採購狀態</label><select class="form-select" style="padding:6px; font-size:12px;" id="adm-procure-' + ord.orderId + '-' + itemIdx + '" ' + disabledAttr + '>' + procOpts + '</select></div>' +
+              '<div><label class="spec-label">物流寄件單號</label><input type="text" class="form-input" style="padding:6px; font-size:12px;" id="adm-trackno-' + ord.orderId + '-' + itemIdx + '" value="' + (it.trackingNo || '') + '" placeholder="例: 711-928371" ' + disabledAttr + '></div>' +
+              '<div><label class="spec-label">出貨狀態</label><select class="form-select" style="padding:6px; font-size:12px;" id="adm-ship-' + ord.orderId + '-' + itemIdx + '" ' + disabledAttr + '>' + shipOpts + '</select></div>' +
             '</div>' +
           '</div>';
         }
 
-        var lockToggleBtn = ord.isClosed
-          ? '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', false)">🔓 解除訂單鎖定</button>'
-          : '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + ordIdx + ', true)">🔒 鎖定訂單</button>';
+        var payOpts = '<option value="等待對帳中" ' + (ord.payStatus === '等待對帳中' ? 'selected' : '') + '>等待對帳中</option>' +
+                      '<option value="已對帳完成" ' + (ord.payStatus === '已對帳完成' ? 'selected' : '') + '>已對帳完成</option>' +
+                      '<option value="對帳失敗" ' + (ord.payStatus === '對帳失敗' ? 'selected' : '') + '>對帳失敗</option>' +
+                      '<option value="對帳異常 請聯絡客服" ' + (ord.payStatus === '對帳異常 請聯絡客服' ? 'selected' : '') + '>對帳異常 請聯絡客服</option>' +
+                      '<option value="已刪單" ' + (ord.payStatus === '已刪單' ? 'selected' : '') + '>已刪單</option>';
 
-        var actionBtns = '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\', ' + ordIdx + ', true)">📨 確認發送最新狀態給客人</button>' + lockToggleBtn;
+        var lockToggleBtn = ord.isClosed
+          ? '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + originalIdx + ', false)">🔓 解除訂單鎖定</button>'
+          : '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', ' + originalIdx + ', true)">🔒 鎖定訂單</button>';
+
+        // 鎖定狀態隱藏發送通知按鈕
+        var sendBtnHtml = ord.isClosed ? '' : '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\', ' + originalIdx + ', true)">📨 確認發送最新狀態給客人</button>';
+        var actionBtns = sendBtnHtml + lockToggleBtn;
 
         html += '<div class="admin-card ' + closedClass + '" id="admin-card-' + ord.orderId + '">' +
           '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">' +
-            '<div><span style="font-size:16px; font-weight:900;">' + ord.orderId + '</span><span style="font-size:12px; color:#64748b; margin-left:8px;">(' + ord.orderDate + ')</span>' + closedBadge + '</div>' +
-            '<div><label style="font-size:12px; font-weight:800; margin-right:4px;">對帳狀態：</label><select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-' + ord.orderId + '">' + payOpts + '</select></div>' +
+            '<div><span style="font-size:16px; font-weight:900;">' + ord.orderId + '</span>' + newBadgeHtml + '<span style="font-size:12px; color:#64748b; margin-left:8px;">(' + ord.orderDate + ')</span>' + closedBadge + '</div>' +
+            '<div><label style="font-size:12px; font-weight:800; margin-right:4px;">對帳狀態：</label><select class="form-select" style="width:auto; display:inline-block; padding:4px 8px; font-size:12px;" id="adm-paystatus-' + ord.orderId + '" ' + disabledAttr + '>' + payOpts + '</select></div>' +
           '</div>' +
           '<div style="font-size:13px; color:#334155; margin-bottom:10px;">買家：<b>' + ord.buyerName + '</b> ｜ 聯絡方式：<b>' + ord.buyerContact + '</b> ｜ 電話：' + ord.buyerPhone + '<br>配送：' + ord.shipMethod + ' ➜ ' + ord.buyerStore + ' ｜ 備註：' + (ord.buyerNote || '無') + '</div>' +
           '<div style="background:#f1f5f9; padding:10px; border-radius:10px; margin-bottom:12px;"><div style="font-weight:800; font-size:12.5px; margin-bottom:6px;">📦 拆單品項出貨/採購狀態維護：</div>' + itemsHtml + '</div>' +
           '<div class="admin-action-btn-row">' + actionBtns + '</div>' +
         '</div>';
       }
-      container.innerHTML = html;
+
+      // 產生分頁 UI
+      var paginationHtml = '<div style="display:flex; justify-content:center; align-items:center; gap:14px; margin-top:20px;">' +
+        '<button onclick="adminChangePage(-1)" style="background:#e2e8f0; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer;" ' + (adminCurrentPage === 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '') + '>⬅ 上一頁</button>' +
+        '<span style="font-size:14px; font-weight:900;">' + adminCurrentPage + ' / ' + totalPages + '</span>' +
+        '<button onclick="adminChangePage(1)" style="background:#e2e8f0; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer;" ' + (adminCurrentPage === totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : '') + '>下一頁 ➡</button>' +
+        '</div>';
+
+      container.innerHTML = html + paginationHtml;
+    }
+
+    // 核心更新：賣家手動標記單一訂單已讀
+    function markOrderAsSeen(orderId) {
+      var seenOrders = JSON.parse(localStorage.getItem('dottodot_seen_orders') || '[]');
+      if (seenOrders.indexOf(orderId) === -1) {
+        seenOrders.push(orderId);
+        localStorage.setItem('dottodot_seen_orders', JSON.stringify(seenOrders));
+        renderAdminOrdersUI();
+        if (isAdminMode) {
+          buildBellNotifications(adminOrdersList);
+        }
+      }
+    }
+
+    // 核心更新：賣家切換分頁
+    function adminChangePage(delta) {
+      adminCurrentPage += delta;
+      renderAdminOrdersUI();
+      window.scrollTo({ top: document.getElementById('page-admin').offsetTop - 60, behavior: 'smooth' });
     }
 
     function adminSubmitStatus(orderId, ordIdx, shouldNotify) {
@@ -2475,7 +2525,7 @@
 
       if (active) {
         if (dot) dot.classList.add('active');
-        if (bellBtn) bellBtn.classList.add('disabled-icon');
+        if (bellBtn) bellBtn.classList.remove('disabled-icon'); // 修改: 管理員也需要查看鈴鐺
         if (cartWrap) cartWrap.classList.add('disabled-btn');
         if (adminShortcut) adminShortcut.classList.add('active');
         if (addNoticeBtn) addNoticeBtn.style.display = 'inline-block';
