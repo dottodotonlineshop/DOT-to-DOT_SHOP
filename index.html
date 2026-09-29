@@ -115,7 +115,7 @@
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
 
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
-    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all; }
+    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all;}
     .product-eta { font-size: 11px; color: #7b46ff; font-weight: 700; background: #f2edff; padding: 3px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px; }
 
     .form-row-spec { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
@@ -437,7 +437,7 @@
         </div>
 
         <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:220px;">
+          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:200px;">
           <select class="form-select" id="admin-status-filter" onchange="adminPage=1; renderAdminOrdersUI()" style="width:auto;">
             <option value="all">全部對帳狀態</option>
             <option value="等待對帳中">等待對帳中</option>
@@ -662,6 +662,10 @@
         </div>
 
         <div id="member-tab-orders" style="display: none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-size:12px; color:#64748b;">點擊下方按鈕手動整理最新對帳與出貨狀態</span>
+            <button id="sync-status-btn" onclick="syncOrdersFromSheetWithFeedback()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">↻ 整理即時狀態</button>
+          </div>
           <div id="member-orders-list"></div>
         </div>
       </div>
@@ -758,6 +762,8 @@
           </div>
         </div>
 
+        <div class="form-group"><label>預計到貨時程 (ETA) *</label><input type="text" class="form-input" id="adm-series-eta" required placeholder="例如：預計 10-14 天抵台出貨"></div>
+
         <!-- 自動結單時間設定 -->
         <div class="form-group">
           <label>自動結單日期與時間 (選填，時間到將自動關閉下單)</label>
@@ -770,7 +776,7 @@
         <div id="sub-items-container">
         </div>
 
-        <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:12px;">＋ 新增下一個品項</button>
+        <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:margin-bottom:12px;">＋ 新增下一個品項</button>
 
         <button type="submit" class="checkout-btn" id="product-modal-submit-btn">確認儲存商品系列</button>
       </form>
@@ -806,9 +812,13 @@
     var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var MY_LIFF_ID = "2011693279-1eGSgIL6";
 
-    var productSeriesData = [];
-    var noticeData = [];
-    var qaData = [];
+    var productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || '[]');
+    if (!Array.isArray(productSeriesData)) productSeriesData = [];
+    var noticeData = JSON.parse(localStorage.getItem('dottodot_custom_notice') || '[]');
+    if (!Array.isArray(noticeData)) noticeData = [];
+    var qaData = JSON.parse(localStorage.getItem('dottodot_custom_qa') || '[]');
+    if (!Array.isArray(qaData)) qaData = [];
+
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
@@ -986,6 +996,24 @@
       }
     }
 
+    function syncOrdersFromSheetWithFeedback() {
+      var btn = document.getElementById('sync-status-btn');
+      if (btn) {
+        btn.textContent = '⏳ 正在同步...';
+        btn.disabled = true;
+      }
+      syncOrdersFromSheet();
+      setTimeout(function() {
+        if (btn) {
+          btn.textContent = '✓ 已更新至最新狀態';
+          setTimeout(function() {
+            btn.textContent = '↻ 整理即時狀態';
+            btn.disabled = false;
+          }, 1500);
+        }
+      }, 800);
+    }
+
     function openCheckoutModal() {
       validateCartStockAndStatus();
       if (cart.length === 0) {
@@ -1087,20 +1115,7 @@
       });
     }
 
-    // 🚀 Firebase 寫入機制：背景備份
-    function syncCMSToCloud() {
-      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
-      var payload = {
-        products: productSeriesData,
-        notices: noticeData,
-        qas: qaData,
-        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: aboutText
-      };
-      db.ref('cms').set(payload);
-    }
-
-    // 🚀 點擊按鈕手動發布：只存 Firebase (秒解)，不再等待 Google 試算表
+    // 🚀 點擊按鈕手動發布：只存 Firebase (秒解)，並在背景備份給 GAS
     function manualSyncCMSData(btnEl) {
       var originalText = btnEl ? btnEl.textContent : '';
       if (btnEl) {
@@ -1125,13 +1140,42 @@
             btnEl.disabled = false;
           }, 1500);
         }
-        alert('🚀 內容已瞬間發布至前台！\n(不再連動試算表商品頁，全面改用極速雲端)');
+        alert('🚀 內容已瞬間發布至前台！\n(試算表備份將於背景默默執行，不影響網頁操作)');
+        
+        if(currentGasWebhook) {
+           fetch(currentGasWebhook, {
+             method: 'POST',
+             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+             body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
+           }).catch(function(){});
+        }
       }).catch(function(err) {
         if (btnEl) {
           btnEl.textContent = originalText;
           btnEl.disabled = false;
         }
         alert('❌ 同步失敗：' + err.message);
+      });
+    }
+
+    function syncCMSToCloud() {
+      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
+      var payload = {
+        products: productSeriesData,
+        notices: noticeData,
+        qas: qaData,
+        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
+        about: aboutText
+      };
+      
+      db.ref('cms').set(payload).then(function() {
+         if(currentGasWebhook) {
+             fetch(currentGasWebhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
+             }).catch(function(e){});
+         }
       });
     }
 
@@ -1313,7 +1357,7 @@
         }
       }
 
-      container.innerHTML = (activeCount === 0) ? '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的商品</div>' : activeHtml;
+      container.innerHTML = (activeCount === 0) ? '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的上架商品</div>' : activeHtml;
 
       if (inactiveCount > 0 && isAdminMode) {
         inactiveContainer.innerHTML = inactiveHtml;
@@ -1333,7 +1377,6 @@
       }
       productSeriesData = newSer;
       syncCMSToCloud();
-      renderProducts();
     }
 
     function handleItemChange(seriesId) {
@@ -1618,6 +1661,30 @@
       syncCMSToCloud();
       renderPosts();
     }
+    
+    function adminToggleProductActive(seriesId) {
+      for (var i = 0; i < productSeriesData.length; i++) {
+        if (String(productSeriesData[i].id) === String(seriesId)) {
+          productSeriesData[i].isActive = (productSeriesData[i].isActive === false) ? true : false;
+          break;
+        }
+      }
+      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+      syncCMSToCloud();
+      renderProducts();
+    }
+    
+    function adminToggleProductClose(seriesId) {
+      for (var i = 0; i < productSeriesData.length; i++) {
+        if (String(productSeriesData[i].id) === String(seriesId)) {
+          productSeriesData[i].isClosed = !productSeriesData[i].isClosed;
+          break;
+        }
+      }
+      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+      syncCMSToCloud();
+      renderProducts();
+    }
 
     function openNoticeModal(editIndex) {
       var modal = document.getElementById('notice-modal');
@@ -1780,6 +1847,7 @@
         document.getElementById('adm-series-eta').value = series.eta;
         document.getElementById('adm-series-close-time').value = series.closeTime || '';
 
+        // 讀取分類複選
         if (series.categories && Array.isArray(series.categories)) {
           catCheckboxes.forEach(function(cb) {
             if (series.categories.includes(cb.value)) cb.checked = true;
@@ -2441,7 +2509,7 @@
           body: JSON.stringify(payload)
         }).catch(function(e) {});
       }
-      alert('✅ 訂單狀態已送出更新！');
+      alert('✅ 訂單狀態已同步至試算表！');
       setTimeout(loadAdminOrders, 1000);
     }
 
@@ -2571,10 +2639,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
-        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
-        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
-        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
-        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
         switchPage('admin');
         loadAdminOrders();
       } else {
