@@ -142,7 +142,6 @@
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
     
-    /* 貼文詳情圖片響應式不裁切 */
     .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
@@ -205,7 +204,6 @@
 </head>
 <body>
 
-  <!-- 內建瀏覽器防呆提醒橫幅 -->
   <div class="inapp-browser-banner" id="inapp-banner">
     ⚠️ 已偵測到您目前使用 App 內建瀏覽器，建議於預設瀏覽器開啟，以保障網頁與登入流程順利運行。
   </div>
@@ -1165,6 +1163,22 @@
       });
     }
 
+    var DEFAULT_NOTICES = [
+      { title: "🐑【羊點一線｜訂購需知】", desc: "下單前請先閱讀以下內容，完成訂購即視為同意相關規則💕" },
+      { title: "【代購性質與鑑賞期規範】", desc: "• 本店提供海外代購服務，非商品製造商或代理經銷商，係受買家委任進行之客製化給付。\n• 依《通訊交易解除權合理例外情事適用準則》第 2 條第 2 款規定，客製化給付不適用消保法 7 日無條件猶豫期（鑑賞期）。訂單成立並付款後，恕無法受理因個人喜好、尺寸挑選錯誤或色差等因素申請取消、退款或換貨。" },
+      { title: "【商品定價與收單原則】", desc: "• 本店商品若無特別標註，報價皆已包含國際運費（免二補）。若為特殊商品（如易碎品、重物等）如有需二補或有成團標準之商品，皆會於官網商品頁面完整說明。\n• 收單期限依各品牌官方發售日程訂定，並視採購額度彈性調整；若有提前截單或延長，將透過官方帳號推播通知。\n• 如遇海外品牌方臨時調整售價，本店保留於主動告知後調整報價或取消該筆委託之權利。" },
+      { title: "【預購與現貨】", desc: "• 現貨商品將於商品名稱特別標註「現貨」字樣，未標記者一律為「預購」。\n• 現貨貨況以及各商品的預估到貨與出貨時間均清楚刊登於官網頁面，敬請確認可接受等待時間後再行下單。" },
+      { title: "【下單與付款規範】", desc: "• 完成付款並於官網送出訂單後，請將系統自動生成之回傳資訊傳送至官方 LINE 或社群，我們將於 2 個工作天內完成人工對帳。\n• 本店一律採「確認收到款項後啟動採購」，恕不提供代墊或未付款代購服務。\n• 匯款金額請務必核對正確：如有多匯金額需退款，將扣除 35 元跨行轉帳與處理手續費；無卡存款整數多匯者，恕不退還差額。\n• 訂單款項核對無誤並進入海外採購流程後，恕無法變更訂單內容（尺寸、顏色、款式）或中途取消。" },
+      { title: "【缺貨、訂單更動處理】", desc: "• 海外商品因流動快速或具限量搶購特性，下單後仍可能遇品牌方缺貨, 斷貨或限購。如遇特定品項未成功購入，我們將主動通知並辦理該商品退款；同單中已採購成功之其餘商品仍會正常出貨，無法整筆連帶取消。" },
+      { title: "【國際物流與配送時間】", desc: "• 預購商品到貨時間受各品牌官方出貨期影響。\n• 國內配送時效：超商取貨（7-11 賣貨便）約 3～5 個工作天；宅配約 1～3 個工作天。\n• 運費計算：本店預設採 7-11 賣貨便寄送，商品定價已預先折抵賣貨便最低下單金額 20 元；若改選宅配，結帳運費將以實際宅配費用另加補回原折抵之 20 元差額計收。" },
+      { title: "【售後服務與開箱錄影】", desc: "★ 拆封請全程錄影一鏡到底（須清楚拍到寄件面單、未拆封之外箱狀態，以及商品拆檢過程）；若未提供完整開箱影片，恕不受理回報。\n★ 如遇品項寄錯或缺件，請於簽收／超商取件後 12 小時內提供開箱影片與清晰照片聯絡客服。" }
+    ];
+
+    var DEFAULT_QAS = [
+      { q: "Q1：在同一張訂單買了現貨和等半年的模型，真的會分開出貨嗎？", a: "會的！我們的後台系統會將您的購物車自動拆解為「獨立品項行」。只要商品提早抵台，我們便會先行包裝出貨，不需等待其他長期待貨品項。" },
+      { q: "Q2：如果其中一樣商品在國外斷貨，會整筆取消嗎？", a: "不會。我們只會將該斷貨品項單獨退款處理，其餘已採購到的預購商品正常留存等待出貨，不會強制整單取消。" }
+    ];
+
     var currentFilterRegion = 'all';
     var currentFilterCategory = 'all';
     var currentSearchKeyword = '';
@@ -1934,7 +1948,7 @@
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
-      closeProductModal();
+      closeProductModal(); // 確保編輯或新增完成後自動關閉彈窗
       e.target.reset();
       alert('🎉 商品系列已儲存並同步至雲端！');
     }
@@ -2451,6 +2465,10 @@
       var addQaBtn = document.getElementById('admin-add-qa-btn');
       var addPostBtn = document.getElementById('admin-add-post-btn');
       var addProdBtn = document.getElementById('admin-add-product-btn');
+      var syncNoticeBtn = document.getElementById('admin-sync-notice-btn');
+      var syncQaBtn = document.getElementById('admin-sync-qa-btn');
+      var syncPostBtn = document.getElementById('admin-sync-post-btn');
+      var syncProdBtn = document.getElementById('admin-sync-product-btn');
 
       if (active) {
         if (dot) dot.classList.add('active');
@@ -2461,6 +2479,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
         switchPage('admin');
         loadAdminOrders();
       } else {
@@ -2472,6 +2494,10 @@
         if (addQaBtn) addQaBtn.style.display = 'none';
         if (addPostBtn) addPostBtn.style.display = 'none';
         if (addProdBtn) addProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
         switchPage('shop');
       }
       renderProducts();
