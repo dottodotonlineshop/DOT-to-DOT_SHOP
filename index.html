@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
+  <!-- 🚀 載入 Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --primary-blue: #0044cc;
@@ -111,7 +115,7 @@
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
 
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
-    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all; }
+    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all;}
     .product-eta { font-size: 11px; color: #7b46ff; font-weight: 700; background: #f2edff; padding: 3px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px; }
 
     .form-row-spec { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
@@ -139,7 +143,6 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
-    
     .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
@@ -201,10 +204,6 @@
   </style>
 </head>
 <body>
-
-  <div class="inapp-browser-banner" id="inapp-banner">
-    ⚠️ 已偵測到您目前使用 App 內建瀏覽器，建議於預設瀏覽器開啟，以保障網頁與登入流程順利運行。
-  </div>
 
   <header class="header-banner">
     <div class="nav-container">
@@ -790,6 +789,20 @@
   <script>
     var ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"];
     var ADMIN_PASSWORD = "admin888";
+    
+    // 🚀 初始化 Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU",
+      authDomain: "dot-to-dotshop.firebaseapp.com",
+      databaseURL: "https://dot-to-dotshop-default-rtdb.firebaseio.com",
+      projectId: "dot-to-dotshop",
+      storageBucket: "dot-to-dotshop.firebasestorage.app",
+      messagingSenderId: "868804558476",
+      appId: "1:868804558476:web:c8c26a49f1d1d6354105a9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+
     var isAdminMode = false;
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
     var currentGasWebhook = localStorage.getItem('dottodot_gas_webhook') || GAS_WEBHOOK_URL;
@@ -797,36 +810,14 @@
     var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var MY_LIFF_ID = "2011693279-1eGSgIL6";
 
-    var productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || '[]');
-    if (!Array.isArray(productSeriesData)) productSeriesData = [];
-    var noticeData = JSON.parse(localStorage.getItem('dottodot_custom_notice') || '[]');
-    if (!Array.isArray(noticeData)) noticeData = [];
-    var qaData = JSON.parse(localStorage.getItem('dottodot_custom_qa') || '[]');
-    if (!Array.isArray(qaData)) qaData = [];
-
+    var productSeriesData = [];
+    var noticeData = [];
+    var qaData = [];
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
     var adminPage = 1;
     var adminPageSize = 5;
-
-    // 將同步函式確實補回
-    function syncCMSToCloud() {
-      if (!currentGasWebhook) return;
-      var payload = {
-        action: "syncCMS",
-        products: productSeriesData,
-        notices: noticeData,
-        qas: qaData,
-        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : ''
-      };
-      fetch(currentGasWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(function(e) {});
-    }
 
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
@@ -848,8 +839,6 @@
 
       if (pageId === 'admin') {
         loadAdminOrders();
-      } else {
-        fetchCMSFromCloud();
       }
     }
 
@@ -996,7 +985,7 @@
         if (btnOrd) btnOrd.classList.add('active');
         if (btnProf) btnProf.classList.remove('active');
         if (tabOrd) tabOrd.style.display = 'block';
-        if (tabProf) tabProf.style.display = 'none';
+        if (tabOrd) tabOrd.style.display = 'none';
         syncOrdersFromSheet();
       }
     }
@@ -1071,7 +1060,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-      checkInAppBrowser();
       fetchCMSFromCloud();
       updateCartDisplay();
       handleGoogleOAuthRedirectCallback();
@@ -1087,25 +1075,16 @@
       setTimeout(loadLineSDK, 300);
     });
 
+    // 🚀 Firebase 讀取機制：0秒即時監聽前台資料
     function fetchCMSFromCloud() {
-      if (!currentGasWebhook) return;
-      fetch(currentGasWebhook + '?action=getCMS').then(function(resp) {
-        return resp.json();
-      }).then(function(data) {
+      db.ref('cms').on('value', function(snapshot) {
+        var data = snapshot.val();
         if (data) {
-          if (data.products && Array.isArray(data.products)) {
-            productSeriesData = data.products;
-            localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-          }
-          if (data.notices && Array.isArray(data.notices)) {
-            noticeData = data.notices;
-            localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-          }
-          if (data.qas && Array.isArray(data.qas)) {
-            qaData = data.qas;
-            localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-          }
-          if (data.posts && Array.isArray(data.posts)) {
+          productSeriesData = data.products || [];
+          noticeData = data.notices || [];
+          qaData = data.qas || [];
+          
+          if (data.posts) {
             localStorage.setItem('dottodot_custom_posts', JSON.stringify(data.posts));
           }
           
@@ -1114,31 +1093,53 @@
             if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>');
             localStorage.setItem('dottodot_about_text', data.about);
           }
+
+          renderProducts();
+          renderNotices();
+          renderQas();
+          renderPosts();
+        } else {
           renderProducts();
           renderNotices();
           renderQas();
           renderPosts();
         }
-      }).catch(function(err) {
-        renderProducts();
-        renderNotices();
-        renderQas();
-        renderPosts();
+      }, function(error) {
+        console.error("Firebase read error", error);
+      });
+    }
+
+    // 🚀 Firebase 寫入機制：點擊發布時瞬間寫入前台，並在背景備份給 GAS
+    function syncCMSToCloud() {
+      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
+      var payload = {
+        products: productSeriesData,
+        notices: noticeData,
+        qas: qaData,
+        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
+        about: aboutText
+      };
+      
+      db.ref('cms').set(payload).then(function() {
+         if(currentGasWebhook) {
+             fetch(currentGasWebhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
+             }).catch(function(e){});
+         }
       });
     }
 
     function manualSyncCMSData(btnEl) {
-      if (!currentGasWebhook) return;
       var originalText = btnEl ? btnEl.textContent : '';
       if (btnEl) {
-        btnEl.textContent = '⏳ 正在同步...';
+        btnEl.textContent = '⏳ 極速同步中...';
         btnEl.disabled = true;
-        btnEl.style.opacity = '0.7';
       }
 
       var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
       var payload = {
-        action: "syncCMS",
         products: productSeriesData,
         notices: noticeData,
         qas: qaData,
@@ -1146,36 +1147,27 @@
         about: aboutText
       };
 
-      fetch(currentGasWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).then(function(resp) {
-        return resp.json();
-      }).then(function(res) {
-        if (res && res.status === 'success') {
-          if (btnEl) {
-            btnEl.textContent = '✓ 同步成功！';
-            setTimeout(function() {
-              btnEl.textContent = originalText;
-              btnEl.disabled = false;
-              btnEl.style.opacity = '1';
-            }, 1500);
-          }
-          alert('🚀 內容已成功發布並同步至全站雲端！');
-        } else {
-          if (btnEl) {
+      db.ref('cms').set(payload).then(function() {
+        if (btnEl) {
+          btnEl.textContent = '✓ 已同步至前台！';
+          setTimeout(function() {
             btnEl.textContent = originalText;
             btnEl.disabled = false;
-            btnEl.style.opacity = '1';
-          }
-          alert('⚠️ 同步完成，但伺服器回傳異常。');
+          }, 1500);
+        }
+        alert('🚀 內容已瞬間發布至前台！\n(試算表備份將於背景默默執行，不影響網頁操作)');
+        
+        if(currentGasWebhook) {
+           fetch(currentGasWebhook, {
+             method: 'POST',
+             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+             body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
+           }).catch(function(){});
         }
       }).catch(function(err) {
         if (btnEl) {
           btnEl.textContent = originalText;
           btnEl.disabled = false;
-          btnEl.style.opacity = '1';
         }
         alert('❌ 同步失敗：' + err.message);
       });
@@ -1378,7 +1370,6 @@
         }
       }
       productSeriesData = newSer;
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
     }
@@ -1664,30 +1655,6 @@
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
       syncCMSToCloud();
       renderPosts();
-    }
-    
-    function adminToggleProductActive(seriesId) {
-      for (var i = 0; i < productSeriesData.length; i++) {
-        if (String(productSeriesData[i].id) === String(seriesId)) {
-          productSeriesData[i].isActive = (productSeriesData[i].isActive === false) ? true : false;
-          break;
-        }
-      }
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
-      renderProducts();
-    }
-    
-    function adminToggleProductClose(seriesId) {
-      for (var i = 0; i < productSeriesData.length; i++) {
-        if (String(productSeriesData[i].id) === String(seriesId)) {
-          productSeriesData[i].isClosed = !productSeriesData[i].isClosed;
-          break;
-        }
-      }
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
-      renderProducts();
     }
 
     function openNoticeModal(editIndex) {
@@ -2642,10 +2609,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
-        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
-        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
-        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
-        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
         switchPage('admin');
         loadAdminOrders();
       } else {
