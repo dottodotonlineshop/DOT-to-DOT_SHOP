@@ -115,7 +115,7 @@
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
 
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
-    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all;}
+    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all; }
     .product-eta { font-size: 11px; color: #7b46ff; font-weight: 700; background: #f2edff; padding: 3px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px; }
 
     .form-row-spec { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
@@ -437,7 +437,7 @@
         </div>
 
         <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:200px;">
+          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:220px;">
           <select class="form-select" id="admin-status-filter" onchange="adminPage=1; renderAdminOrdersUI()" style="width:auto;">
             <option value="all">全部對帳狀態</option>
             <option value="等待對帳中">等待對帳中</option>
@@ -662,10 +662,6 @@
         </div>
 
         <div id="member-tab-orders" style="display: none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:12px; color:#64748b;">點擊下方按鈕手動整理最新對帳與出貨狀態</span>
-            <button id="sync-status-btn" onclick="syncOrdersFromSheetWithFeedback()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">↻ 整理即時狀態</button>
-          </div>
           <div id="member-orders-list"></div>
         </div>
       </div>
@@ -990,24 +986,6 @@
       }
     }
 
-    function syncOrdersFromSheetWithFeedback() {
-      var btn = document.getElementById('sync-status-btn');
-      if (btn) {
-        btn.textContent = '⏳ 正在同步...';
-        btn.disabled = true;
-      }
-      syncOrdersFromSheet();
-      setTimeout(function() {
-        if (btn) {
-          btn.textContent = '✓ 已更新至最新狀態';
-          setTimeout(function() {
-            btn.textContent = '↻ 整理即時狀態';
-            btn.disabled = false;
-          }, 1500);
-        }
-      }, 800);
-    }
-
     function openCheckoutModal() {
       validateCartStockAndStatus();
       if (cart.length === 0) {
@@ -1109,7 +1087,7 @@
       });
     }
 
-    // 🚀 Firebase 寫入機制：點擊發布時瞬間寫入前台，並在背景備份給 GAS
+    // 🚀 Firebase 寫入機制：背景備份
     function syncCMSToCloud() {
       var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
       var payload = {
@@ -1119,18 +1097,10 @@
         posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
         about: aboutText
       };
-      
-      db.ref('cms').set(payload).then(function() {
-         if(currentGasWebhook) {
-             fetch(currentGasWebhook, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
-             }).catch(function(e){});
-         }
-      });
+      db.ref('cms').set(payload);
     }
 
+    // 🚀 點擊按鈕手動發布：只存 Firebase (秒解)，不再等待 Google 試算表
     function manualSyncCMSData(btnEl) {
       var originalText = btnEl ? btnEl.textContent : '';
       if (btnEl) {
@@ -1149,21 +1119,13 @@
 
       db.ref('cms').set(payload).then(function() {
         if (btnEl) {
-          btnEl.textContent = '✓ 已同步至前台！';
+          btnEl.textContent = '✓ 同步成功！';
           setTimeout(function() {
             btnEl.textContent = originalText;
             btnEl.disabled = false;
           }, 1500);
         }
-        alert('🚀 內容已瞬間發布至前台！\n(試算表備份將於背景默默執行，不影響網頁操作)');
-        
-        if(currentGasWebhook) {
-           fetch(currentGasWebhook, {
-             method: 'POST',
-             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-             body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
-           }).catch(function(){});
-        }
+        alert('🚀 內容已瞬間發布至前台！\n(不再連動試算表商品頁，全面改用極速雲端)');
       }).catch(function(err) {
         if (btnEl) {
           btnEl.textContent = originalText;
@@ -1351,7 +1313,7 @@
         }
       }
 
-      container.innerHTML = (activeCount === 0) ? '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的上架商品</div>' : activeHtml;
+      container.innerHTML = (activeCount === 0) ? '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有找到符合條件的商品</div>' : activeHtml;
 
       if (inactiveCount > 0 && isAdminMode) {
         inactiveContainer.innerHTML = inactiveHtml;
@@ -2265,7 +2227,7 @@
         lineItemsText += (j + 1) + '. [' + it.series + '] ' + (it.itemName || it.name) + ' (' + it.spec + ') x ' + it.quantity + ' - NT$' + (it.price * it.quantity) + '\n';
       }
 
-      var orderFullText = '【DOT to DOT 訂購單】\n' +
+      var orderFullText = '【DOT to DOT 預購委託單】\n' +
         '訂單編號：' + finalOrderId + '\n' +
         '買家姓名：' + pendingOrderData.buyerName + '\n' +
         '手機號碼：' + pendingOrderData.buyerPhone + '\n' +
@@ -2479,7 +2441,7 @@
           body: JSON.stringify(payload)
         }).catch(function(e) {});
       }
-      alert('✅ 訂單狀態已同步至試算表！');
+      alert('✅ 訂單狀態已送出更新！');
       setTimeout(loadAdminOrders, 1000);
     }
 
@@ -2609,10 +2571,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
-        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
-        if (syncQaBtn) syncQaBtn.style.display = 'none';
-        if (syncPostBtn) syncPostBtn.style.display = 'none';
-        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
         switchPage('admin');
         loadAdminOrders();
       } else {
