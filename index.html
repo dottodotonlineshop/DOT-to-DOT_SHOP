@@ -42,7 +42,6 @@
 
     .action-badge-btn { position: relative; background: none; border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
     .action-badge-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .action-badge-btn.disabled-icon { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
     .badge-count { position: absolute; top: -2px; right: -6px; background-color: var(--danger-red); color: #ffffff; font-size: 10px; font-weight: 900; min-width: 17px; height: 17px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 3px; border: 2px solid var(--primary-blue); }
 
@@ -52,7 +51,6 @@
     .admin-dot.active { display: block; }
 
     .cart-btn-wrap { display: flex; align-items: center; gap: 5px; background: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.6); padding: 4px 10px; border-radius: 999px; color: #ffffff; cursor: pointer; transition: all 0.2s; }
-    .cart-btn-wrap.disabled-btn { opacity: 0.4; cursor: not-allowed; pointer-events: none; background: rgba(255,255,255,0.05); }
     .cart-btn-wrap:hover { background: #ffffff; color: var(--primary-blue); }
     .cart-btn-wrap svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
     .cart-num { font-size: 12px; font-weight: 900; }
@@ -64,7 +62,6 @@
 
     .pop-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: 800; color: #333; }
     .pop-item { padding: 9px 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid var(--primary-blue); line-height: 1.45; }
-    .pop-item.ship { border-left-color: #06C755; background: #f4fcf6; }
     .mark-read-btn { width: 100%; background: #f1f3f7; color: #555; border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 4px; }
 
     main { flex: 1; width: 100%; }
@@ -96,6 +93,7 @@
     .price-range-input { width: 75px; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; text-align: center; outline: none; }
     .filter-toggle-btn { background: var(--primary-blue); color: #ffffff; border: none; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,68,204,0.2); }
     .filter-toggle-btn svg { width: 20px; height: 20px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; }
+    
     .filter-dropdown-panel { background: var(--accent-gray); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 20px; display: none; flex-direction: column; gap: 10px; }
     .filter-dropdown-panel.active { display: flex; }
     .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -113,7 +111,7 @@
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
 
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
-    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all;}
+    .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all; }
     .product-eta { font-size: 11px; color: #7b46ff; font-weight: 700; background: #f2edff; padding: 3px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px; }
 
     .form-row-spec { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
@@ -141,7 +139,8 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
-    .blog-detail-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-top: 14px; }
+    
+    .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
     .cart-drawer-overlay.active { display: block; }
@@ -213,7 +212,7 @@
           <button class="admin-shortcut-btn" id="admin-shortcut-btn" onclick="switchPage('admin'); loadAdminOrders();">後台管理</button>
 
           <div class="bell-wrapper">
-            <button class="action-badge-btn" onclick="toggleNotificationPopover(event)" id="bell-btn" title="最新出貨公告">
+            <button class="action-badge-btn" onclick="toggleNotificationPopover(event)" id="bell-btn" title="最新通知">
               <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
               <span class="badge-count" id="bell-badge" style="display:none;">0</span>
             </button>
@@ -534,7 +533,8 @@
       <div class="bank-info-box">
         🏦 <b>匯款帳號資訊</b><br>
         銀行：兆豐銀行（017）<br>
-        帳號：<b>07764002939</b>
+        帳號：<b>07764002939</b><br>
+        戶名：DOT to DOT 專門店
       </div>
 
       <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
@@ -802,22 +802,19 @@
     var adminPage = 1;
     var adminPageSize = 5;
 
-    // 將同步函式補回，解決找不到 ReferenceError 的問題
-    function syncCMSToCloud() {
-      if (!currentGasWebhook) return;
-      var payload = {
-        action: "syncCMS",
-        products: productSeriesData,
-        notices: noticeData,
-        qas: qaData,
-        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : ''
-      };
-      fetch(currentGasWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(function(e) {});
+    function checkInAppBrowser() {
+      try {
+        var ua = navigator.userAgent || navigator.vendor || window.opera;
+        var isLine = (ua.indexOf("Line") > -1);
+        var isInstagram = (ua.indexOf("Instagram") > -1);
+        var isFacebook = (ua.indexOf("FBAN") > -1 || ua.indexOf("FBAV") > -1);
+        var isThreads = (ua.indexOf("Threads") > -1);
+
+        if (isLine || isInstagram || isFacebook || isThreads) {
+          var banner = document.getElementById('inapp-banner');
+          if (banner) banner.classList.add('active');
+        }
+      } catch (e) {}
     }
 
     function switchPage(pageId) {
@@ -1055,6 +1052,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
+      checkInAppBrowser();
       fetchCMSFromCloud();
       updateCartDisplay();
       handleGoogleOAuthRedirectCallback();
@@ -1112,6 +1110,23 @@
     }
 
     // 發布同步按鈕功能
+    function syncCMSToCloud() {
+      if (!currentGasWebhook) return;
+      var payload = {
+        action: "syncCMS",
+        products: productSeriesData,
+        notices: noticeData,
+        qas: qaData,
+        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
+        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。'
+      };
+      fetch(currentGasWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(function(e) {});
+    }
+
     function manualSyncCMSData(btnEl) {
       if (!currentGasWebhook) return;
       var originalText = btnEl ? btnEl.textContent : '';
@@ -1229,7 +1244,11 @@
 
       for (var i = 0; i < productSeriesData.length; i++) {
         var s = productSeriesData[i];
-        if (!s.id) s.id = 'series_' + Date.now() + '_' + i;
+        if (!s || !s.items || !Array.isArray(s.items)) continue;
+        
+        // 【自我修復機制】確保商品有 ID 才能綁定按鈕
+        if (!s.id) s.id = 'legacy_fix_' + Date.now() + '_' + i;
+        
         var isActive = (s.isActive !== false);
 
         if (currentFilterRegion !== 'all' && s.region !== currentFilterRegion) continue;
@@ -1321,7 +1340,7 @@
           '</div>';
         } else {
           inactiveCount++;
-          var inactiveAdminBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#16a34a; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🔄 恢復上架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
+          var inactiveAdminBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;"><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#16a34a; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🔄 恢復上架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
 
           inactiveHtml += '<div class="product-card inactive-product">' +
             '<div class="product-img-wrap"><img src="' + currentImg + '" alt="' + s.seriesName + '"></div>' +
