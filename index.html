@@ -9,10 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-  <!-- 載入 Firebase v8 CDN -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
   <style>
     :root {
       --primary-blue: #0044cc;
@@ -46,7 +42,6 @@
 
     .action-badge-btn { position: relative; background: none; border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
     .action-badge-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .action-badge-btn.disabled-icon { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
     .badge-count { position: absolute; top: -2px; right: -6px; background-color: var(--danger-red); color: #ffffff; font-size: 10px; font-weight: 900; min-width: 17px; height: 17px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 3px; border: 2px solid var(--primary-blue); }
 
@@ -144,6 +139,7 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
+    
     .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
@@ -205,6 +201,10 @@
   </style>
 </head>
 <body>
+
+  <div class="inapp-browser-banner" id="inapp-banner">
+    ⚠️ 已偵測到您目前使用 App 內建瀏覽器，建議於預設瀏覽器開啟，以保障網頁與登入流程順利運行。
+  </div>
 
   <header class="header-banner">
     <div class="nav-container">
@@ -438,7 +438,7 @@
         </div>
 
         <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:12px; padding:14px; margin-bottom:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:220px;">
+          <input type="text" class="search-input" id="admin-search-input" placeholder="🔍 搜尋訂單編號、買家姓名或電話..." oninput="adminPage=1; renderAdminOrdersUI()" style="flex:1; min-width:200px;">
           <select class="form-select" id="admin-status-filter" onchange="adminPage=1; renderAdminOrdersUI()" style="width:auto;">
             <option value="all">全部對帳狀態</option>
             <option value="等待對帳中">等待對帳中</option>
@@ -790,20 +790,6 @@
   <script>
     var ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"];
     var ADMIN_PASSWORD = "admin888";
-    
-    // 初始化 Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU",
-      authDomain: "dot-to-dotshop.firebaseapp.com",
-      databaseURL: "https://dot-to-dotshop-default-rtdb.firebaseio.com",
-      projectId: "dot-to-dotshop",
-      storageBucket: "dot-to-dotshop.firebasestorage.app",
-      messagingSenderId: "868804558476",
-      appId: "1:868804558476:web:c8c26a49f1d1d6354105a9"
-    };
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.database();
-
     var isAdminMode = false;
     var GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxC5-LhTrBBuILbCvFhRDTA4sHJIZmZAdEIixufZPNeg1myjApTmSe34CIVeGRgmQ/exec";
     var currentGasWebhook = localStorage.getItem('dottodot_gas_webhook') || GAS_WEBHOOK_URL;
@@ -811,14 +797,36 @@
     var GOOGLE_CLIENT_ID = "884766774239-h8q876coskuv71okrldomo6rk5p07ohn.apps.googleusercontent.com";
     var MY_LIFF_ID = "2011693279-1eGSgIL6";
 
-    var productSeriesData = [];
-    var noticeData = [];
-    var qaData = [];
+    var productSeriesData = JSON.parse(localStorage.getItem('dottodot_custom_series') || '[]');
+    if (!Array.isArray(productSeriesData)) productSeriesData = [];
+    var noticeData = JSON.parse(localStorage.getItem('dottodot_custom_notice') || '[]');
+    if (!Array.isArray(noticeData)) noticeData = [];
+    var qaData = JSON.parse(localStorage.getItem('dottodot_custom_qa') || '[]');
+    if (!Array.isArray(qaData)) qaData = [];
+
     var cart = JSON.parse(localStorage.getItem('dottodot_cart') || '[]');
     var currentUser = null;
 
     var adminPage = 1;
     var adminPageSize = 5;
+
+    // 將同步函式確實補回
+    function syncCMSToCloud() {
+      if (!currentGasWebhook) return;
+      var payload = {
+        action: "syncCMS",
+        products: productSeriesData,
+        notices: noticeData,
+        qas: qaData,
+        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
+        about: document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : ''
+      };
+      fetch(currentGasWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(function(e) {});
+    }
 
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
@@ -840,6 +848,8 @@
 
       if (pageId === 'admin') {
         loadAdminOrders();
+      } else {
+        fetchCMSFromCloud();
       }
     }
 
@@ -1077,16 +1087,25 @@
       setTimeout(loadLineSDK, 300);
     });
 
-    // 🚀 Firebase 讀取機制：實時監聽
     function fetchCMSFromCloud() {
-      db.ref('cms').on('value', function(snapshot) {
-        var data = snapshot.val();
+      if (!currentGasWebhook) return;
+      fetch(currentGasWebhook + '?action=getCMS').then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
         if (data) {
-          productSeriesData = data.products || [];
-          noticeData = data.notices || [];
-          qaData = data.qas || [];
-          
-          if (data.posts) {
+          if (data.products && Array.isArray(data.products)) {
+            productSeriesData = data.products;
+            localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
+          }
+          if (data.notices && Array.isArray(data.notices)) {
+            noticeData = data.notices;
+            localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
+          }
+          if (data.qas && Array.isArray(data.qas)) {
+            qaData = data.qas;
+            localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
+          }
+          if (data.posts && Array.isArray(data.posts)) {
             localStorage.setItem('dottodot_custom_posts', JSON.stringify(data.posts));
           }
           
@@ -1095,19 +1114,12 @@
             if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>');
             localStorage.setItem('dottodot_about_text', data.about);
           }
-
-          renderProducts();
-          renderNotices();
-          renderQas();
-          renderPosts();
-        } else {
           renderProducts();
           renderNotices();
           renderQas();
           renderPosts();
         }
-      }, function(error) {
-        console.error("Firebase read error", error);
+      }).catch(function(err) {
         renderProducts();
         renderNotices();
         renderQas();
@@ -1115,37 +1127,18 @@
       });
     }
 
-    // 🚀 Firebase 寫入機制：先寫入 Firebase，再備份到 GAS
-    function syncCMSToCloud() {
-      var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
-      var payload = {
-        products: productSeriesData,
-        notices: noticeData,
-        qas: qaData,
-        posts: JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]'),
-        about: aboutText
-      };
-      
-      db.ref('cms').set(payload).then(function() {
-         if(currentGasWebhook) {
-             fetch(currentGasWebhook, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
-             }).catch(function(e){});
-         }
-      });
-    }
-
     function manualSyncCMSData(btnEl) {
+      if (!currentGasWebhook) return;
       var originalText = btnEl ? btnEl.textContent : '';
       if (btnEl) {
         btnEl.textContent = '⏳ 正在同步...';
         btnEl.disabled = true;
+        btnEl.style.opacity = '0.7';
       }
 
       var aboutText = document.getElementById('about-us-desc-text') ? document.getElementById('about-us-desc-text').innerHTML.replace(/<br>/g, '\n') : '本店提供泰韓選物、明星個人品牌及同款代購。';
       var payload = {
+        action: "syncCMS",
         products: productSeriesData,
         notices: noticeData,
         qas: qaData,
@@ -1153,27 +1146,36 @@
         about: aboutText
       };
 
-      db.ref('cms').set(payload).then(function() {
-        if (btnEl) {
-          btnEl.textContent = '✓ 同步成功！';
-          setTimeout(function() {
+      fetch(currentGasWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).then(function(resp) {
+        return resp.json();
+      }).then(function(res) {
+        if (res && res.status === 'success') {
+          if (btnEl) {
+            btnEl.textContent = '✓ 同步成功！';
+            setTimeout(function() {
+              btnEl.textContent = originalText;
+              btnEl.disabled = false;
+              btnEl.style.opacity = '1';
+            }, 1500);
+          }
+          alert('🚀 內容已成功發布並同步至全站雲端！');
+        } else {
+          if (btnEl) {
             btnEl.textContent = originalText;
             btnEl.disabled = false;
-          }, 1500);
-        }
-        alert('🚀 內容已成功發布並同步至全站雲端！');
-        
-        if(currentGasWebhook) {
-           fetch(currentGasWebhook, {
-             method: 'POST',
-             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-             body: JSON.stringify(Object.assign({action: "syncCMS"}, payload))
-           }).catch(function(){});
+            btnEl.style.opacity = '1';
+          }
+          alert('⚠️ 同步完成，但伺服器回傳異常。');
         }
       }).catch(function(err) {
         if (btnEl) {
           btnEl.textContent = originalText;
           btnEl.disabled = false;
+          btnEl.style.opacity = '1';
         }
         alert('❌ 同步失敗：' + err.message);
       });
@@ -1244,6 +1246,7 @@
         var s = productSeriesData[i];
         if (!s || !s.items || !Array.isArray(s.items)) continue;
         
+        if (!s.id) s.id = 'series_' + Date.now() + '_' + i;
         var isActive = (s.isActive !== false);
 
         if (currentFilterRegion !== 'all' && s.region !== currentFilterRegion) continue;
@@ -1310,7 +1313,7 @@
 
         if (isActive) {
           activeCount++;
-          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除商品</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
+          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
           var cartBtnHtml = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4; cursor:not-allowed;">已結單</button>' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>';
 
           activeHtml += '<div class="product-card ' + closedClass + '" id="card-' + s.id + '">' +
@@ -1333,7 +1336,7 @@
           '</div>';
         } else {
           inactiveCount++;
-          var inactiveAdminBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;"><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#16a34a; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🔄 恢復上架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除商品</button></div>' : '';
+          var inactiveAdminBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;"><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#16a34a; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🔄 恢復上架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
 
           inactiveHtml += '<div class="product-card inactive-product">' +
             '<div class="product-img-wrap"><img src="' + currentImg + '" alt="' + s.seriesName + '"></div>' +
@@ -1375,6 +1378,7 @@
         }
       }
       productSeriesData = newSer;
+      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
     }
@@ -2638,10 +2642,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
-        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
-        if (syncQaBtn) syncQaBtn.style.display = 'none';
-        if (syncPostBtn) syncPostBtn.style.display = 'none';
-        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
         switchPage('admin');
         loadAdminOrders();
       } else {
