@@ -109,8 +109,11 @@
     .product-card.closed-product { background: #f1f5f9; opacity: 0.75; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card.inactive-product { background: #f8fafc; opacity: 0.6; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card:hover { transform: translateY(-4px); border-color: var(--primary-blue); }
-    .product-img-wrap { width: 100%; height: 220px; background: #f1f3f7; position: relative; }
+    
+    /* 🚀 圖片比例 1:1 修改 */
+    .product-img-wrap { width: 100%; aspect-ratio: 1 / 1; background: #f1f3f7; position: relative; overflow: hidden; }
     .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    
     .preorder-badge { position: absolute; top: 10px; left: 10px; background: var(--accent-black); color: var(--accent-lime); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px; }
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
 
@@ -516,6 +519,15 @@
         </div>
         <div class="form-group"><label id="buyer-address-label">收件門市(賣貨便) *</label><input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)"></div>
         <div class="form-group"><label>訂單備註 / 拆單出貨偏好</label><input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出"></div>
+        
+        <!-- 🚀 必填條款勾選 -->
+        <div class="form-group" style="margin-top: 16px; margin-bottom: 4px; padding: 10px; background: #eff6ff; border-radius: 8px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-size:12.5px;">
+            <input type="checkbox" id="agree-tos" required style="width:18px; height:18px; cursor:pointer;">
+            <span>已詳細閱讀並同意 <a href="javascript:void(0)" onclick="closeCheckoutModal1(); switchPage('notice');" style="color:var(--primary-blue); text-decoration:underline;">訂購須知</a></span>
+          </label>
+        </div>
+
         <button type="submit" class="checkout-btn">已確認，前往下一步 (匯款資訊) ➔</button>
       </form>
     </div>
@@ -776,7 +788,7 @@
         <div id="sub-items-container">
         </div>
 
-        <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:margin-bottom:12px;">＋ 新增下一個品項</button>
+        <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:12px;">＋ 新增下一個品項</button>
 
         <button type="submit" class="checkout-btn" id="product-modal-submit-btn">確認儲存商品系列</button>
       </form>
@@ -867,8 +879,8 @@
       }
     }
 
-    function validateCartStockAndStatus() {
-      if (cart.length === 0) return;
+    function validateCartStockAndStatus(silent) {
+      if (cart.length === 0) return false;
       var updatedCart = [];
       var removedOrChanged = false;
       var alertMsg = "";
@@ -925,8 +937,9 @@
         cart = updatedCart;
         saveCartToLocalStorage();
         updateCartDisplay();
-        alert("⚠️ 購物車商品異動通知：\n" + alertMsg);
+        if (!silent) alert("⚠️ 購物車商品異動通知：\n" + alertMsg);
       }
+      return removedOrChanged;
     }
 
     function toggleNotificationPopover(e) {
@@ -940,6 +953,7 @@
       }
     }
 
+    // 🚀 鈴鐺已讀與 NEW 標記脫鉤
     function markAllNotificationsRead() {
       var popoverContent = document.getElementById('bell-popover-content');
       var badge = document.getElementById('bell-badge');
@@ -953,14 +967,7 @@
       if (currentUser) {
         localStorage.setItem('dottodot_read_notifs_' + currentUser.userId, 'true');
       }
-      
-      var ackOrders = JSON.parse(localStorage.getItem('dottodot_ack_orders') || '{}');
-      for (var f = 0; f < adminOrdersList.length; f++) {
-        ackOrders[adminOrdersList[f].orderId] = true;
-      }
-      localStorage.setItem('dottodot_ack_orders', JSON.stringify(ackOrders));
-      renderAdminOrdersUI();
-      
+      // 不清除 dottodot_ack_orders，讓後台的 NEW 按鈕保留
       var popover = document.getElementById('bell-popover');
       if (popover) popover.classList.remove('active');
     }
@@ -991,7 +998,7 @@
         if (btnOrd) btnOrd.classList.add('active');
         if (btnProf) btnProf.classList.remove('active');
         if (tabOrd) tabOrd.style.display = 'block';
-        if (tabOrd) tabOrd.style.display = 'none';
+        if (tabProf) tabProf.style.display = 'none'; // 🚀 修正標籤切換筆誤
         syncOrdersFromSheet();
       }
     }
@@ -1015,7 +1022,7 @@
     }
 
     function openCheckoutModal() {
-      validateCartStockAndStatus();
+      validateCartStockAndStatus(false);
       if (cart.length === 0) {
         alert('購物車內尚無有效商品可供結帳！');
         return;
@@ -1081,7 +1088,7 @@
       setTimeout(loadLineSDK, 300);
     });
 
-    // 🚀 Firebase 讀取機制：0秒即時監聽前台資料
+    // 🚀 Firebase 讀取機制
     function fetchCMSFromCloud() {
       db.ref('cms').on('value', function(snapshot) {
         var data = snapshot.val();
@@ -1115,7 +1122,6 @@
       });
     }
 
-    // 🚀 點擊按鈕手動發布：只存 Firebase (秒解)，並在背景備份給 GAS
     function manualSyncCMSData(btnEl) {
       var originalText = btnEl ? btnEl.textContent : '';
       if (btnEl) {
@@ -1287,10 +1293,10 @@
         var closedClass = isActuallyClosed ? 'closed-product' : '';
         var closedBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
 
-        var itemOptions = '';
+        // 🚀 選單預設防呆「-」，不顯示庫存數字
+        var itemOptions = '<option value="" disabled selected>-</option>';
         for (var j = 0; j < s.items.length; j++) {
-          var stockText = s.items[j].stock !== undefined ? ' (庫存:' + s.items[j].stock + ')' : '';
-          itemOptions += '<option value="' + j + '">' + s.items[j].name + stockText + '</option>';
+          itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
         }
 
         var colorOptions = '';
@@ -1311,7 +1317,7 @@
 
         if (isActive) {
           activeCount++;
-          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
+          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
           var cartBtnHtml = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4; cursor:not-allowed;">已結單</button>' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>';
 
           activeHtml += '<div class="product-card ' + closedClass + '" id="card-' + s.id + '">' +
@@ -1377,6 +1383,7 @@
       }
       productSeriesData = newSer;
       syncCMSToCloud();
+      renderProducts();
     }
 
     function handleItemChange(seriesId) {
@@ -1425,6 +1432,14 @@
         alert('目前為賣家後台模式，無法進行購物。');
         return;
       }
+      
+      // 🚀 檢查是否點選了防呆的 "-" 選項
+      var selectEl = document.getElementById('item-select-' + seriesId);
+      if (!selectEl || !selectEl.value) {
+        alert('👉 請先點開下拉選單，選擇您要的商品規格品項！');
+        return;
+      }
+
       var series = null;
       for (var i = 0; i < productSeriesData.length; i++) {
         if (String(productSeriesData[i].id) === String(seriesId)) {
@@ -1439,7 +1454,6 @@
         return;
       }
 
-      var selectEl = document.getElementById('item-select-' + seriesId);
       var itemIdx = parseInt(selectEl.value, 10);
       var item = series.items[itemIdx];
 
@@ -1563,474 +1577,14 @@
       if (totalEl) totalEl.textContent = 'NT$ ' + Number(checkedSubtotal).toLocaleString();
     }
 
-    function renderNotices() {
-      var container = document.getElementById('dynamic-notice-container');
-      if (!container) return;
-
-      var html = '';
-      for (var i = 0; i < noticeData.length; i++) {
-        var n = noticeData[i];
-        var adminBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="openNoticeModal(' + i + ')" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeleteNotice(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
-        html += '<div class="notice-card">' +
-          '<h4>' + n.title + '</h4>' +
-          '<p>' + n.desc.replace(/\n/g, '<br>') + '</p>' +
-          adminBtns +
-        '</div>';
-      }
-      container.innerHTML = html;
-    }
-
-    function renderQas() {
-      var container = document.getElementById('dynamic-qa-container');
-      if (!container) return;
-
-      var html = '';
-      for (var i = 0; i < qaData.length; i++) {
-        var q = qaData[i];
-        var adminBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="openQaModal(' + i + ')" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeleteQa(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除此問題</button></div>' : '';
-        html += '<div class="qa-box">' +
-          '<div class="qa-q">' + q.q + ' <span>＋</span></div>' +
-          '<div class="qa-a">' + q.a.replace(/\n/g, '<br>') + '</div>' +
-          adminBtns +
-        '</div>';
-      }
-      container.innerHTML = html;
-    }
-
-    function renderPosts() {
-      var container = document.getElementById('dynamic-blog-container');
-      if (!container) return;
-      var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
-
-      var html = '';
-      for (var i = 0; i < posts.length; i++) {
-        var p = posts[i];
-        var adminBtns = isAdminMode ? '<div style="margin-top:10px; display:flex; gap:6px;"><button onclick="openPostModal(' + i + '); event.stopPropagation();" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeletePost(' + i + '); event.stopPropagation();" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
-        
-        html += '<div class="blog-card" onclick="viewPostDetail(' + i + ')">' +
-          '<div class="blog-content-part">' +
-            '<span class="blog-tag">' + p.tag + '</span>' +
-            '<div style="font-size:11px; color:#888; margin-bottom:4px;">' + p.date + '</div>' +
-            '<div class="blog-title">' + p.title + '</div>' +
-            '<div class="blog-desc">' + p.desc.substring(0, 75) + '... (點擊閱讀完整內容)</div>' +
-            (p.link ? '<div style="margin-top:6px; font-size:12px; color:var(--primary-blue); font-weight:700;">🔗 相關連結</div>' : '') +
-            adminBtns +
-          '</div>' +
-          (p.img ? '<img src="' + p.img + '" class="blog-thumb">' : '') +
-        '</div>';
-      }
-      container.innerHTML = html;
-    }
-
-    function viewPostDetail(index) {
-      var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
-      var p = posts[index];
-      if (!p) return;
-
-      var container = document.getElementById('dynamic-blog-container');
-      container.innerHTML = '<button onclick="renderPosts()" style="background:#475569; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; margin-bottom:16px;">⬅ 返回貼文總覽</button>' +
-        '<div class="blog-card" style="display:block; cursor:default;">' +
-          '<span class="blog-tag">' + p.tag + '</span>' +
-          '<div style="font-size:11px; color:#888; margin-bottom:6px;">發布日期：' + p.date + '</div>' +
-          '<h2 style="font-size:22px; font-weight:900; margin-bottom:12px;">' + p.title + '</h2>' +
-          '<div style="font-size:14px; color:#333; line-height:1.8; margin-bottom:14px; white-space:pre-wrap;">' + p.desc + '</div>' +
-          (p.img ? '<img src="' + p.img + '" class="blog-detail-img">' : '') +
-          (p.link ? '<div style="margin-top:14px;"><a href="' + p.link + '" target="_blank" style="background:var(--primary-blue); color:#fff; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; text-decoration:none; display:inline-block;">🔗 點擊前往相關連結 ➔</a></div>' : '') +
-        '</div>';
-    }
-
-    function adminDeleteNotice(index) {
-      if (!confirm('確定要刪除此公告項目嗎？')) return;
-      noticeData.splice(index, 1);
-      localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      syncCMSToCloud();
-      renderNotices();
-    }
-    function adminDeleteQa(index) {
-      if (!confirm('確定要刪除此 Q&A 嗎？')) return;
-      qaData.splice(index, 1);
-      localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      syncCMSToCloud();
-      renderQas();
-    }
-    function adminDeletePost(index) {
-      if (!confirm('確定要刪除此貼文嗎？')) return;
-      var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
-      posts.splice(index, 1);
-      localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-      syncCMSToCloud();
-      renderPosts();
-    }
-    
-    function adminToggleProductActive(seriesId) {
-      for (var i = 0; i < productSeriesData.length; i++) {
-        if (String(productSeriesData[i].id) === String(seriesId)) {
-          productSeriesData[i].isActive = (productSeriesData[i].isActive === false) ? true : false;
-          break;
-        }
-      }
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
-      renderProducts();
-    }
-    
-    function adminToggleProductClose(seriesId) {
-      for (var i = 0; i < productSeriesData.length; i++) {
-        if (String(productSeriesData[i].id) === String(seriesId)) {
-          productSeriesData[i].isClosed = !productSeriesData[i].isClosed;
-          break;
-        }
-      }
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
-      renderProducts();
-    }
-
-    function openNoticeModal(editIndex) {
-      var modal = document.getElementById('notice-modal');
-      var titleEl = document.getElementById('notice-modal-title');
-      var editIdxInput = document.getElementById('adm-notice-edit-index');
-
-      if (editIndex !== undefined && editIndex >= 0) {
-        var n = noticeData[editIndex];
-        titleEl.textContent = '編輯 NOTICE 項目';
-        editIdxInput.value = editIndex;
-        document.getElementById('adm-notice-title').value = n.title;
-        document.getElementById('adm-notice-desc').value = n.desc;
-      } else {
-        titleEl.textContent = '新增 NOTICE 項目';
-        editIdxInput.value = '-1';
-        document.getElementById('adm-notice-title').value = '';
-        document.getElementById('adm-notice-desc').value = '';
-      }
-      modal.classList.add('active');
-    }
-    function closeNoticeModal() { document.getElementById('notice-modal').classList.remove('active'); }
-
-    function handleAdminSaveNotice(e) {
-      e.preventDefault();
-      var t = document.getElementById('adm-notice-title').value.trim();
-      var d = document.getElementById('adm-notice-desc').value.trim();
-      var editIdx = parseInt(document.getElementById('adm-notice-edit-index').value, 10);
-
-      if (editIdx >= 0) {
-        noticeData[editIdx].title = t;
-        noticeData[editIdx].desc = d;
-      } else {
-        noticeData.push({ title: t, desc: d });
-      }
-      localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
-      syncCMSToCloud();
-      renderNotices();
-      closeNoticeModal();
-    }
-
-    function openQaModal(editIndex) {
-      var modal = document.getElementById('qa-modal');
-      var titleEl = document.getElementById('qa-modal-title');
-      var editIdxInput = document.getElementById('adm-qa-edit-index');
-
-      if (editIndex !== undefined && editIndex >= 0) {
-        var q = qaData[editIndex];
-        titleEl.textContent = '編輯 Q&A 問題';
-        editIdxInput.value = editIndex;
-        document.getElementById('adm-qa-q').value = q.q;
-        document.getElementById('adm-qa-a').value = q.a;
-      } else {
-        titleEl.textContent = '新增 Q&A 問題';
-        editIdxInput.value = '-1';
-        document.getElementById('adm-qa-q').value = '';
-        document.getElementById('adm-qa-a').value = '';
-      }
-      modal.classList.add('active');
-    }
-    function closeQaModal() { document.getElementById('qa-modal').classList.remove('active'); }
-
-    function handleAdminSaveQa(e) {
-      e.preventDefault();
-      var q = document.getElementById('adm-qa-q').value.trim();
-      var a = document.getElementById('adm-qa-a').value.trim();
-      var editIdx = parseInt(document.getElementById('adm-qa-edit-index').value, 10);
-
-      if (editIdx >= 0) {
-        qaData[editIdx].q = q;
-        qaData[editIdx].a = a;
-      } else {
-        qaData.push({ q: q, a: a });
-      }
-      localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
-      syncCMSToCloud();
-      renderQas();
-      closeQaModal();
-    }
-
-    function openPostModal(editIndex) {
-      var modal = document.getElementById('post-modal');
-      var titleEl = document.getElementById('post-modal-title');
-      var editIdxInput = document.getElementById('adm-post-edit-index');
-
-      if (editIndex !== undefined && editIndex >= 0) {
-        var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
-        var p = posts[editIndex];
-        titleEl.textContent = '編輯 NEW POST 貼文';
-        editIdxInput.value = editIndex;
-        document.getElementById('adm-post-title').value = p.title;
-        document.getElementById('adm-post-tag').value = p.tag;
-        document.getElementById('adm-post-desc').value = p.desc;
-        document.getElementById('adm-post-link').value = p.link || '';
-        document.getElementById('adm-post-file').value = p.img || '';
-      } else {
-        titleEl.textContent = '發布 NEW POST 貼文';
-        editIdxInput.value = '-1';
-        document.getElementById('adm-post-title').value = '';
-        document.getElementById('adm-post-tag').value = '';
-        document.getElementById('adm-post-desc').value = '';
-        document.getElementById('adm-post-link').value = '';
-        document.getElementById('adm-post-file').value = '';
-      }
-      modal.classList.add('active');
-    }
-
-    function closePostModal() { document.getElementById('post-modal').classList.remove('active'); }
-
-    function handleAdminSavePost(e) {
-      e.preventDefault();
-      var title = document.getElementById('adm-post-title').value.trim();
-      var tag = document.getElementById('adm-post-tag').value.trim();
-      var desc = document.getElementById('adm-post-desc').value.trim();
-      var link = document.getElementById('adm-post-link').value.trim();
-      var imgUrl = document.getElementById('adm-post-file').value.trim();
-      var editIdx = parseInt(document.getElementById('adm-post-edit-index').value, 10);
-
-      var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
-
-      if (editIdx >= 0) {
-        posts[editIdx].title = title;
-        posts[editIdx].tag = tag;
-        posts[editIdx].desc = desc;
-        posts[editIdx].link = link;
-        if (imgUrl) posts[editIdx].img = imgUrl;
-      } else {
-        posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgUrl || '', date: new Date().toLocaleDateString() });
-      }
-      localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
-      syncCMSToCloud();
-      renderPosts();
-      closePostModal();
-    }
-
-    function openProductModal(seriesId) {
-      var modal = document.getElementById('product-modal');
-      var titleEl = document.getElementById('product-modal-title');
-      var editIdInput = document.getElementById('adm-product-edit-id');
-      var container = document.getElementById('sub-items-container');
-
-      var catCheckboxes = document.querySelectorAll('input[name="cat-chk"]');
-      catCheckboxes.forEach(function(cb) { cb.checked = false; });
-
-      if (seriesId) {
-        var series = null;
-        for (var i = 0; i < productSeriesData.length; i++) {
-          if (String(productSeriesData[i].id) === String(seriesId)) {
-            series = productSeriesData[i];
-            break;
-          }
-        }
-        if (!series) return;
-
-        titleEl.textContent = '編輯商品系列';
-        editIdInput.value = series.id;
-        document.getElementById('adm-series-name').value = series.seriesName;
-        document.getElementById('adm-series-file').value = series.img;
-        document.getElementById('adm-series-is-preorder').checked = (series.stockType === 'PRE-ORDER');
-        document.getElementById('adm-series-region').value = series.region || '泰國商品';
-        document.getElementById('adm-series-eta').value = series.eta;
-        document.getElementById('adm-series-close-time').value = series.closeTime || '';
-
-        // 讀取分類複選
-        if (series.categories && Array.isArray(series.categories)) {
-          catCheckboxes.forEach(function(cb) {
-            if (series.categories.includes(cb.value)) cb.checked = true;
-          });
-        } else if (series.category) {
-          catCheckboxes.forEach(function(cb) {
-            if (cb.value === series.category) cb.checked = true;
-          });
-        }
-
-        var subHtml = '';
-        for (var j = 0; j < series.items.length; j++) {
-          var it = series.items[j];
-          var stk = it.stock !== undefined ? it.stock : 99;
-          subHtml += '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
-            '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
-            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div>' +
-            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div>' +
-            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="' + stk + '"></div>' +
-            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + (it.colors ? it.colors.join(', ') : '') + '"></div>' +
-            '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + (it.sizes ? it.sizes.join(', ') : '') + '"></div>' +
-            '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div>' +
-          '</div>';
-        }
-        container.innerHTML = subHtml;
-      } else {
-        titleEl.textContent = '上架全新商品系列';
-        editIdInput.value = '';
-        document.getElementById('adm-series-name').value = '';
-        document.getElementById('adm-series-file').value = '';
-        document.getElementById('adm-series-is-preorder').checked = false;
-        document.getElementById('adm-series-eta').value = '';
-        document.getElementById('adm-series-close-time').value = '';
-        
-        container.innerHTML = '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
-          '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
-          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
-          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
-          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>' +
-          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
-          '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
-          '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>' +
-        '</div>';
-      }
-      modal.classList.add('active');
-    }
-
-    function closeProductModal() { document.getElementById('product-modal').classList.remove('active'); }
-
-    function addSubItemBlock() {
-      var container = document.getElementById('sub-items-container');
-      if (!container) return;
-      var div = document.createElement('div');
-      div.className = 'sub-item-block';
-      div.style.cssText = 'background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;';
-      div.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
-        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
-        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div>' +
-        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">庫存數量 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99" placeholder="99"></div>' +
-        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div>' +
-        '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
-        '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
-      container.appendChild(div);
-    }
-
-    function handleAdminSaveProduct(e) {
-      e.preventDefault();
-      var editId = document.getElementById('adm-product-edit-id').value;
-      var seriesName = document.getElementById('adm-series-name').value.trim();
-      var isPre = document.getElementById('adm-series-is-preorder').checked;
-      var stockType = isPre ? 'PRE-ORDER' : '';
-      var region = document.getElementById('adm-series-region').value;
-      var eta = document.getElementById('adm-series-eta').value.trim();
-      var seriesImgUrl = document.getElementById('adm-series-file').value.trim();
-      var closeTime = document.getElementById('adm-series-close-time').value;
-
-      var selectedCats = [];
-      document.querySelectorAll('input[name="cat-chk"]:checked').forEach(function(cb) {
-        selectedCats.push(cb.value);
-      });
-      if (selectedCats.length === 0) {
-        alert("請至少選擇一個商品分類！");
-        return;
-      }
-
-      var subBlocks = document.querySelectorAll('.sub-item-block');
-      var itemsArr = [];
-
-      subBlocks.forEach(function(block) {
-        var name = block.querySelector('.sub-name').value.trim();
-        var price = parseInt(block.querySelector('.sub-price').value, 10);
-        var stock = parseInt(block.querySelector('.sub-stock').value, 10);
-        var rawColors = block.querySelector('.sub-colors').value.split(',');
-        var rawSizes = block.querySelector('.sub-sizes').value.split(',');
-        var imgUrl = block.querySelector('.sub-file').value.trim();
-
-        var colors = [];
-        for (var c = 0; c < rawColors.length; c++) colors.push(rawColors[c].trim());
-        var sizes = [];
-        for (var sz = 0; sz < rawSizes.length; sz++) sizes.push(rawSizes[sz].trim());
-
-        itemsArr.push({ name: name, price: price, stock: isNaN(stock) ? 99 : stock, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
-      });
-
-      if (editId) {
-        for (var i = 0; i < productSeriesData.length; i++) {
-          if (String(productSeriesData[i].id) === String(editId)) {
-            productSeriesData[i].seriesName = seriesName;
-            productSeriesData[i].img = seriesImgUrl;
-            productSeriesData[i].eta = eta;
-            productSeriesData[i].stockType = stockType;
-            productSeriesData[i].region = region;
-            productSeriesData[i].categories = selectedCats;
-            productSeriesData[i].closeTime = closeTime;
-            productSeriesData[i].items = itemsArr;
-            break;
-          }
-        }
-      } else {
-        var newSeries = {
-          id: 'custom_' + Date.now(),
-          seriesName: seriesName,
-          img: seriesImgUrl,
-          eta: eta,
-          stockType: stockType,
-          region: region,
-          categories: selectedCats,
-          closeTime: closeTime,
-          isClosed: false,
-          isActive: true,
-          items: itemsArr
-        };
-        productSeriesData.unshift(newSeries);
-      }
-
-      localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
-      syncCMSToCloud();
-      renderProducts();
-      closeProductModal(); 
-    }
-
-    function handleUserLoggedIn(user, isFirstTime) {
-      currentUser = user;
-
-      var avatarSlot = document.getElementById('user-avatar-slot');
-      if (avatarSlot) {
-        if (user.pictureUrl) {
-          avatarSlot.innerHTML = '<img src="' + user.pictureUrl + '" alt="' + user.displayName + '"><div class="admin-dot ' + (isAdminMode ? 'active' : '') + '" id="admin-red-dot"></div>';
-        } else {
-          avatarSlot.innerHTML = user.displayName.charAt(0) + '<div class="admin-dot ' + (isAdminMode ? 'active' : '') + '" id="admin-red-dot"></div>';
-        }
-      }
-
-      var unlogged = document.getElementById('auth-unlogged');
-      var logged = document.getElementById('auth-logged');
-      if (unlogged) unlogged.style.display = 'none';
-      if (logged) logged.style.display = 'block';
-
-      var dispName = document.getElementById('user-display-name');
-      var dispId = document.getElementById('user-display-id');
-      if (dispName) dispName.textContent = user.displayName + ' (' + user.provider + ')';
-      if (dispId) dispId.textContent = user.contactValue || (user.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : 'LINE ID: ' + user.userId);
-
-      var profPic = document.getElementById('user-profile-pic');
-      if (profPic && user.pictureUrl) profPic.src = user.pictureUrl;
-
-      var userEmail = (user.contactValue || "").trim().toLowerCase();
-      var isManager = false;
-      for (var i = 0; i < ADMIN_EMAILS.length; i++) {
-        if (ADMIN_EMAILS[i].toLowerCase() === userEmail) {
-          isManager = true;
-          break;
-        }
-      }
-
-      var adminBox = document.getElementById('admin-mode-switch-box');
-      if (adminBox) adminBox.style.display = isManager ? 'block' : 'none';
-
-      syncOrdersFromSheet();
-    }
-
+    // 🚀 歷史訂單：加上載入中的防呆文字
     function syncOrdersFromSheet() {
       if (!currentUser || !currentGasWebhook) return;
+      var listContainer = document.getElementById('member-orders-list');
+      if (listContainer && listContainer.innerHTML === '') {
+        listContainer.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b; font-weight:800; font-size:13px;">⏳ 正在連線為您載入歷史訂單...</div>';
+      }
+      
       var queryParam = encodeURIComponent(currentUser.contactValue || currentUser.displayName);
       var nameParam = encodeURIComponent(currentUser.displayName || '');
       var fetchUrl = currentGasWebhook + '?contact=' + queryParam + '&name=' + nameParam;
@@ -2043,100 +1597,9 @@
           renderMemberOrders(data.orders);
           buildBellNotifications(data.orders);
         }
-      }).catch(function() {});
-    }
-
-    function buildBellNotifications(orders) {
-      if (!orders || orders.length === 0) return;
-      var notifItems = [];
-      for (var i = 0; i < orders.length; i++) {
-        var order = orders[i];
-        var statuses = [];
-        if (order.payStatus && order.payStatus !== '等待對帳中') {
-          statuses.push('對帳：' + order.payStatus);
-        }
-        var shipStrs = [];
-        for (var j = 0; j < order.items.length; j++) {
-          if (order.items[j].shipStatus) {
-             shipStrs.push(order.items[j].name + ' (' + order.items[j].shipStatus + ')');
-          }
-        }
-        if (shipStrs.length > 0) statuses.push('物流：' + shipStrs.join(', '));
-
-        if (statuses.length > 0) {
-          notifItems.push({ 
-            title: '訂單 ' + order.orderId + ' 狀態更新', 
-            desc: statuses.join('<br>') 
-          });
-        }
-      }
-
-      var popoverContent = document.getElementById('bell-popover-content');
-      var badge = document.getElementById('bell-badge');
-      if (notifItems.length > 0 && popoverContent && badge) {
-        var html = '';
-        for (var k = 0; k < notifItems.length; k++) {
-          var n = notifItems[k];
-          html += '<div class="pop-item"><strong style="color:var(--primary-blue);">● ' + n.title + '</strong><div>' + n.desc + '</div></div>';
-        }
-        popoverContent.innerHTML = html;
-        var isRead = localStorage.getItem('dottodot_read_notifs_' + currentUser.userId);
-        if (!isRead) {
-          badge.textContent = notifItems.length;
-          badge.style.display = 'flex';
-        } else {
-          badge.style.display = 'none';
-        }
-      }
-    }
-
-    function checkNewOrdersNotification(orders) {
-      if (!isAdminMode) return;
-      var ackOrders = JSON.parse(localStorage.getItem('dottodot_ack_orders') || '{}');
-      var newCount = 0;
-      var popoverHtml = '';
-      
-      for (var i = 0; i < orders.length; i++) {
-        if (!ackOrders[orders[i].orderId]) {
-          newCount++;
-          popoverHtml += '<div class="pop-item"><strong style="color:var(--danger-red);">● 新訂單通知</strong><div style="margin-top:2px;">收到一筆新訂單：' + orders[i].orderId + '</div></div>';
-        }
-      }
-      
-      var bellBadge = document.getElementById('bell-badge');
-      var popoverContent = document.getElementById('bell-popover-content');
-      var popoverTitle = document.getElementById('bell-popover-title');
-      
-      if (popoverTitle) popoverTitle.textContent = '🔔 賣家新訂單通知';
-
-      if (newCount > 0) {
-        if(bellBadge) { bellBadge.textContent = '!'; bellBadge.style.display = 'flex'; }
-        if(popoverContent) popoverContent.innerHTML = popoverHtml;
-      } else {
-        if(bellBadge) bellBadge.style.display = 'none';
-        if(popoverContent) popoverContent.innerHTML = '<div class="pop-item"><div style="color: var(--text-muted);">目前尚無新訂單</div></div>';
-      }
-    }
-
-    function acknowledgeOrderNew(orderId) {
-      var ackOrders = JSON.parse(localStorage.getItem('dottodot_ack_orders') || '{}');
-      ackOrders[orderId] = true;
-      localStorage.setItem('dottodot_ack_orders', JSON.stringify(ackOrders));
-      renderAdminOrdersUI();
-      checkNewOrdersNotification(adminOrdersList);
-    }
-
-    function handleSaveProfile(e, mode) {
-      e.preventDefault();
-      if (!currentUser) return;
-      var name = document.getElementById('profile-name').value.trim();
-      var phone = document.getElementById('profile-phone').value.trim();
-      var shipMethod = document.getElementById('profile-ship-method').value;
-      var store = document.getElementById('profile-store').value.trim();
-
-      var profileData = { name: name, phone: phone, shipMethod: shipMethod, store: store };
-      localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
-      alert('常用收件資料已儲存！');
+      }).catch(function() {
+        if (listContainer) listContainer.innerHTML = '<div style="text-align:center; padding:30px; color:var(--danger-red); font-weight:800; font-size:13px;">❌ 歷史訂單載入失敗，請稍後再試。</div>';
+      });
     }
 
     function renderMemberOrders(ordersList) {
@@ -2146,7 +1609,7 @@
       var allOrders = ordersList || [];
 
       if (allOrders.length === 0) {
-        listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">目前尚無歷史訂單</div>';
+        listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">目前尚無歷史訂單紀錄</div>';
         return;
       }
 
@@ -2186,15 +1649,46 @@
       }
     }
 
-    function handleLogout() {
-      localStorage.removeItem('dottodot_user');
-      if (typeof liff !== 'undefined' && liff.isLoggedIn()) liff.logout();
-      window.location.reload();
+    // 🚀 儲存常用資料：加回饋效果、不跳轉
+    function handleSaveProfile(e) {
+      e.preventDefault(); // 阻擋表單送出跳轉
+      if (!currentUser) return;
+      var btn = e.target.querySelector('button[type="submit"]');
+      if (!btn) return;
+
+      var originalText = btn.textContent;
+      btn.textContent = '⏳ 儲存中...';
+      btn.disabled = true;
+
+      var name = document.getElementById('profile-name').value.trim();
+      var phone = document.getElementById('profile-phone').value.trim();
+      var shipMethod = document.getElementById('profile-ship-method').value;
+      var store = document.getElementById('profile-store').value.trim();
+
+      var profileData = { name: name, phone: phone, shipMethod: shipMethod, store: store };
+      localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
+      
+      setTimeout(function() {
+        btn.textContent = '✓ 常用資料儲存成功';
+        setTimeout(function() {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 1500);
+      }, 600);
     }
 
     var pendingOrderData = null;
     function goToCheckoutStep2(e) {
       e.preventDefault();
+
+      // 🚀 結帳最後防線檢查
+      var hasChanged = validateCartStockAndStatus(true);
+      if (hasChanged) {
+        alert('⚠️ 抱歉！您選購的部分商品剛剛已被搶購一空或已結單，已為您更新購物車，請重新確認！');
+        closeCheckoutModal1();
+        toggleCartDrawer(true);
+        return;
+      }
 
       var buyerName = document.getElementById('buyer-name').value.trim();
       var buyerContact = document.getElementById('buyer-line').value.trim();
@@ -2204,7 +1698,7 @@
       var buyerNote = document.getElementById('buyer-note').value.trim();
 
       if (!buyerName || !buyerPhone || !buyerStore) {
-        alert('⚠️ 請填寫所有必填欄位！');
+        alert('⚠️️ 請填寫所有必填欄位！');
         return;
       }
 
@@ -2395,7 +1889,7 @@
       for (var ordIdx = 0; ordIdx < pageOrders.length; ordIdx++) {
         var ord = pageOrders[ordIdx];
         var isAcked = ackOrders[ord.orderId];
-        var newBtnHtml = !isAcked ? '<button onclick="acknowledgeOrderNew(\'' + ord.orderId + '\')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:900; cursor:pointer; margin-right:8px;" title="標記為已讀">NEW</button>' : '';
+        var newBtnHtml = !isAcked ? '<button onclick="acknowledgeOrderNew(\'' + ord.orderId + '\')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:900; cursor:pointer; margin-right:8px;" title="標記為已處理">NEW</button>' : '';
 
         var isLocked = ord.isClosed;
         var disabledAttr = isLocked ? 'disabled' : '';
@@ -2639,10 +2133,10 @@
         if (addQaBtn) addQaBtn.style.display = 'inline-block';
         if (addPostBtn) addPostBtn.style.display = 'inline-block';
         if (addProdBtn) addProdBtn.style.display = 'inline-block';
-        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
-        if (syncQaBtn) syncQaBtn.style.display = 'none';
-        if (syncPostBtn) syncPostBtn.style.display = 'none';
-        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
         switchPage('admin');
         loadAdminOrders();
       } else {
@@ -2664,16 +2158,6 @@
       renderNotices();
       renderQas();
       renderPosts();
-    }
-
-    function verifyAdminPasswordAndEnter() {
-      var pwd = prompt('為保障帳號安全，請輸入管理員專屬密碼：');
-      if (pwd === ADMIN_PASSWORD) {
-        setAdminMode(true);
-        closeMemberModal();
-      } else if (pwd !== null) {
-        alert('密碼錯誤！無法進入賣家後台。');
-      }
     }
   </script>
 </body>
