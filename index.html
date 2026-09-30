@@ -110,7 +110,7 @@
     .product-card.inactive-product { background: #f8fafc; opacity: 0.6; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card:hover { transform: translateY(-4px); border-color: var(--primary-blue); }
     
-    /* 🚀 圖片改回完美的 1:1 比例 */
+    /* 🚀 圖片 1:1 完美比例 */
     .product-img-wrap { width: 100%; aspect-ratio: 1 / 1; background: #f1f3f7; position: relative; overflow: hidden; }
     .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; transition: transform 0.3s; }
     .product-img-wrap img:hover { transform: scale(1.05); }
@@ -169,8 +169,8 @@
     .drawer-foot { padding: 16px; border-top: 1.5px solid var(--border-color); background: #fafafa; }
     .foot-row { display: flex; justify-content: space-between; font-size: 13.5px; margin-bottom: 6px; font-weight: 600; }
     .foot-total { font-size: 17px; font-weight: 900; color: var(--primary-blue); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
-    .checkout-btn { width: 100%; background: var(--primary-blue); color: #ffffff; border: none; padding: 13px; border-radius: 10px; font-size: 14.5px; font-weight: 900; margin-top: 12px; cursor: pointer; transition: 0.2s; }
-    .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .checkout-btn { width: 100%; background: var(--primary-blue); color: #ffffff; border: none; padding: 13px; border-radius: 10px; font-size: 14.5px; font-weight: 900; margin-top: 12px; cursor: pointer; }
+    .checkout-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.active { display: flex; }
@@ -229,7 +229,7 @@
         <div class="brand-logo" onclick="switchPage('about')">DOT to DOT</div>
 
         <div class="nav-actions">
-          <button class="admin-shortcut-btn" id="admin-shortcut-btn" onclick="switchPage('admin'); loadAdminOrders();">後台管理</button>
+          <button class="admin-shortcut-btn" id="admin-shortcut-btn" onclick="switchPage('admin')">後台管理</button>
 
           <div class="bell-wrapper">
             <button class="action-badge-btn" onclick="toggleNotificationPopover(event)" id="bell-btn" title="最新通知">
@@ -663,7 +663,7 @@
           <div style="font-size:12px; font-weight:800; color:#854d0e; margin-bottom:6px;">👑 偵測到最高管理員帳號</div>
           <div style="display:flex; gap:8px; justify-content:center;">
             <button onclick="setAdminMode(false); closeMemberModal();" style="background:#fff; border:1px solid #ca8a04; color:#854d0e; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">🏠 切換至一般會員模式</button>
-            <button onclick="window.verifyAdminPasswordAndEnter();" style="background:#111; color:#ccff00; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">⚙️ 切換至賣家後台 (需密碼)</button>
+            <button onclick="verifyAdminPasswordAndEnter();" style="background:#111; color:#ccff00; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;">⚙️ 切換至賣家後台 (需密碼)</button>
           </div>
         </div>
 
@@ -692,9 +692,7 @@
             <span style="font-size:12px; color:#64748b;">點擊下方按鈕手動整理最新出貨狀態</span>
             <button id="sync-status-btn" onclick="syncOrdersFromSheetWithFeedback()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">↻ 整理即時狀態</button>
           </div>
-          <div id="member-orders-list">
-            <!-- 載入中的提示將顯示於此 -->
-          </div>
+          <div id="member-orders-list"></div>
         </div>
       </div>
 
@@ -774,6 +772,7 @@
           </select>
         </div>
         
+        <!-- 🚀 分類複選區塊 -->
         <div class="form-group">
           <label>商品分類 (可複選) *</label>
           <div style="display:flex; flex-wrap:wrap; gap:10px; padding:10px; background:#f8fafc; border:1px solid var(--border-color); border-radius:8px;" id="adm-series-category-group">
@@ -789,8 +788,7 @@
           </div>
         </div>
 
-        <div class="form-group"><label>預計到貨時程 (ETA) *</label><input type="text" class="form-input" id="adm-series-eta" required placeholder="例如：預計 10-14 天抵台出貨"></div>
-
+        <!-- 🚀 自動結單時間設定 -->
         <div class="form-group">
           <label>自動結單日期與時間 (選填，時間到將自動關閉下單)</label>
           <input type="datetime-local" class="form-input" id="adm-series-close-time">
@@ -799,7 +797,8 @@
         <hr style="margin:14px 0; border:0; border-top:1px dashed var(--border-color);">
         <div style="font-weight:900; font-size:13.5px; color:var(--primary-blue); margin-bottom:8px;">📦 子品項規格與庫存設定：</div>
         
-        <div id="sub-items-container"></div>
+        <div id="sub-items-container">
+        </div>
 
         <button type="button" onclick="addSubItemBlock()" style="background:#eef2ff; color:var(--primary-blue); border:1px solid #bfdbfe; width:100%; padding:8px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:12px;">＋ 新增下一個品項</button>
 
@@ -818,6 +817,7 @@
     var ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"];
     var ADMIN_PASSWORD = "admin888";
     
+    // 初始化 Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU",
       authDomain: "dot-to-dotshop.firebaseapp.com",
@@ -869,14 +869,14 @@
     });
 
     // 🚀 燈箱功能
-    window.openLightbox = function(src) {
+    function openLightbox(src) {
       document.getElementById('lightbox-img').src = src;
       document.getElementById('lightbox').classList.add('active');
-    };
-    window.closeLightbox = function() {
+    }
+    function closeLightbox() {
       document.getElementById('lightbox').classList.remove('active');
       document.getElementById('lightbox-img').src = '';
-    };
+    }
 
     // 🚀 頁面切換
     function switchPage(pageId) {
@@ -897,7 +897,9 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (pageId === 'admin') loadAdminOrders();
+      if (pageId === 'admin') {
+        loadAdminOrders();
+      }
     }
 
     // 🚀 Firebase 讀取機制
@@ -962,7 +964,7 @@
             btnEl.disabled = false;
           }, 1500);
         }
-        alert('🚀 內容已瞬間發布至前台！\n(試算表備份將於背景默默執行)');
+        alert('🚀 內容已瞬間發布至前台！\n(試算表備份將於背景默默執行，不影響網頁操作)');
         
         if(currentGasWebhook) {
            fetch(currentGasWebhook, {
@@ -1088,15 +1090,15 @@
         var closedClass = isActuallyClosed ? 'closed-product' : '';
         var closedBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
 
-        // 🚀 預設防呆選項「-」，保留它讓買家能點回來看總圖
-        var itemOptions = '<option value="default" selected>-</option>';
+        // 🚀 預設選項 "-", 只要選走就不能再選回來
+        var itemOptions = '<option value="" disabled selected>-</option>';
         for (var j = 0; j < s.items.length; j++) {
           itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
         }
 
         var colorOptions = '<option value="">-</option>';
         var sizeOptions = '<option value="">-</option>';
-        var currentImg = s.img; // 首圖維持系列預設圖
+        var currentImg = s.img; 
 
         var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (isActive ? '🗑️ 下架' : '🔄 恢復上架') + '</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
         
@@ -1105,7 +1107,7 @@
             : (!isActive ? '<button class="add-cart-btn" disabled style="opacity:0.4; cursor:not-allowed;">已下架</button>' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>');
 
         var cardHtml = '<div class="product-card ' + closedClass + (!isActive ? ' inactive-product' : '') + '" id="card-' + s.id + '">' +
-          '<div class="product-img-wrap">' + badgeHtml + closedBadgeTag + '<img id="img-display-' + s.id + '" src="' + currentImg + '" alt="' + s.seriesName + '" onclick="window.openLightbox(this.src)"></div>' +
+          '<div class="product-img-wrap">' + badgeHtml + closedBadgeTag + '<img id="img-display-' + s.id + '" src="' + currentImg + '" alt="' + s.seriesName + '" onclick="openLightbox(this.src)"></div>' +
           '<div class="product-content">' +
             '<div class="product-series">' + s.seriesName + (!isActive ? ' (已下架)' : '') + '</div>' +
             '<div class="product-eta">⏱ ' + s.eta + '</div>' +
@@ -1141,8 +1143,7 @@
       }
     }
 
-    // 🚀 讓預設的 "-" 選項可切換回來，並恢復首圖
-    window.handleItemChange = function(seriesId) {
+    function handleItemChange(seriesId) {
       var series = null;
       for (var i = 0; i < productSeriesData.length; i++) {
         if (String(productSeriesData[i].id) === String(seriesId)) {
@@ -1154,19 +1155,7 @@
 
       var selectEl = document.getElementById('item-select-' + seriesId);
       var val = selectEl.value;
-
-      if (val === 'default') {
-         var pEl = document.getElementById('price-display-' + seriesId);
-         if (pEl) pEl.textContent = 'NT$ ' + Number(series.items[0].price).toLocaleString();
-         var iEl = document.getElementById('img-display-' + seriesId);
-         if (iEl) iEl.src = series.img;
-         
-         var cSel = document.getElementById('color-select-' + seriesId);
-         if (cSel) cSel.innerHTML = '<option value="">-</option>';
-         var sSel = document.getElementById('size-select-' + seriesId);
-         if (sSel) sSel.innerHTML = '<option value="">-</option>';
-         return;
-      }
+      if (!val) return;
 
       var itemIdx = parseInt(val, 10);
       if (isNaN(itemIdx)) return;
@@ -1197,9 +1186,9 @@
         }
         sizeSelect.innerHTML = sHtml;
       }
-    };
+    }
 
-    window.adminToggleProductActive = function(seriesId) {
+    function adminToggleProductActive(seriesId) {
       for (var i = 0; i < productSeriesData.length; i++) {
         if (String(productSeriesData[i].id) === String(seriesId)) {
           productSeriesData[i].isActive = (productSeriesData[i].isActive === false) ? true : false;
@@ -1209,9 +1198,9 @@
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
-    };
+    }
 
-    window.adminToggleProductClose = function(seriesId) {
+    function adminToggleProductClose(seriesId) {
       for (var i = 0; i < productSeriesData.length; i++) {
         if (String(productSeriesData[i].id) === String(seriesId)) {
           productSeriesData[i].isClosed = !productSeriesData[i].isClosed;
@@ -1221,9 +1210,9 @@
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
-    };
+    }
 
-    window.adminDeleteProductSeries = function(seriesId) {
+    function adminDeleteProductSeries(seriesId) {
       if (!confirm('確定要永久刪除這個商品系列嗎？此動作無法復原！')) return;
       var newSer = [];
       for (var i = 0; i < productSeriesData.length; i++) {
@@ -1232,17 +1221,17 @@
       productSeriesData = newSer;
       syncCMSToCloud();
       renderProducts();
-    };
+    }
 
-    window.addToCart = function(seriesId) {
+    function addToCart(seriesId) {
       if (isAdminMode) {
         alert('目前為賣家後台模式，無法進行購物。');
         return;
       }
       
       var selectEl = document.getElementById('item-select-' + seriesId);
-      if (!selectEl || selectEl.value === 'default' || selectEl.value === '') {
-        alert('👉 請先點開下拉選單，選擇您要的商品規格！');
+      if (!selectEl || !selectEl.value) {
+        alert('👉 請先點開下拉選單，選擇您要的商品規格品項！');
         return;
       }
 
@@ -1297,7 +1286,7 @@
       saveCartToLocalStorage();
       updateCartDisplay();
       toggleCartDrawer(true);
-    };
+    }
 
     function toggleCartDrawer(open) {
       if (isAdminMode) { alert('賣家後台模式暫停購物車功能。'); return; }
@@ -1455,12 +1444,11 @@
       if (popover) popover.classList.remove('active');
     }
 
-    // 🚀 會員區塊函式與按鈕修復
-    window.openMemberModal = function() {
+    // 🚀 會員與儲存邏輯 (修復)
+    function openMemberModal() {
       var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.add('active');
       
-      // 開啟時自動填入已儲存的資料
       if (currentUser) {
          var savedProfile = localStorage.getItem('dottodot_profile_' + currentUser.userId);
          if (savedProfile) {
@@ -1473,14 +1461,14 @@
          }
          syncOrdersFromSheet();
       }
-    };
+    }
 
-    window.closeMemberModal = function() {
+    function closeMemberModal() {
       var memModal = document.getElementById('member-modal');
       if (memModal) memModal.classList.remove('active');
-    };
+    }
 
-    window.switchMemberTab = function(tabName) {
+    function switchMemberTab(tabName) {
       var btnProf = document.getElementById('tab-btn-profile');
       var btnOrd = document.getElementById('tab-btn-orders');
       var tabProf = document.getElementById('member-tab-profile');
@@ -1498,10 +1486,9 @@
         if (tabProf) tabProf.style.display = 'none';
         syncOrdersFromSheet();
       }
-    };
+    }
 
-    // 🚀 儲存常用資料 (不再跳轉，增加回饋)
-    window.handleSaveProfile = function(e) {
+    function handleSaveProfile(e) {
       e.preventDefault();
       if (!currentUser) return;
 
@@ -1520,7 +1507,6 @@
       var profileData = { name: name, phone: phone, shipMethod: shipMethod, store: store };
       localStorage.setItem('dottodot_profile_' + currentUser.userId, JSON.stringify(profileData));
 
-      // 模擬儲存延遲與成功回饋
       setTimeout(function() {
         btn.textContent = '✓ 常用資料儲存成功';
         setTimeout(function() {
@@ -1528,10 +1514,9 @@
           btn.disabled = false;
         }, 1500);
       }, 600);
-    };
+    }
 
-    // 🚀 Google Apps Script 資料獲取
-    window.syncOrdersFromSheetWithFeedback = function() {
+    function syncOrdersFromSheetWithFeedback() {
       var btn = document.getElementById('sync-status-btn');
       if (btn) { btn.textContent = '⏳ 正在同步...'; btn.disabled = true; }
       syncOrdersFromSheet();
@@ -1544,9 +1529,8 @@
           }, 1500);
         }
       }, 800);
-    };
+    }
 
-    // 🚀 歷史訂單：加上明確載入提示
     function syncOrdersFromSheet() {
       if (!currentUser || !currentGasWebhook) return;
       
@@ -1610,6 +1594,11 @@
       listContainer.innerHTML = html;
     }
 
+    function toggleOrderDetail(detailId) {
+      var el = document.getElementById(detailId);
+      if (el) el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+    }
+
     function buildBellNotifications(orders) {
       if (!orders || orders.length === 0) return;
       var notifItems = [];
@@ -1667,18 +1656,13 @@
       }
     }
 
-    window.acknowledgeOrderNew = function(orderId) {
+    function acknowledgeOrderNew(orderId) {
       var ackOrders = JSON.parse(localStorage.getItem('dottodot_ack_orders') || '{}');
       ackOrders[orderId] = true;
       localStorage.setItem('dottodot_ack_orders', JSON.stringify(ackOrders));
       renderAdminOrdersUI();
       checkNewOrdersNotification(adminOrdersList);
-    };
-
-    window.toggleOrderDetail = function(detailId) {
-      var el = document.getElementById(detailId);
-      if (el) el.style.display = (el.style.display === 'none') ? 'block' : 'none';
-    };
+    }
 
     // 🚀 CMS 渲染 (公告/QA/貼文)
     function renderNotices() {
@@ -1723,7 +1707,7 @@
       var html = '';
       for (var i = 0; i < posts.length; i++) {
         var p = posts[i];
-        var adminBtns = isAdminMode ? '<div style="margin-top:10px; display:flex; gap:6px;"><button onclick="openPostModal(' + i + '); event.stopPropagation();" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeletePost(' + i + '); event.stopPropagation();" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">🗑️ 刪除</button></div>' : '';
+        var adminBtns = isAdminMode ? '<div style="margin-top:10px; display:flex; gap:6px;"><button onclick="openPostModal(' + i + '); event.stopPropagation();" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeletePost(' + i + '); event.stopPropagation();" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">🗑️️ 刪除</button></div>' : '';
         
         html += '<div class="blog-card" onclick="viewPostDetail(' + i + ')">' +
           '<div class="blog-content-part">' +
@@ -1740,10 +1724,11 @@
       container.innerHTML = html;
     }
 
-    window.viewPostDetail = function(index) {
+    function viewPostDetail(index) {
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       var p = posts[index];
       if (!p) return;
+
       var container = document.getElementById('dynamic-blog-container');
       container.innerHTML = '<button onclick="renderPosts()" style="background:#475569; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; margin-bottom:16px;">⬅ 返回貼文總覽</button>' +
         '<div class="blog-card" style="display:block; cursor:default;">' +
@@ -1751,38 +1736,39 @@
           '<div style="font-size:11px; color:#888; margin-bottom:6px;">發布日期：' + p.date + '</div>' +
           '<h2 style="font-size:22px; font-weight:900; margin-bottom:12px;">' + p.title + '</h2>' +
           '<div style="font-size:14px; color:#333; line-height:1.8; margin-bottom:14px; white-space:pre-wrap;">' + p.desc + '</div>' +
-          (p.img ? '<img src="' + p.img + '" class="blog-detail-img" onclick="window.openLightbox(this.src)">' : '') +
+          (p.img ? '<img src="' + p.img + '" class="blog-detail-img" onclick="openLightbox(this.src)">' : '') +
           (p.link ? '<div style="margin-top:14px;"><a href="' + p.link + '" target="_blank" style="background:var(--primary-blue); color:#fff; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; text-decoration:none; display:inline-block;">🔗 點擊前往相關連結 ➔</a></div>' : '') +
         '</div>';
-    };
+    }
 
-    window.adminDeleteNotice = function(index) {
+    function adminDeleteNotice(index) {
       if (!confirm('確定要刪除此公告項目嗎？')) return;
       noticeData.splice(index, 1);
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
       syncCMSToCloud();
       renderNotices();
-    };
-    window.adminDeleteQa = function(index) {
+    }
+    function adminDeleteQa(index) {
       if (!confirm('確定要刪除此 Q&A 嗎？')) return;
       qaData.splice(index, 1);
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
       syncCMSToCloud();
       renderQas();
-    };
-    window.adminDeletePost = function(index) {
+    }
+    function adminDeletePost(index) {
       if (!confirm('確定要刪除此貼文嗎？')) return;
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
       posts.splice(index, 1);
       localStorage.setItem('dottodot_custom_posts', JSON.stringify(posts));
       syncCMSToCloud();
       renderPosts();
-    };
+    }
 
-    window.openNoticeModal = function(editIndex) {
+    function openNoticeModal(editIndex) {
       var modal = document.getElementById('notice-modal');
       var titleEl = document.getElementById('notice-modal-title');
       var editIdxInput = document.getElementById('adm-notice-edit-index');
+
       if (editIndex !== undefined && editIndex >= 0) {
         var n = noticeData[editIndex];
         titleEl.textContent = '編輯 NOTICE 項目';
@@ -1796,26 +1782,32 @@
         document.getElementById('adm-notice-desc').value = '';
       }
       modal.classList.add('active');
-    };
-    window.closeNoticeModal = function() { document.getElementById('notice-modal').classList.remove('active'); };
+    }
+    function closeNoticeModal() { document.getElementById('notice-modal').classList.remove('active'); }
 
-    window.handleAdminSaveNotice = function(e) {
+    function handleAdminSaveNotice(e) {
       e.preventDefault();
       var t = document.getElementById('adm-notice-title').value.trim();
       var d = document.getElementById('adm-notice-desc').value.trim();
       var editIdx = parseInt(document.getElementById('adm-notice-edit-index').value, 10);
-      if (editIdx >= 0) { noticeData[editIdx].title = t; noticeData[editIdx].desc = d; } 
-      else { noticeData.push({ title: t, desc: d }); }
+
+      if (editIdx >= 0) {
+        noticeData[editIdx].title = t;
+        noticeData[editIdx].desc = d;
+      } else {
+        noticeData.push({ title: t, desc: d });
+      }
       localStorage.setItem('dottodot_custom_notice', JSON.stringify(noticeData));
       syncCMSToCloud();
       renderNotices();
       closeNoticeModal();
-    };
+    }
 
-    window.openQaModal = function(editIndex) {
+    function openQaModal(editIndex) {
       var modal = document.getElementById('qa-modal');
       var titleEl = document.getElementById('qa-modal-title');
       var editIdxInput = document.getElementById('adm-qa-edit-index');
+
       if (editIndex !== undefined && editIndex >= 0) {
         var q = qaData[editIndex];
         titleEl.textContent = '編輯 Q&A 問題';
@@ -1829,26 +1821,32 @@
         document.getElementById('adm-qa-a').value = '';
       }
       modal.classList.add('active');
-    };
-    window.closeQaModal = function() { document.getElementById('qa-modal').classList.remove('active'); };
+    }
+    function closeQaModal() { document.getElementById('qa-modal').classList.remove('active'); }
 
-    window.handleAdminSaveQa = function(e) {
+    function handleAdminSaveQa(e) {
       e.preventDefault();
       var q = document.getElementById('adm-qa-q').value.trim();
       var a = document.getElementById('adm-qa-a').value.trim();
       var editIdx = parseInt(document.getElementById('adm-qa-edit-index').value, 10);
-      if (editIdx >= 0) { qaData[editIdx].q = q; qaData[editIdx].a = a; } 
-      else { qaData.push({ q: q, a: a }); }
+
+      if (editIdx >= 0) {
+        qaData[editIdx].q = q;
+        qaData[editIdx].a = a;
+      } else {
+        qaData.push({ q: q, a: a });
+      }
       localStorage.setItem('dottodot_custom_qa', JSON.stringify(qaData));
       syncCMSToCloud();
       renderQas();
       closeQaModal();
-    };
+    }
 
-    window.openPostModal = function(editIndex) {
+    function openPostModal(editIndex) {
       var modal = document.getElementById('post-modal');
       var titleEl = document.getElementById('post-modal-title');
       var editIdxInput = document.getElementById('adm-post-edit-index');
+
       if (editIndex !== undefined && editIndex >= 0) {
         var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
         var p = posts[editIndex];
@@ -1869,10 +1867,11 @@
         document.getElementById('adm-post-file').value = '';
       }
       modal.classList.add('active');
-    };
-    window.closePostModal = function() { document.getElementById('post-modal').classList.remove('active'); };
+    }
 
-    window.handleAdminSavePost = function(e) {
+    function closePostModal() { document.getElementById('post-modal').classList.remove('active'); }
+
+    function handleAdminSavePost(e) {
       e.preventDefault();
       var title = document.getElementById('adm-post-title').value.trim();
       var tag = document.getElementById('adm-post-tag').value.trim();
@@ -1882,8 +1881,13 @@
       var editIdx = parseInt(document.getElementById('adm-post-edit-index').value, 10);
 
       var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
+
       if (editIdx >= 0) {
-        posts[editIdx].title = title; posts[editIdx].tag = tag; posts[editIdx].desc = desc; posts[editIdx].link = link; if (imgUrl) posts[editIdx].img = imgUrl;
+        posts[editIdx].title = title;
+        posts[editIdx].tag = tag;
+        posts[editIdx].desc = desc;
+        posts[editIdx].link = link;
+        if (imgUrl) posts[editIdx].img = imgUrl;
       } else {
         posts.unshift({ title: title, tag: tag, desc: desc, link: link, img: imgUrl || '', date: new Date().toLocaleDateString() });
       }
@@ -1891,19 +1895,21 @@
       syncCMSToCloud();
       renderPosts();
       closePostModal();
-    };
+    }
 
-    window.openProductModal = function(seriesId) {
+    function openProductModal(seriesId) {
       var modal = document.getElementById('product-modal');
       var titleEl = document.getElementById('product-modal-title');
       var editIdInput = document.getElementById('adm-product-edit-id');
       var container = document.getElementById('sub-items-container');
+
       var catCheckboxes = document.querySelectorAll('input[name="cat-chk"]');
       catCheckboxes.forEach(function(cb) { cb.checked = false; });
 
       if (seriesId) {
-        var series = productSeriesData.find(s => String(s.id) === String(seriesId));
+        var series = productSeriesData.find(function(s) { return String(s.id) === String(seriesId); });
         if (!series) return;
+
         titleEl.textContent = '編輯商品系列';
         editIdInput.value = series.id;
         document.getElementById('adm-series-name').value = series.seriesName;
@@ -1914,9 +1920,13 @@
         document.getElementById('adm-series-close-time').value = series.closeTime || '';
 
         if (series.categories && Array.isArray(series.categories)) {
-          catCheckboxes.forEach(cb => { if (series.categories.includes(cb.value)) cb.checked = true; });
+          catCheckboxes.forEach(function(cb) {
+            if (series.categories.includes(cb.value)) cb.checked = true;
+          });
         } else if (series.category) {
-          catCheckboxes.forEach(cb => { if (cb.value === series.category) cb.checked = true; });
+          catCheckboxes.forEach(function(cb) {
+            if (cb.value === series.category) cb.checked = true;
+          });
         }
 
         var subHtml = '';
@@ -1942,6 +1952,7 @@
         document.getElementById('adm-series-is-preorder').checked = false;
         document.getElementById('adm-series-eta').value = '';
         document.getElementById('adm-series-close-time').value = '';
+        
         container.innerHTML = '<div class="sub-item-block" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:8px; position:relative;">' +
           '<button type="button" onclick="this.parentElement.remove()" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#fff; border:none; width:22px; height:22px; border-radius:50%; font-size:11px; cursor:pointer;">✕</button>' +
           '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div>' +
@@ -1953,10 +1964,11 @@
         '</div>';
       }
       modal.classList.add('active');
-    };
-    window.closeProductModal = function() { document.getElementById('product-modal').classList.remove('active'); };
+    }
 
-    window.addSubItemBlock = function() {
+    function closeProductModal() { document.getElementById('product-modal').classList.remove('active'); }
+
+    function addSubItemBlock() {
       var container = document.getElementById('sub-items-container');
       if (!container) return;
       var div = document.createElement('div');
@@ -1970,9 +1982,9 @@
         '<div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div>' +
         '<div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
       container.appendChild(div);
-    };
+    }
 
-    window.handleAdminSaveProduct = function(e) {
+    function handleAdminSaveProduct(e) {
       e.preventDefault();
       var editId = document.getElementById('adm-product-edit-id').value;
       var seriesName = document.getElementById('adm-series-name').value.trim();
@@ -1984,7 +1996,7 @@
       var closeTime = document.getElementById('adm-series-close-time').value;
 
       var selectedCats = [];
-      document.querySelectorAll('input[name="cat-chk"]:checked').forEach(cb => selectedCats.push(cb.value));
+      document.querySelectorAll('input[name="cat-chk"]:checked').forEach(function(cb) { selectedCats.push(cb.value); });
       if (selectedCats.length === 0) { alert("請至少選擇一個商品分類！"); return; }
 
       var subBlocks = document.querySelectorAll('.sub-item-block');
@@ -1996,31 +2008,34 @@
         var rawColors = block.querySelector('.sub-colors').value.split(',');
         var rawSizes = block.querySelector('.sub-sizes').value.split(',');
         var imgUrl = block.querySelector('.sub-file').value.trim();
-        var colors = []; rawColors.forEach(c => colors.push(c.trim()));
-        var sizes = []; rawSizes.forEach(s => sizes.push(s.trim()));
+        var colors = []; rawColors.forEach(function(c) { colors.push(c.trim()); });
+        var sizes = []; rawSizes.forEach(function(s) { sizes.push(s.trim()); });
         itemsArr.push({ name: name, price: price, stock: isNaN(stock) ? 99 : stock, colors: colors, sizes: sizes, img: imgUrl || seriesImgUrl });
       });
 
       if (editId) {
-        var idx = productSeriesData.findIndex(s => String(s.id) === String(editId));
-        if (idx !== -1) {
-          productSeriesData[idx].seriesName = seriesName; productSeriesData[idx].img = seriesImgUrl;
-          productSeriesData[idx].eta = eta; productSeriesData[idx].stockType = stockType;
-          productSeriesData[idx].region = region; productSeriesData[idx].categories = selectedCats;
-          productSeriesData[idx].closeTime = closeTime; productSeriesData[idx].items = itemsArr;
+        for (var i = 0; i < productSeriesData.length; i++) {
+          if (String(productSeriesData[i].id) === String(editId)) {
+            productSeriesData[i].seriesName = seriesName; productSeriesData[i].img = seriesImgUrl;
+            productSeriesData[i].eta = eta; productSeriesData[i].stockType = stockType;
+            productSeriesData[i].region = region; productSeriesData[i].categories = selectedCats;
+            productSeriesData[i].closeTime = closeTime; productSeriesData[i].items = itemsArr;
+            break;
+          }
         }
       } else {
         var newSeries = { id: 'custom_' + Date.now(), seriesName: seriesName, img: seriesImgUrl, eta: eta, stockType: stockType, region: region, categories: selectedCats, closeTime: closeTime, isClosed: false, isActive: true, items: itemsArr };
         productSeriesData.unshift(newSeries);
       }
+
       localStorage.setItem('dottodot_custom_series', JSON.stringify(productSeriesData));
       syncCMSToCloud();
       renderProducts();
       closeProductModal(); 
-    };
+    }
 
     // 🚀 結帳與訂單送出邏輯
-    window.goToCheckoutStep2 = function(e) {
+    function goToCheckoutStep2(e) {
       e.preventDefault();
       var hasChanged = validateCartStockAndStatus(true);
       if (hasChanged) {
@@ -2038,24 +2053,24 @@
 
       if (!buyerName || !buyerPhone || !buyerStore) { alert('⚠️ 請填寫所有必填欄位！'); return; }
 
-      var checkedItems = cart.filter(c => c.selected !== false);
+      var checkedItems = cart.filter(function(c) { return c.selected !== false; });
       var totalAmount = 0;
-      checkedItems.forEach(c => totalAmount += (c.price * c.quantity));
+      checkedItems.forEach(function(c) { totalAmount += (c.price * c.quantity); });
 
       pendingOrderData = { buyerName: buyerName, buyerContact: buyerContact, buyerPhone: buyerPhone, shipMethod: buyerShipMethod, buyerStore: buyerStore, buyerNote: buyerNote, totalAmount: totalAmount, items: checkedItems };
       document.getElementById('step2-total-amount').textContent = '請匯款訂單總金額:$ ' + Number(totalAmount).toLocaleString();
       closeCheckoutModal1();
       var chkModal2 = document.getElementById('checkout-modal-2');
       if (chkModal2) chkModal2.classList.add('active');
-    };
+    }
 
-    window.backToStep1 = function() {
+    function backToStep1() {
       closeCheckoutModal2();
       var chkModal1 = document.getElementById('checkout-modal-1');
       if (chkModal1) { isCheckoutModalOpen = true; chkModal1.classList.add('active'); }
-    };
+    }
 
-    window.updateShipInputUI = function() {
+    function updateShipInputUI() {
       var method = document.getElementById('buyer-ship-method').value;
       var labelEl = document.getElementById('buyer-address-label');
       var inputEl = document.getElementById('buyer-store');
@@ -2066,9 +2081,9 @@
         if (labelEl) labelEl.textContent = '收件門市 (賣貨便) *';
         if (inputEl) inputEl.placeholder = '例如：7-11 鑫東門市 (123456)';
       }
-    };
+    }
 
-    window.handleFinalOrderSubmit = function(e) {
+    function handleFinalOrderSubmit(e) {
       e.preventDefault();
       var remitDate = document.getElementById('remit-date').value;
       var remitTime = document.getElementById('remit-time').value;
@@ -2077,7 +2092,7 @@
       if (!remitDate || !remitTime || !remitAccount) { alert('⚠️ 請填寫完整匯款資訊！'); return; }
 
       var checkedItems = pendingOrderData.items;
-      var uncheckedItems = cart.filter(c => c.selected === false);
+      var uncheckedItems = cart.filter(function(c) { return c.selected === false; });
 
       var orderPayload = {
         orderDate: new Date().toLocaleString(), buyerName: pendingOrderData.buyerName, buyerContact: pendingOrderData.buyerContact,
@@ -2091,15 +2106,15 @@
       if (currentGasWebhook) {
         fetch(currentGasWebhook, {
           method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(orderPayload)
-        }).then(resp => resp.json()).then(resData => {
+        }).then(function(resp) { return resp.json(); }).then(function(resData) {
           if (resData && resData.orderId) {
             finalOrderId = resData.orderId; document.getElementById('success-order-id').textContent = finalOrderId;
           }
-        }).catch(err => {});
+        }).catch(function(err) {});
       }
 
       var lineItemsText = '';
-      checkedItems.forEach((it, j) => {
+      checkedItems.forEach(function(it, j) {
         lineItemsText += (j + 1) + '. [' + it.series + '] ' + (it.itemName || it.name) + ' (' + it.spec + ') x ' + it.quantity + ' - NT$' + (it.price * it.quantity) + '\n';
       });
 
@@ -2116,19 +2131,19 @@
       document.getElementById('order-form-1').reset();
       document.getElementById('order-form-2').reset();
       document.getElementById('order-success-modal').classList.add('active');
-    };
+    }
 
-    window.copyAndOpenCommunity = function() {
+    function copyAndOpenCommunity() {
       var textarea = document.getElementById('order-text-content');
       if (textarea) {
         textarea.select();
         try { document.execCommand('copy'); } catch (e) {}
       }
       alert('📋 訂單內容已自動複製！即將為您前往官方社群，請直接長按貼上即可。');
-    };
+    }
 
     // 🚀 後台管理邏輯
-    window.verifyAdminPasswordAndEnter = function() {
+    function verifyAdminPasswordAndEnter() {
       var pwd = prompt('為保障帳號安全，請輸入管理員專屬密碼：');
       if (pwd === ADMIN_PASSWORD) {
         setAdminMode(true);
@@ -2136,25 +2151,26 @@
       } else if (pwd !== null) {
         alert('密碼錯誤！無法進入賣家後台。');
       }
-    };
+    }
 
-    var adminOrdersList = [];
-    window.loadAdminOrders = function() {
+    function loadAdminOrders() {
       var container = document.getElementById('admin-orders-container');
       if (!container) return;
       container.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">載入試算表資料中...</div>';
 
-      fetch(currentGasWebhook + '?admin=true').then(resp => resp.json()).then(data => {
+      fetch(currentGasWebhook + '?admin=true').then(function(resp) {
+        return resp.json();
+      }).then(function(data) {
         adminOrdersList = data.orders || [];
-        adminOrdersList.forEach((o, i) => o.originalIndex = i);
+        adminOrdersList.forEach(function(o, i) { o.originalIndex = i; });
         checkNewOrdersNotification(adminOrdersList);
         renderAdminOrdersUI();
-      }).catch(err => {
+      }).catch(function(err) {
         container.innerHTML = '<div style="color:red; padding:20px;">載入失敗：' + err.message + '</div>';
       });
-    };
+    }
 
-    window.renderAdminOrdersUI = function() {
+    function renderAdminOrdersUI() {
       var container = document.getElementById('admin-orders-container');
       var paginationContainer = document.getElementById('admin-pagination-container');
       if (!container) return;
@@ -2262,10 +2278,10 @@
           paginationContainer.innerHTML = '<span style="font-size:12px; color:#64748b;">共 ' + filtered.length + ' 筆訂單</span>';
         }
       }
-    };
+    }
 
-    window.adminSubmitStatus = function(orderId) {
-      var ord = adminOrdersList.find(f => f.orderId === orderId);
+    function adminSubmitStatus(orderId) {
+      var ord = adminOrdersList.find(function(f) { return f.orderId === orderId; });
       if (!ord) return;
       var payStatus = document.getElementById('adm-paystatus-' + orderId).value;
       if (!confirm('確定要儲存狀態並發送最新動態給買家嗎？')) return;
@@ -2277,13 +2293,13 @@
           trackingNo: document.getElementById('adm-trackno-' + orderId + '-' + i).value.trim(), shipStatus: document.getElementById('adm-ship-' + orderId + '-' + i).value,
           payStatus: payStatus, shouldNotify: true
         };
-        fetch(currentGasWebhook, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).catch(e => {});
+        fetch(currentGasWebhook, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).catch(function(e) {});
       }
       alert('✅ 訂單狀態已同步至試算表！');
       setTimeout(loadAdminOrders, 1000);
-    };
+    }
 
-    window.adminToggleCloseOrder = function(orderId, setClose) {
+    function adminToggleCloseOrder(orderId, setClose) {
       if (!confirm(setClose ? '確定要鎖定這筆訂單嗎？' : '確定要解除訂單鎖定嗎？')) return;
       for (var f = 0; f < adminOrdersList.length; f++) {
         if (adminOrdersList[f].orderId === orderId) adminOrdersList[f].isClosed = setClose;
@@ -2293,7 +2309,129 @@
         method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: "updateStatus", orderId: orderId, isClosed: setClose, shouldNotify: false })
       }).catch(function() {});
-    };
+    }
+
+    // 🚀 初始化登入與 Oauth
+    function loadLineSDK() {
+      var lineScript = document.createElement('script');
+      lineScript.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+      lineScript.onload = function() {
+        try {
+          if (typeof liff !== 'undefined') {
+            liff.init({ liffId: MY_LIFF_ID }).then(function() {
+              if (liff.isLoggedIn()) {
+                liff.getProfile().then(function(profile) {
+                  var userObj = {
+                    provider: 'LINE', displayName: profile.displayName, userId: profile.userId, lineUserId: profile.userId,
+                    contactValue: profile.displayName, pictureUrl: profile.pictureUrl
+                  };
+                  localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+                  handleUserLoggedIn(userObj, true);
+                });
+              }
+            }).catch(function(e) {});
+          }
+        } catch (e) {}
+      };
+      document.body.appendChild(lineScript);
+    }
+
+    function loginWithLine() {
+      try {
+        if (typeof liff !== 'undefined' && liff.login) {
+          if (!liff.isLoggedIn()) liff.login();
+        } else {
+          alert("LINE SDK 連線中，請稍候重試。");
+        }
+      } catch (e) { alert("LINE 登入遇到問題，請重新整理頁面。"); }
+    }
+
+    function loginWithGoogle() {
+      var redirectUri = window.location.origin + window.location.pathname;
+      var googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
+        '&response_type=token&scope=' + encodeURIComponent('email profile');
+      window.location.href = googleAuthUrl;
+    }
+
+    function handleGoogleOAuthRedirectCallback() {
+      try {
+        var hash = window.location.hash;
+        if (hash && hash.indexOf('access_token=') !== -1) {
+          var params = {};
+          hash.substring(1).split('&').forEach(function(item) {
+            var parts = item.split('=');
+            params[parts[0]] = decodeURIComponent(parts[1]);
+          });
+          var accessToken = params['access_token'];
+          if (accessToken) {
+            fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { 'Authorization': 'Bearer ' + accessToken } })
+            .then(function(res) { return res.json(); }).then(function(userInfo) {
+              var userObj = {
+                provider: 'Google', displayName: userInfo.name, userId: userInfo.sub, lineUserId: '',
+                contactValue: userInfo.email || "dottodot.onlineshop@gmail.com", pictureUrl: userInfo.picture
+              };
+              localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+              window.history.replaceState({}, document.title, window.location.pathname);
+              handleUserLoggedIn(userObj, true);
+            }).catch(function(err) {});
+          }
+        }
+      } catch (e) {}
+    }
+
+    function setAdminMode(active) {
+      isAdminMode = active;
+      var dot = document.getElementById('admin-red-dot');
+      var bellBtn = document.getElementById('bell-btn');
+      var cartWrap = document.getElementById('cart-nav-wrap');
+      var adminShortcut = document.getElementById('admin-shortcut-btn');
+      
+      var addNoticeBtn = document.getElementById('admin-add-notice-btn');
+      var addQaBtn = document.getElementById('admin-add-qa-btn');
+      var addPostBtn = document.getElementById('admin-add-post-btn');
+      var addProdBtn = document.getElementById('admin-add-product-btn');
+      var syncNoticeBtn = document.getElementById('admin-sync-notice-btn');
+      var syncQaBtn = document.getElementById('admin-sync-qa-btn');
+      var syncPostBtn = document.getElementById('admin-sync-post-btn');
+      var syncProdBtn = document.getElementById('admin-sync-product-btn');
+
+      if (active) {
+        if (dot) dot.classList.add('active');
+        if (bellBtn) bellBtn.classList.add('disabled-icon');
+        if (cartWrap) cartWrap.classList.add('disabled-btn');
+        if (adminShortcut) adminShortcut.classList.add('active');
+        if (addNoticeBtn) addNoticeBtn.style.display = 'inline-block';
+        if (addQaBtn) addQaBtn.style.display = 'inline-block';
+        if (addPostBtn) addPostBtn.style.display = 'inline-block';
+        if (addProdBtn) addProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'inline-block';
+        if (syncQaBtn) syncQaBtn.style.display = 'inline-block';
+        if (syncPostBtn) syncPostBtn.style.display = 'inline-block';
+        if (syncProdBtn) syncProdBtn.style.display = 'inline-block';
+        switchPage('admin');
+        loadAdminOrders();
+      } else {
+        if (dot) dot.classList.remove('active');
+        if (bellBtn) bellBtn.classList.remove('disabled-icon');
+        if (cartWrap) cartWrap.classList.remove('disabled-btn');
+        if (adminShortcut) adminShortcut.classList.remove('active');
+        if (addNoticeBtn) addNoticeBtn.style.display = 'none';
+        if (addQaBtn) addQaBtn.style.display = 'none';
+        if (addPostBtn) addPostBtn.style.display = 'none';
+        if (addProdBtn) addProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        switchPage('shop');
+      }
+      renderProducts();
+      renderNotices();
+      renderQas();
+      renderPosts();
+    }
   </script>
 </body>
 </html>
