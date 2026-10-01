@@ -37,16 +37,19 @@ body{background-color:#fff;color:var(--text-main);display:flex;flex-direction:co
 .cart-btn-wrap:hover{background:#fff;color:var(--primary-blue)}
 .cart-btn-wrap svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none}
 .cart-num{font-size:12px;font-weight:900}
-/* 🚀 購物車閃爍螢光綠動畫 */
 @keyframes popAnim{0%{transform:scale(1);background:rgba(255,255,255,0.15)}50%{transform:scale(1.35);background:var(--accent-lime);color:var(--accent-black);border-color:var(--accent-lime)}100%{transform:scale(1);background:rgba(255,255,255,0.15)}}
 .pop-anim{animation:popAnim 0.35s cubic-bezier(0.175,0.885,0.32,1.275)}
 .bell-wrapper{position:relative}
 .bell-popover-box{position:absolute;top:38px;right:-80px;width:300px;background:#fff;color:var(--text-main);border-radius:14px;box-shadow:0 12px 36px rgba(0,15,60,0.25);border:1px solid var(--border-color);z-index:2100;display:none;padding:14px}
-.bell-popover-box.active{display:block}
+.bell-popover-box.active{display:flex;flex-direction:column}
 .bell-popover-box::before{content:'';position:absolute;top:-7px;right:90px;width:12px;height:12px;background:#fff;transform:rotate(45deg);border-left:1px solid var(--border-color);border-top:1px solid var(--border-color)}
-.pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:800;color:#333}
+.pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:800;color:#333;flex-shrink:0}
+/* 🚀 修正通知列表捲動 */
+#bell-popover-content{max-height:280px;overflow-y:auto;margin-bottom:8px;padding-right:4px}
+#bell-popover-content::-webkit-scrollbar{width:4px}
+#bell-popover-content::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 .pop-item{padding:9px 10px;background:#f8fafc;border-radius:8px;margin-bottom:8px;font-size:12px;border-left:3px solid var(--primary-blue);line-height:1.45}
-.mark-read-btn{width:100%;background:#f1f3f7;color:#555;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;margin-top:4px}
+.mark-read-btn{width:100%;background:#f1f3f7;color:#555;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;margin-top:auto;flex-shrink:0}
 main{flex:1;width:100%}
 .page-section{display:none;width:100%;animation:fadeIn 0.2s ease forwards}
 .page-section.active{display:block}
@@ -185,6 +188,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
     <div class="nav-container">
       <div class="nav-top-row">
         <img class="brand-logo" src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88%E4%B8%AD%E5%AD%97.png?raw=true" onclick="switchPage('about')" alt="DOT to DOT">
+
         <div class="nav-actions">
           <button class="admin-shortcut-btn" id="admin-shortcut-btn" onclick="switchPage('admin'); loadAdminOrders();">後台管理</button>
           <div class="bell-wrapper">
@@ -437,7 +441,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title">步驟二：匯款資訊與對帳回報</div><button class="drawer-close" onclick="closeCheckoutModal2()">✕</button></div>
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;"><div style="font-size:13px; color:#1e40af;" id="step2-total-amount">請匯款訂單總金額:$ 0</div></div>
-      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">⚠ <b>無卡匯款提醒：</b><br>無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！</div>
+      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">⚠️ <b>無卡匯款提醒：</b><br>無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！</div>
       <div class="bank-info-box">🏦 <b>匯款帳號資訊</b><br>銀行：兆豐銀行（017）<br>帳號：<b>07764002939</b><br>戶名：DOT to DOT 專門店</div>
       <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
         <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:14px;">
@@ -593,7 +597,7 @@ window.fetchCMSFromCloud = function() {
       if (data.posts) localStorage.setItem('dottodot_custom_posts', JSON.stringify(data.posts));
       if (data.about) { var descEl = document.getElementById('about-us-desc-text'); if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>'); localStorage.setItem('dottodot_about_text', data.about); }
       window.renderProducts(); window.renderNotices(); window.renderQas(); window.renderPosts();
-      if (window.isCheckoutModalOpen) { if (window.validateCartStockAndStatus(true)) { alert("⚠️️ 您選購的商品剛被搶購一空或已結單，已更新購物車，請重新確認！"); window.closeCheckoutModal1(); window.toggleCartDrawer(true); } }
+      if (window.isCheckoutModalOpen) { if (window.validateCartStockAndStatus(true)) { alert("⚠️ 您選購的商品剛被搶購一空或已結單，已更新購物車，請重新確認！"); window.closeCheckoutModal1(); window.toggleCartDrawer(true); } }
     } else { window.renderProducts(); window.renderNotices(); window.renderQas(); window.renderPosts(); }
   }, function(err) {});
 };
@@ -611,7 +615,7 @@ window.syncCMSToCloud = function() {
   window.db.ref('cms').set(payload).then(function() { if(window.currentGasWebhook) fetch(window.currentGasWebhook, { method: 'POST', body: JSON.stringify(Object.assign({action: "syncCMS"}, payload)) }).catch(function(){}); });
 };
 
-// 🚀 從試算表強勢覆寫拉取 (並加入時間戳記防止快取卡死)
+// 🚀 從試算表強勢覆寫拉取 (並加入時間戳記防止快取卡死，處理 undefined 屬性，徹底同步刪除訂單)
 window.pullOrdersFromSheet = function() {
   var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
   var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
@@ -624,12 +628,22 @@ window.pullOrdersFromSheet = function() {
           var newOrders = {};
           data.orders.forEach(function(o){
             if(o.orderId) {
-              if(currentOrders[o.orderId]) o.lastNotifiedHash = currentOrders[o.orderId].lastNotifiedHash;
+              // 防呆機制：避免 undefined 寫入 Firebase
+              o.lastNotifiedHash = (currentOrders[o.orderId] && currentOrders[o.orderId].lastNotifiedHash) ? currentOrders[o.orderId].lastNotifiedHash : "";
+              if(o.isCompleted === undefined) o.isCompleted = (currentOrders[o.orderId] && currentOrders[o.orderId].isCompleted) ? currentOrders[o.orderId].isCompleted : false;
+              if(o.isClosed === undefined) o.isClosed = (currentOrders[o.orderId] && currentOrders[o.orderId].isClosed) ? currentOrders[o.orderId].isClosed : false;
+              
+              if(o.items) {
+                 o.items.forEach(function(it) { Object.keys(it).forEach(function(k) { if(it[k] === undefined) it[k] = ""; }); });
+              }
               newOrders[o.orderId] = o;
             }
           });
+          // 🚀 採取「完全覆寫(set)」機制：如果試算表裡已經刪除的訂單，網頁端也會同步刪除
           window.db.ref('orders').set(newOrders).then(function(){
             btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000);
+          }).catch(function(e) {
+            btn.textContent = '❌ Firebase寫入失敗'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000);
           });
         });
       } else { btn.textContent = '❌ 無效資料，請重試'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); }
