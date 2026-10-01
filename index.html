@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- 🚀 Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <style>
@@ -51,8 +52,8 @@ main{flex:1;width:100%}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .container{max-width:1180px;margin:0 auto;padding:clamp(20px,5vw,36px) clamp(16px,4vw,20px)}
 .hero-container{background-color:var(--primary-blue);color:#fff;padding:clamp(30px,8vw,50px) 16px clamp(50px,10vw,70px);text-align:center;display:flex;flex-direction:column;align-items:center}
-/* 🚀 綠字改小：clamp(20px, 6vw, 36px) */
-.hero-title{font-size:clamp(20px,6vw,36px);font-weight:900;line-height:0.95;text-transform:uppercase;letter-spacing:-1px;color:var(--accent-lime);margin-bottom:16px;text-shadow:0 4px 15px rgba(0,0,0,0.25)}
+/* 🚀 調整首頁間距，加大 margin-bottom */
+.hero-title{font-size:clamp(20px,6vw,36px);font-weight:900;line-height:0.95;text-transform:uppercase;letter-spacing:-1px;color:var(--accent-lime);margin-bottom:24px;text-shadow:0 4px 15px rgba(0,0,0,0.25)}
 .hero-desc{font-size:clamp(14px,3.8vw,17px);max-width:680px;margin:0 auto 16px;line-height:1.65;color:rgba(255,255,255,0.95);font-weight:500;padding:0 10px}
 .hero-btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .cta-button{display:inline-block;background-color:var(--accent-lime);color:var(--accent-black);padding:12px 28px;font-size:clamp(13px,4vw,15px);font-weight:900;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(204,255,0,0.4);border:2px solid var(--accent-lime);transition:transform 0.2s;text-decoration:none}
@@ -106,9 +107,9 @@ main{flex:1;width:100%}
 .qa-box.open .qa-a{display:block}
 .blog-card{background:#fff;border:1.5px solid var(--border-color);border-radius:16px;margin-bottom:20px;padding:20px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;transition:transform 0.2s,border-color 0.2s;position:relative}
 .blog-card:hover{border-color:var(--primary-blue);transform:translateY(-2px)}
-.blog-content-part{flex:1; padding-top:20px;} /* 給右上角文字留空間 */
+.blog-content-part{flex:1; padding-top:20px;}
 .blog-tag{display:inline-block;background:var(--accent-lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:4px;margin-bottom:8px;margin-right:4px}
-.blog-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.blog-title{font-size:18px;font-weight:800;margin-bottom:6px;padding-right:40px}
 .blog-desc{font-size:13.5px;color:var(--text-muted);line-height:1.7}
 .blog-thumb{width:110px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#eee;margin-top:20px}
 .blog-detail-img{width:100%;height:auto;max-height:550px;object-fit:contain;border-radius:12px;margin-top:14px;background:#f8fafc;display:block;margin-left:auto;margin-right:auto;cursor:zoom-in}
@@ -220,8 +221,9 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
   <main>
     <section id="page-about" class="page-section active">
       <div class="hero-container">
-        <img src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88.jpg?raw=true" style="max-width:100%;height:auto;max-height:180px;margin-bottom:8px;border-radius:8px;" alt="DOT to DOT">
-        <h1 class="hero-title">羊點一線｜泰韓代購</h1>
+        <!-- 🚀 加大圖片與文字間距 -->
+        <img src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88.jpg?raw=true" style="max-width:100%;height:auto;max-height:180px;margin-bottom:24px;border-radius:8px;" alt="DOT to DOT">
+        <h1 class="hero-title" style="margin-bottom: 24px;">羊點一線｜泰韓代購</h1>
         <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物、明星個人品牌及同款代購。<br>架上商品歡迎直接選購下單<br>有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨 #提供售後</p>
         <div class="hero-btn-group">
           <a href="https://linktr.ee/dottodot.shop" target="_blank" class="cta-button outline">CONTACT US</a>
@@ -278,9 +280,12 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
             <button id="admin-sync-post-btn" onclick="manualSyncCMSData(this)" style="display:none; background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">🚀 發布並同步貼文</button>
           </div>
         </div>
+        
+        <!-- 🚀 NEW POST 加入預設排序 -->
         <div class="filter-bar-wrapper">
           <input type="text" class="search-input" id="post-search-input" placeholder="🔍 搜尋貼文標題或內容..." oninput="renderPosts()">
           <select class="form-select" id="post-sort-select" onchange="renderPosts()" style="width: auto;">
+            <option value="default">預設排序 (後台手動)</option>
             <option value="newest">時間排序：由新到舊</option>
             <option value="oldest">時間排序：由舊到新</option>
           </select>
@@ -630,27 +635,17 @@ function syncCMSToCloud() {
   db.ref('cms').set(payload).then(function() { if(currentGasWebhook) fetch(currentGasWebhook, { method: 'POST', body: JSON.stringify(Object.assign({action: "syncCMS"}, payload)) }).catch(function(){}); });
 }
 
-// 🚀 從試算表拉取資料功能
+// 🚀 極速同步單筆 POST 請求
 function pullOrdersFromSheet() {
-  var btn = document.getElementById('sync-sheet-btn');
-  if(!btn) return;
-  var ori = btn.textContent;
-  btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
-  fetch(currentGasWebhook + '?action=getOrders', { method: 'GET' })
-    .then(res => res.json())
-    .then(data => {
+  var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
+  var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
+  fetch(currentGasWebhook, { method: 'POST', body: JSON.stringify({action: 'getOrders'}) })
+    .then(res=>res.json()).then(data=>{
       if(data && Array.isArray(data)) {
         var upd = {}; data.forEach(o => { if(o.orderId) upd[o.orderId] = o; });
         db.ref('orders').update(upd).then(() => { btn.textContent = '✓ 已同步'; setTimeout(() => { btn.textContent=ori; btn.disabled=false; }, 2000); });
-      } else throw new Error('Data format');
-    }).catch(err => {
-      fetch(currentGasWebhook, { method: 'POST', body: JSON.stringify({action: 'getOrders'}) }).then(res=>res.json()).then(data=>{
-        if(data && Array.isArray(data)) {
-          var upd = {}; data.forEach(o => { if(o.orderId) upd[o.orderId] = o; });
-          db.ref('orders').update(upd).then(() => { btn.textContent = '✓ 已同步'; setTimeout(() => { btn.textContent=ori; btn.disabled=false; }, 2000); });
-        }
-      }).catch(e=>{ btn.textContent = '❌ 同步失敗'; setTimeout(() => { btn.textContent=ori; btn.disabled=false; }, 2000); });
-    });
+      } else { throw new Error('Data err'); }
+    }).catch(e=>{ btn.textContent = '❌ 失敗，請重試'; setTimeout(() => { btn.textContent=ori; btn.disabled=false; }, 2000); });
 }
 
 var currentFilterRegion = 'all'; var currentFilterCategory = 'all'; var currentSearchKeyword = '';
@@ -661,9 +656,7 @@ function setFilter(type, value, btnEl) {
   var c = document.getElementById(cid); if (c) { c.querySelectorAll('.filter-chip').forEach(ch=>ch.classList.remove('active')); }
   if (btnEl) btnEl.classList.add('active'); renderProducts();
 }
-function applyFilters() {
-  var kw = document.getElementById('search-keyword-input'); currentSearchKeyword = kw ? kw.value.trim().toLowerCase() : ''; renderProducts();
-}
+function applyFilters() { var kw = document.getElementById('search-keyword-input'); currentSearchKeyword = kw ? kw.value.trim().toLowerCase() : ''; renderProducts(); }
 
 function renderProducts() {
   var c = document.getElementById('product-grid-container'); if (!c) return;
@@ -696,7 +689,7 @@ function renderProducts() {
     var clsBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
     var itemOpts = '<option value="default" selected>-</option>'; s.items.forEach((it,j) => {itemOpts += '<option value="'+j+'">'+it.name+'</option>';});
     var curImg = s.img || s.items[0].img;
-    var admBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (isActive ? '下架' : '上架') + '</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
+    var admBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已下架</button>' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>');
 
     var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div><div class="product-eta">' + (s.eta ? s.eta.replace(/\n/g, '<br>') : '') + '</div><div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div style="width: 50px;"><label class="spec-label">數量：</label><input type="number" class="qty-input" id="qty-input-' + s.id + '" value="1" min="1" max="99" ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
@@ -704,9 +697,8 @@ function renderProducts() {
     if (!isActive) { if (isAdminMode) inaHtml += html; } else if (isActuallyClosed) { clsHtml += html; } else { actHtml += html; }
   });
 
-  var finalHtml = '';
-  if(actHtml) finalHtml += actHtml;
-  if(clsHtml) finalHtml += '<div style="grid-column: 1/-1; margin-top:10px; padding-top:20px; border-top:2px dashed #cbd5e1;"><h3 style="font-size:18px; font-weight:900; color:#64748b; margin-bottom:10px;">🔒 已結單商品</h3></div>' + clsHtml;
+  // 🚀 移除結單商品分隔線，直接相接
+  var finalHtml = actHtml + clsHtml;
   if(inaHtml) finalHtml += '<div style="grid-column: 1/-1; margin-top:10px; padding-top:20px; border-top:2px dashed #cbd5e1;"><h3 style="font-size:18px; font-weight:900; color:#64748b; margin-bottom:10px;">📦 已下架商品</h3></div>' + inaHtml;
   c.innerHTML = finalHtml || '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有符合條件的商品</div>';
 }
@@ -999,9 +991,11 @@ function renderAdminOrdersUI() {
         '<div><label style="font-size:10px;">出貨狀態</label><select class="form-select" id="adm-ship-' + ord.orderId + '-' + idx + '" '+(isLockedOrDone?'disabled':'')+'><option value="">(無)</option><option value="抵台理貨中" '+(it.shipStatus==='抵台理貨中'?'selected':'')+'>抵台理貨中</option><option value="已出貨" '+(it.shipStatus==='已出貨'?'selected':'')+'>已出貨</option></select></div>' +
         '</div></div>';
     });
-    var lockBtn = ord.isClosed ? '<button class="btn-unclose-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', false)">🔓 解除鎖定</button>' : '<button class="btn-close-order" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', true)">🔒 鎖定</button>';
-    var sendBtn = isLockedOrDone ? '' : '<button class="btn-send-notif" onclick="adminSubmitStatus(\'' + ord.orderId + '\')">📨 發送最新狀態</button>';
-    var completeBtn = isDone ? '<button style="background:#94a3b8;color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;" onclick="adminToggleCompleteOrder(\'' + ord.orderId + '\', false)">🔄 解除結案</button>' : '<button style="background:#16a34a;color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;" onclick="adminToggleCompleteOrder(\'' + ord.orderId + '\', true)">✅ 結案</button>';
+    
+    // 🚀 按鈕 Inline Styles 完整版，確保不會被壓縮吃掉
+    var lockBtn = ord.isClosed ? '<button style="background:#e2e8f0;color:#475569;border:1px solid #cbd5e1;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', false)">🔓 解除鎖定</button>' : '<button style="background:#f59e0b;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="adminToggleCloseOrder(\'' + ord.orderId + '\', true)">🔒 鎖定</button>';
+    var sendBtn = isLockedOrDone ? '' : '<button style="background:#0ea5e9;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="adminSubmitStatus(\'' + ord.orderId + '\')">📨 發送最新狀態</button>';
+    var completeBtn = isDone ? '<button style="background:#94a3b8;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="adminToggleCompleteOrder(\'' + ord.orderId + '\', false)">🔄 解除結案</button>' : '<button style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="adminToggleCompleteOrder(\'' + ord.orderId + '\', true)">✅ 結案</button>';
     
     html += '<div class="admin-card '+(isLockedOrDone?'closed-order':'')+'"><div style="font-weight:900;margin-bottom:8px;">' + doneBadge + newBtn + ord.orderId + '<span style="font-size:11px;color:#666;font-weight:normal;margin-left:10px;">'+ord.orderDate+'</span></div><div style="font-size:12px;margin-bottom:10px;">買家：<b>'+ord.buyerName+'</b> ('+ord.buyerPhone+') | '+ord.buyerStore+'<br>備註：'+(ord.buyerNote||'無')+'</div><div style="font-size:12px;margin-bottom:10px;">對帳：<select class="form-select" style="width:auto;display:inline-block;" id="adm-paystatus-' + ord.orderId + '" '+(isLockedOrDone?'disabled':'')+'><option value="等待對帳中" '+(ord.payStatus==='等待對帳中'?'selected':'')+'>等待對帳中</option><option value="已對帳完成" '+(ord.payStatus==='已對帳完成'?'selected':'')+'>已對帳完成</option><option value="對帳異常" '+(ord.payStatus==='對帳異常'?'selected':'')+'>對帳異常</option></select></div><div style="background:#f1f5f9;padding:10px;border-radius:8px;">' + itemsH + '</div><div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">' + sendBtn + lockBtn + completeBtn + '</div></div>';
   });
@@ -1076,7 +1070,7 @@ function renderPosts() {
   var c = document.getElementById('dynamic-blog-container'); if (!c) return;
   var posts = JSON.parse(localStorage.getItem('dottodot_custom_posts') || '[]');
   var kw = document.getElementById('post-search-input') ? document.getElementById('post-search-input').value.trim().toLowerCase() : '';
-  var sortT = document.getElementById('post-sort-select') ? document.getElementById('post-sort-select').value : 'newest';
+  var sortT = document.getElementById('post-sort-select') ? document.getElementById('post-sort-select').value : 'default';
   
   posts.forEach(function(p, idx) { p.oriIdx = idx; });
   var filtered = posts.filter(function(p) {
@@ -1089,6 +1083,7 @@ function renderPosts() {
   
   if (sortT === 'newest') filtered.sort(function(a,b) { return new Date(b.date||0) - new Date(a.date||0); });
   else if (sortT === 'oldest') filtered.sort(function(a,b) { return new Date(a.date||0) - new Date(b.date||0); });
+  else filtered.sort(function(a,b) { return a.oriIdx - b.oriIdx; });
 
   if(filtered.length===0){ c.innerHTML='<div style="text-align:center;">無貼文</div>'; return; }
   var h = '';
@@ -1096,9 +1091,13 @@ function renderPosts() {
     var cT = Array.isArray(p.tags) ? p.tags : (p.tag ? [p.tag] : []); var rT = Array.isArray(p.regions) ? p.regions : [];
     var tgH = ''; rT.forEach(function(t) { tgH += '<span class="blog-tag" style="background:#e2e8f0;">' + t + '</span>'; }); cT.forEach(function(t) { tgH += '<span class="blog-tag">' + t + '</span>'; });
     var dT = p.desc || ''; var sd = dT.length > 75 ? dT.substring(0, 75) : dT;
-    var cp = dT.length > 75 ? '<div style="position:absolute;top:20px;right:20px;font-size:12px;color:var(--primary-blue);font-weight:900;">點擊查看完整內容</div>' : '';
+    
+    // 🚀 固定在每一篇右上角的引導文字，確保絕對定位不會被蓋住
+    var cp = '<div style="position:absolute;top:20px;right:20px;font-size:12px;color:var(--primary-blue);font-weight:900;z-index:2;background:#fff;padding:2px 4px;border-radius:4px;">點擊查看完整內容</div>';
+
     var btns = isAdminMode ? '<div class="admin-sort-btn-group"><button class="admin-sort-btn" onclick="event.stopPropagation();movePost('+p.oriIdx+',-1)">↑</button><button class="admin-sort-btn" onclick="event.stopPropagation();movePost('+p.oriIdx+',1)">↓</button></div><div style="margin-top:10px;display:flex;gap:6px;"><button onclick="event.stopPropagation();openPostModal('+p.oriIdx+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="event.stopPropagation();adminDeletePost('+p.oriIdx+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
-    h += '<div class="blog-card" onclick="viewPostDetail('+p.oriIdx+')"><div class="blog-content-part"><div>'+tgH+'</div><div style="font-size:11px;color:#888;">'+(p.date||'')+'</div><div class="blog-title">'+p.title+'</div><div class="blog-desc" style="white-space:pre-wrap;">'+sd+'</div>'+cp+btns+'</div>'+(p.img?'<img src="'+p.img+'" class="blog-thumb">':'')+'</div>';
+    // 🚀 加大 padding-right 確保標題不與絕對定位文字重疊
+    h += '<div class="blog-card" onclick="viewPostDetail('+p.oriIdx+')"><div class="blog-content-part" style="padding-right: 120px;"><div>'+tgH+'</div><div style="font-size:11px;color:#888;">'+(p.date||'')+'</div><div class="blog-title">'+p.title+'</div><div class="blog-desc" style="white-space:pre-wrap;">'+sd+'</div>'+cp+btns+'</div>'+(p.img?'<img src="'+p.img+'" class="blog-thumb">':'')+'</div>';
   }); c.innerHTML = h;
 }
 
