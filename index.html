@@ -37,7 +37,8 @@ body{background-color:#fff;color:var(--text-main);display:flex;flex-direction:co
 .cart-btn-wrap:hover{background:#fff;color:var(--primary-blue)}
 .cart-btn-wrap svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none}
 .cart-num{font-size:12px;font-weight:900}
-@keyframes popAnim{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
+/* 🚀 購物車閃爍綠色動畫 */
+@keyframes popAnim{0%{transform:scale(1);background:rgba(255,255,255,0.15)}50%{transform:scale(1.35);background:var(--line-green);color:#fff;border-color:var(--line-green)}100%{transform:scale(1);background:rgba(255,255,255,0.15)}}
 .pop-anim{animation:popAnim 0.35s cubic-bezier(0.175,0.885,0.32,1.275)}
 .bell-wrapper{position:relative}
 .bell-popover-box{position:absolute;top:38px;right:-80px;width:300px;background:#fff;color:var(--text-main);border-radius:14px;box-shadow:0 12px 36px rgba(0,15,60,0.25);border:1px solid var(--border-color);z-index:2100;display:none;padding:14px}
@@ -88,12 +89,14 @@ main{flex:1;width:100%}
 .closed-badge{position:absolute;top:10px;right:10px;background:#64748b;color:#fff;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px;z-index:2}
 .product-content{padding:16px;display:flex;flex-direction:column;flex:1}
 .product-series{font-size:clamp(15px,4vw,16.5px);font-weight:900;margin-bottom:4px;color:#111;word-break:break-all}
-.product-eta{font-size:11.5px;color:#7b46ff;font-weight:700;background:#f2edff;padding:6px 10px;border-radius:6px;margin-bottom:12px;white-space:pre-wrap;line-height:1.5}
+/* 🚀 備註縮放修復：隨內容最寬折行，並加入圖示 */
+.product-eta{font-size:11.5px;color:#7b46ff;font-weight:700;background:#f2edff;padding:6px 10px;border-radius:6px;margin-bottom:12px;white-space:pre-wrap;line-height:1.5;display:inline-block;max-width:100%;align-self:flex-start;word-break:break-word;}
 .form-row-spec{display:flex;gap:8px;margin-bottom:12px;align-items:center}
 .spec-field{flex:1}
 .spec-label{font-size:11px;font-weight:800;color:var(--text-muted);margin-bottom:3px;display:block}
 .spec-select{width:100%;padding:7px 8px;border:1.5px solid var(--border-color);border-radius:8px;font-size:12px;font-weight:600;outline:none;background:#fff}
 .qty-input{width:60px;padding:7px 6px;border:1.5px solid var(--border-color);border-radius:8px;font-size:12px;font-weight:700;text-align:center;background:#fff}
+.qty-input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
 .product-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px dashed var(--border-color)}
 .product-price{font-size:clamp(16px,4.5vw,18px);font-weight:900;color:var(--primary-blue);min-width:70px}
 .add-cart-btn{background:var(--primary-blue);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer}
@@ -101,7 +104,7 @@ main{flex:1;width:100%}
 .notice-card h4{font-size:15px;font-weight:900;color:var(--primary-blue);margin-bottom:6px;padding-right:40px}
 .notice-card p{font-size:13px;color:var(--text-muted);margin-bottom:6px}
 .qa-box{border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:12px;background:#fff;overflow:hidden;position:relative}
-.qa-q{padding:16px 20px;font-weight:800;font-size:14.5px;cursor:pointer;display:flex;justify-content:space-between;background:#fafbff;padding-right:40px}
+.qa-q{padding:16px 20px;font-weight:800;font-size:14.5px;cursor:pointer;display:flex;justify-content:space-between;background:#fafbff;padding-right:50px}
 .qa-a{padding:16px 20px;font-size:13.5px;color:var(--text-muted);line-height:1.7;border-top:1px solid var(--border-color);display:none}
 .qa-box.open .qa-a{display:block}
 .blog-card{background:#fff;border:1.5px solid var(--border-color);border-radius:16px;margin-bottom:20px;padding:20px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;transition:transform 0.2s,border-color 0.2s;position:relative}
@@ -160,7 +163,8 @@ main{flex:1;width:100%}
 .admin-card.closed-order{background:#e2e8f0!important;border-color:#94a3b8!important;opacity:0.85;filter:grayscale(80%)}
 .admin-badge-closed{background:#64748b;color:#fff;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:800}
 .admin-action-btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-size:12.5px;text-align:center;margin-top:auto}
+/* 🚀 Footer 減半 */
+footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-size:12.5px;text-align:center;margin-top:auto}
 .lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:4000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .lightbox-overlay.active{display:flex;animation:fadeIn 0.2s}
 .lightbox-img{max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
@@ -183,6 +187,7 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
     <div class="nav-container">
       <div class="nav-top-row">
         <img class="brand-logo" src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88%E4%B8%AD%E5%AD%97.png?raw=true" onclick="switchPage('about')" alt="DOT to DOT">
+
         <div class="nav-actions">
           <button class="admin-shortcut-btn" id="admin-shortcut-btn" onclick="switchPage('admin'); loadAdminOrders();">後台管理</button>
           <div class="bell-wrapper">
@@ -220,7 +225,6 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
   <main>
     <section id="page-about" class="page-section active">
       <div class="hero-container">
-        <!-- 🚀 圖片與綠字間距拉寬 -->
         <img src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88.jpg?raw=true" style="max-width:100%;height:auto;max-height:180px;margin-bottom:24px;border-radius:8px;" alt="DOT to DOT">
         <h1 class="hero-title" style="margin-bottom: 24px;">羊點一線｜泰韓代購</h1>
         <p class="hero-desc" id="about-us-desc-text">本店提供泰韓選物、明星個人品牌及同款代購。<br>架上商品歡迎直接選購下單<br>有任何想了解的商品都可以私訊詢問。<br>#價格透明 #快速出貨 #提供售後</p>
@@ -283,7 +287,7 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
         <div class="filter-bar-wrapper">
           <input type="text" class="search-input" id="post-search-input" placeholder="🔍 搜尋貼文標題或內容..." oninput="renderPosts()">
           <select class="form-select" id="post-sort-select" onchange="renderPosts()" style="width: auto;">
-            <option value="default">預設排序 (後台手動)</option>
+            <option value="default">預設排序</option>
             <option value="newest">時間排序：由新到舊</option>
             <option value="oldest">時間排序：由舊到新</option>
           </select>
@@ -359,7 +363,6 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
       </div>
     </section>
 
-    <!-- 賣家專屬管理後台 -->
     <section id="page-admin" class="page-section">
       <div class="container">
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -436,7 +439,7 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title">步驟二：匯款資訊與對帳回報</div><button class="drawer-close" onclick="closeCheckoutModal2()">✕</button></div>
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;"><div style="font-size:13px; color:#1e40af;" id="step2-total-amount">請匯款訂單總金額:$ 0</div></div>
-      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">⚠️ <b>無卡匯款提醒：</b><br>無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！</div>
+      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">⚠️️ <b>無卡匯款提醒：</b><br>無卡匯款者請先洽詢官方客服再下訂單與履行付款，謝謝！</div>
       <div class="bank-info-box">🏦 <b>匯款帳號資訊</b><br>銀行：兆豐銀行（017）<br>帳號：<b>07764002939</b><br>戶名：DOT to DOT 專門店</div>
       <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
         <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:14px;">
@@ -519,7 +522,7 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
   <div class="form-group"><label>地區分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-region-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="全站公告">全站公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="泰國相關">泰國相關</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="韓國相關">韓國相關</label></div></div>
   <div class="form-group"><label>標籤 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-tag-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="公告">公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="新團通知">新團通知</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="品牌推介">品牌推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="商品推介">商品推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="現場連線">現場連線</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="其他分享">其他分享</label></div></div><div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required></textarea></div><div class="form-group"><label>外部連結</label><input type="url" class="form-input" id="adm-post-link"></div><div class="form-group"><label>圖片網址</label><input type="url" class="form-input" id="adm-post-file"></div><button type="submit" class="checkout-btn">發布</button></form></div></div>
 
-  <!-- 🚀 上架商品彈窗 (已完整修復並加回) -->
+  <!-- 🚀 上架商品彈窗 -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title" id="product-modal-title">上架全新商品</div><button class="drawer-close" onclick="closeProductModal()">✕</button></div>
@@ -530,7 +533,7 @@ footer{background:var(--accent-black);color:#888;padding:30px 20px 50px;font-siz
         <div class="form-group" style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="adm-series-is-preorder" style="width:18px; height:18px; cursor:pointer;"><label for="adm-series-is-preorder" style="margin-bottom:0; cursor:pointer; font-weight:800;">是否為預購</label></div>
         <div class="form-group"><label>地區分類 *</label><select class="form-select" id="adm-series-region"><option value="泰國商品">泰國商品</option><option value="韓國商品">韓國商品</option></select></div>
         <div class="form-group"><label>商品分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="官方周邊">官方周邊</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="明星個人品牌">明星個人品牌</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="明星同款">明星同款</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="藥妝">藥妝</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="零食">零食</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="文創商品">文創商品</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="包包">包包</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="服飾">服飾</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="cat-chk" value="其他商品">其他商品</label></div></div>
-        <div class="form-group"><label>備註 (單行)</label><input type="text" class="form-input" id="adm-series-eta" placeholder="例如：結單時間、預計出貨日等"></div>
+        <div class="form-group"><label>備註 (支援多行換行)</label><textarea class="form-textarea" id="adm-series-eta" placeholder="例如：結單時間、預計出貨日等"></textarea></div>
         <div class="form-group"><label>自動結單時間</label><input type="datetime-local" class="form-input" id="adm-series-close-time"></div>
         <hr style="margin:14px 0; border:0; border-top:1px dashed var(--border-color);">
         <div style="font-weight:900; font-size:13.5px; color:var(--primary-blue); margin-bottom:8px;">📦 子品項規格設定：</div>
@@ -610,7 +613,7 @@ window.syncCMSToCloud = function() {
   window.db.ref('cms').set(payload).then(function() { if(window.currentGasWebhook) fetch(window.currentGasWebhook, { method: 'POST', body: JSON.stringify(Object.assign({action: "syncCMS"}, payload)) }).catch(function(){}); });
 };
 
-// 🚀 極速同步單筆 GET 請求 (防呆超時)
+// 🚀 從試算表強勢覆寫拉取 (並刪除遺失的訂單)
 window.pullOrdersFromSheet = function() {
   var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
   var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
@@ -618,8 +621,19 @@ window.pullOrdersFromSheet = function() {
     .then(function(res){ return res.json(); })
     .then(function(data){
       if(data && data.orders && Array.isArray(data.orders)) {
-        var upd = {}; data.orders.forEach(function(o){ if(o.orderId) upd[o.orderId] = o; });
-        window.db.ref('orders').update(upd).then(function(){ btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000); });
+        window.db.ref('orders').once('value').then(function(snap) {
+          var currentOrders = snap.val() || {};
+          var newOrders = {};
+          data.orders.forEach(function(o){
+            if(o.orderId) {
+              if(currentOrders[o.orderId]) o.lastNotifiedHash = currentOrders[o.orderId].lastNotifiedHash;
+              newOrders[o.orderId] = o;
+            }
+          });
+          window.db.ref('orders').set(newOrders).then(function(){
+            btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000);
+          });
+        });
       } else { btn.textContent = '❌ 無效資料，請重試'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); }
     }).catch(function(e){ btn.textContent = '❌ 連線失敗或逾時'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); });
 };
@@ -666,13 +680,11 @@ window.renderProducts = function() {
     var admBtns = window.isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已下架</button>' : '<button class="add-cart-btn" onclick="window.addToCart(\'' + s.id + '\')">加入購物車</button>');
 
-    // 🚀 備註紫底無圖標
-    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div><div class="product-eta">' + (s.eta ? s.eta.replace(/\n/g, '<br>') : '') + '</div><div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div style="width: 50px;"><label class="spec-label">數量：</label><input type="number" class="qty-input" id="qty-input-' + s.id + '" value="1" min="1" max="99" ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
+    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">⏱ ' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div style="width: 50px;"><label class="spec-label">數量：</label><input type="text" class="qty-input" id="qty-input-' + s.id + '" value="-" disabled ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
 
     if (!isActive) { if (window.isAdminMode) inaHtml += html; } else if (isActuallyClosed) { clsHtml += html; } else { actHtml += html; }
   });
 
-  // 🚀 結單商品無分隔線，下架商品有分隔線
   var finalHtml = actHtml + clsHtml;
   if(inaHtml) finalHtml += '<div style="grid-column: 1/-1; margin-top:10px; padding-top:20px; border-top:2px dashed #cbd5e1;"><h3 style="font-size:18px; font-weight:900; color:#64748b; margin-bottom:10px;">📦 已下架商品</h3></div>' + inaHtml;
   c.innerHTML = finalHtml || '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">沒有符合條件的商品</div>';
@@ -685,13 +697,16 @@ window.adminToggleProductClose = function(seriesId) { for (var i = 0; i < window
 window.handleItemChange = function(seriesId) {
   var series = window.productSeriesData.find(function(x){return x.id===seriesId;}); if (!series) return;
   var sel = document.getElementById('item-select-' + seriesId);
+  var qIn = document.getElementById('qty-input-' + seriesId);
   if (sel.value === 'default') {
     if (document.getElementById('price-display-' + seriesId)) document.getElementById('price-display-' + seriesId).textContent = 'NT$ -';
     if (document.getElementById('img-display-' + seriesId)) document.getElementById('img-display-' + seriesId).src = series.img || (series.items[0]?series.items[0].img:'');
     if (document.getElementById('color-select-' + seriesId)) document.getElementById('color-select-' + seriesId).innerHTML = '<option value="">-</option>';
     if (document.getElementById('size-select-' + seriesId)) document.getElementById('size-select-' + seriesId).innerHTML = '<option value="">-</option>';
+    if (qIn) { qIn.type = 'text'; qIn.value = '-'; qIn.disabled = true; }
     return;
   }
+  if (qIn) { qIn.type = 'number'; qIn.value = '1'; qIn.min = '1'; qIn.max = '99'; qIn.disabled = false; }
   var it = series.items[parseInt(sel.value, 10)];
   if (document.getElementById('price-display-' + seriesId)) document.getElementById('price-display-' + seriesId).textContent = 'NT$ ' + Number(it.price).toLocaleString();
   if (it.img && document.getElementById('img-display-' + seriesId)) document.getElementById('img-display-' + seriesId).src = it.img;
@@ -707,7 +722,8 @@ window.addToCart = function(seriesId) {
   if (!s || s.isClosed || isTC || s.isActive === false) return;
   var item = s.items[parseInt(sel.value, 10)];
   var fs = document.getElementById('color-select-' + seriesId).value + ' / ' + document.getElementById('size-select-' + seriesId).value;
-  var qty = document.getElementById('qty-input-' + seriesId) ? parseInt(document.getElementById('qty-input-' + seriesId).value, 10) : 1;
+  var qtyInput = document.getElementById('qty-input-' + seriesId);
+  var qty = (qtyInput && qtyInput.value !== '-') ? parseInt(qtyInput.value, 10) : 1;
   var fIdx = -1; for (var idx = 0; idx < window.cart.length; idx++) { if (window.cart[idx].series === s.seriesName && window.cart[idx].itemName === item.name && window.cart[idx].spec === fs) { fIdx = idx; break; } }
   if (fIdx !== -1) window.cart[fIdx].quantity += qty; else window.cart.push({ series: s.seriesName, name: s.seriesName + ' - ' + item.name, itemName: item.name, price: item.price, spec: fs, quantity: qty, img: item.img || s.img, selected: true, cartItemId: Date.now() + Math.random() });
   window.saveCartToLocalStorage(); window.updateCartDisplay();
@@ -1010,7 +1026,6 @@ window.adminToggleCompleteOrder = function(orderId, isComplete) {
   window.db.ref('orders/' + orderId).set(uOrd);
 };
 
-// 🚀 新增商品彈窗完整函數歸位
 window.openProductModal = function(id) {
   var m = document.getElementById('product-modal'); if (!m) return; m.classList.add('active');
   document.querySelectorAll('input[name="cat-chk"]').forEach(function (c) { c.checked = false; });
@@ -1117,7 +1132,7 @@ window.renderPosts = function() {
   filtered.forEach(function(p) {
     var cT = Array.isArray(p.tags) ? p.tags : (p.tag ? [p.tag] : []); var rT = Array.isArray(p.regions) ? p.regions : [];
     var tgH = ''; rT.forEach(function(t) { tgH += '<span class="blog-tag" style="background:#e2e8f0;">' + t + '</span>'; }); cT.forEach(function(t) { tgH += '<span class="blog-tag">' + t + '</span>'; });
-    var dT = p.desc || ''; var sd = dT.length > 75 ? dT.substring(0, 75) : dT;
+    var dT = p.desc || ''; var sd = dT.length > 75 ? dT.substring(0, 75) + '...' : dT;
     var cp = '<div style="position:absolute;top:20px;right:20px;font-size:12px;color:var(--primary-blue);font-weight:900;z-index:2;background:#fff;padding:2px 4px;border-radius:4px;">點擊查看完整內容</div>';
 
     var btns = window.isAdminMode ? '<div class="admin-sort-btn-group"><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',-1)">↑</button><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',1)">↓</button></div><div style="margin-top:10px;display:flex;gap:6px;"><button onclick="event.stopPropagation();window.openPostModal('+p.oriIdx+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="event.stopPropagation();window.adminDeletePost('+p.oriIdx+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
