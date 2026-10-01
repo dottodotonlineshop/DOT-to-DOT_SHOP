@@ -15,7 +15,7 @@
 
   <style>
     :root {
-      --primary-blue: #0047ba; /* 🚀 統一為 Logo 精準色碼 */
+      --primary-blue: #0047ba; /* 🚀 統一為 Logo 專屬寶石藍 */
       --accent-lime: #ccff00;
       --accent-black: #111111;
       --accent-gray: #f4f6fb;
@@ -33,8 +33,8 @@
     .nav-container { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
     .nav-top-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
     
-    /* 🚀 導覽列 Logo 換為圖片 */
-    .brand-logo { height: 34px; width: auto; object-fit: contain; cursor: pointer; user-select: none; }
+    /* 🚀 導覽列 Logo 改為圖片控制 */
+    .brand-logo { height: 34px; width: auto; object-fit: contain; cursor: pointer; user-select: none; margin-top: 2px; }
     
     .nav-actions { display: flex; align-items: center; gap: 12px; position: relative; }
     .nav-bottom-row { display: flex; justify-content: center; width: 100%; }
@@ -112,10 +112,13 @@
     .product-card.closed-product { background: #f1f5f9; opacity: 0.75; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card.inactive-product { background: #f8fafc; opacity: 0.6; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card:hover { transform: translateY(-4px); border-color: var(--primary-blue); }
-    .product-img-wrap { width: 100%; height: 220px; background: #f1f3f7; position: relative; }
-    .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-    .preorder-badge { position: absolute; top: 10px; left: 10px; background: var(--accent-black); color: var(--accent-lime); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px; }
-    .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; }
+    
+    /* 🚀 圖片 1:1 修改 */
+    .product-img-wrap { width: 100%; aspect-ratio: 1 / 1; background: #f1f3f7; position: relative; overflow: hidden; }
+    .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+    
+    .preorder-badge { position: absolute; top: 10px; left: 10px; background: var(--accent-black); color: var(--accent-lime); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px; z-index: 2;}
+    .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; z-index: 2;}
 
     .product-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
     .product-series { font-size: clamp(15px, 4vw, 16.5px); font-weight: 900; margin-bottom: 4px; color: #111; word-break: break-all;}
@@ -146,7 +149,7 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
-    .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
+    .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; cursor: zoom-in; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
     .cart-drawer-overlay.active { display: block; }
@@ -204,15 +207,27 @@
     .btn-unclose-order { background: #d97706; color: #ffffff; border: none; padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; }
 
     footer { background: var(--accent-black); color: #888888; padding: 30px 20px 50px; font-size: 12.5px; text-align: center; margin-top: auto; }
+    
+    /* 🚀 圖片全螢幕燈箱 */
+    .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .lightbox-overlay.active { display: flex; animation: fadeIn 0.2s; }
+    .lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 12px; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; font-weight: 300; cursor: pointer; background: none; border: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-radius: 50%; }
   </style>
 </head>
 <body>
+
+  <!-- 🚀 燈箱 HTML -->
+  <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close">✕</button>
+    <img src="" class="lightbox-img" id="lightbox-img" onclick="event.stopPropagation()">
+  </div>
 
   <header class="header-banner">
     <div class="nav-container">
       
       <div class="nav-top-row">
-        <!-- 🚀 導覽列左上角替換為您的 Logo 圖片 -->
+        <!-- 🚀 導覽列左上角替換為中文字版 Logo 圖片 -->
         <img class="brand-logo" src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88%E4%B8%AD%E5%AD%97.png?raw=true" onclick="switchPage('about')" alt="DOT to DOT">
 
         <div class="nav-actions">
@@ -520,6 +535,7 @@
         <div class="form-group"><label id="buyer-address-label">收件門市(賣貨便) *</label><input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)"></div>
         <div class="form-group"><label>訂單備註 / 拆單出貨偏好</label><input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出"></div>
         
+        <!-- 🚀 必填條款勾選 -->
         <div class="form-group" style="margin-top: 16px; margin-bottom: 4px; padding: 10px; background: #eff6ff; border-radius: 8px;">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-size:12.5px;">
             <input type="checkbox" id="agree-tos" required style="width:18px; height:18px; cursor:pointer;"> 
@@ -674,7 +690,7 @@
 
         <div id="member-tab-orders" style="display: none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:12px; color:#64748b;">(歷史訂單已自動即時同步)</span>
+            <span style="font-size:12px; color:#64748b;">(歷史訂單已由 Firebase 即時同步)</span>
           </div>
           <div id="member-orders-list"></div>
         </div>
@@ -833,9 +849,9 @@
     var adminPageSize = 5;
     var isCheckoutModalOpen = false;
 
-    // 🚀 全域 Firebase 監聽器
-    var adminOrdersListener = null;
+    // 🚀 Firebase 監聽器
     var userOrdersListener = null;
+    var adminOrdersListener = null;
 
     window.addEventListener('DOMContentLoaded', function() {
       fetchCMSFromCloud();
@@ -1098,7 +1114,7 @@
         var closedClass = isActuallyClosed ? 'closed-product' : '';
         var closedBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
 
-        // 🚀 預設選項 "-", 讓買家可切換預覽
+        // 🚀 修改：預設選項為 '-'，隱藏了 (庫存: X)
         var itemOptions = '<option value="default" selected>-</option>';
         for (var j = 0; j < s.items.length; j++) {
           itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
@@ -1193,7 +1209,7 @@
       var selectEl = document.getElementById('item-select-' + seriesId);
       var val = selectEl.value;
 
-      // 🚀 若選回 "-" 選項，將價格與圖片恢復原狀預覽
+      // 🚀 修改：若選回 "default"，恢復原狀
       if (val === 'default') {
         var pEl = document.getElementById('price-display-' + seriesId);
         if (pEl && series.items.length > 0) pEl.textContent = 'NT$ ' + Number(series.items[0].price).toLocaleString();
@@ -1270,7 +1286,7 @@
         return;
       }
 
-      // 🚀 加入購物車前的 "-" 防呆判斷
+      // 🚀 修改：加入購物車前的 "-" 防呆判斷
       var selectEl = document.getElementById('item-select-' + seriesId);
       if (!selectEl || selectEl.value === 'default' || selectEl.value === '') {
         alert('👉 請先點開下拉選單，選擇您要的商品規格品項！');
@@ -1442,19 +1458,33 @@
 
       for (var i = 0; i < cart.length; i++) {
         var it = cart[i];
-        var foundSeries = productSeriesData.find(function(s) { return s.seriesName === it.series; });
+        var foundSeries = null;
+        for (var s = 0; s < productSeriesData.length; s++) {
+          if (productSeriesData[s].seriesName === it.series) {
+            foundSeries = productSeriesData[s];
+            break;
+          }
+        }
+
         var isTimeClosed = foundSeries && foundSeries.closeTime && nowTime >= new Date(foundSeries.closeTime).getTime();
 
         if (!foundSeries || foundSeries.isActive === false || foundSeries.isClosed || isTimeClosed) {
           removedOrChanged = true;
-          alertMsg += "• 【" + it.name + "】 已下架或結單。\n";
+          alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 已下架或結單，已從購物車移除。\n";
           continue;
         }
 
-        var foundSubItem = foundSeries.items.find(function(sub) { return sub.name === it.itemName; });
+        var foundSubItem = null;
+        for (var sub = 0; sub < foundSeries.items.length; sub++) {
+          if (foundSeries.items[sub].name === it.itemName) {
+            foundSubItem = foundSeries.items[sub];
+            break;
+          }
+        }
+
         if (!foundSubItem) {
           removedOrChanged = true;
-          alertMsg += "• 【" + it.name + "】 已無此規格。\n";
+          alertMsg += "• 【" + it.name + "】 已無此規格，已自購物車移除。\n";
           continue;
         }
 
@@ -1462,13 +1492,14 @@
         if (it.quantity > stock) {
           removedOrChanged = true;
           if (stock <= 0) {
-            alertMsg += "• 【" + it.name + "】 已售完。\n";
+            alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 已無庫存，已自購物車移除。\n";
             continue;
           } else {
-            alertMsg += "• 【" + it.name + "】 庫存不足，為您調整數量為 " + stock + "。\n";
+            alertMsg += "• 【" + it.name + "】 (" + it.spec + ") 庫存不足（僅剩 " + stock + " 件），已為您調整數量。\n";
             it.quantity = stock;
           }
         }
+
         updatedCart.push(it);
       }
 
@@ -1476,7 +1507,7 @@
         cart = updatedCart;
         saveCartToLocalStorage();
         updateCartDisplay();
-        if (!silent) alert("⚠️ 購物車異動：\n" + alertMsg);
+        if (!silent) alert("⚠️ 購物車商品異動通知：\n" + alertMsg);
       }
       return removedOrChanged;
     }
@@ -1489,10 +1520,10 @@
       var popover = document.getElementById('bell-popover');
       if (popover) {
         popover.classList.toggle('active');
-        // Firebase 自動推播，只需打開介面
       }
     }
 
+    // Hash 比對法：組合所有狀態字串
     function getOrderHash(o) {
       var s = o.payStatus || "";
       if(o.items) {
@@ -1511,11 +1542,11 @@
       allOrders.forEach(function(o) {
         var currentHash = getOrderHash(o);
         if (!savedHashes[o.orderId]) {
-          // 客人剛下的新訂單，紀錄 Hash 但不發通知給買家
+          // 新訂單，記錄但不發通知
           savedHashes[o.orderId] = currentHash;
           changed = true;
         } else if (savedHashes[o.orderId] !== currentHash) {
-          // 賣家更新了訂單狀態！
+          // 狀態變了，發送通知
           savedHashes[o.orderId] = currentHash;
           bellUnreads[o.orderId] = true;
           historyUnreads[o.orderId] = true;
@@ -1542,6 +1573,7 @@
         if(badge) { badge.textContent = unreadIds.length; badge.style.display = 'flex'; }
         var html = '';
         unreadIds.forEach(function(id) {
+          // 🚀 修改：鈴鐺文字簡化
           html += '<div class="pop-item"><strong style="color:var(--primary-blue);">● 訂單 ' + id + ' 狀態已更新</strong><div style="margin-top:2px;">請至歷史訂單查看最新進度</div></div>';
         });
         if(popoverContent) popoverContent.innerHTML = html;
@@ -1552,6 +1584,7 @@
     }
 
     function markAllNotificationsRead() {
+      // 🚀 修改：只清除買家的未讀鈴鐺，不再影響賣家後台
       if(currentUser) {
         localStorage.setItem('dottodot_bell_unreads_' + currentUser.userId, '{}');
         renderBell({});
@@ -1560,7 +1593,50 @@
       if (popover) popover.classList.remove('active');
     }
 
-    // 🚀 Firebase 買家訂單即時監聽器
+    function openMemberModal() {
+      var memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.add('active');
+      
+      if (currentUser) {
+         var savedProfile = localStorage.getItem('dottodot_profile_' + currentUser.userId);
+         if (savedProfile) {
+            var p = JSON.parse(savedProfile);
+            document.getElementById('profile-name').value = p.name || '';
+            document.getElementById('profile-phone').value = p.phone || '';
+            document.getElementById('profile-ship-method').value = p.shipMethod || '711';
+            document.getElementById('profile-store').value = p.store || '';
+            updateShipInputUI();
+         }
+         syncOrdersFromSheet();
+      }
+    }
+
+    function closeMemberModal() {
+      var memModal = document.getElementById('member-modal');
+      if (memModal) memModal.classList.remove('active');
+    }
+
+    function switchMemberTab(tabName) {
+      var btnProf = document.getElementById('tab-btn-profile');
+      var btnOrd = document.getElementById('tab-btn-orders');
+      var tabProf = document.getElementById('member-tab-profile');
+      var tabOrd = document.getElementById('member-tab-orders');
+
+      if (tabName === 'profile') {
+        if (btnProf) btnProf.classList.add('active');
+        if (btnOrd) btnOrd.classList.remove('active');
+        if (tabProf) tabProf.style.display = 'block';
+        if (tabOrd) tabOrd.style.display = 'none';
+      } else {
+        if (btnOrd) btnOrd.classList.add('active');
+        if (btnProf) btnProf.classList.remove('active');
+        if (tabOrd) tabOrd.style.display = 'block';
+        if (tabProf) tabProf.style.display = 'none'; // 🚀 修正歷史訂單無法切換的筆誤
+        syncOrdersFromSheet();
+      }
+    }
+
+    // 🚀 Firebase 買家訂單即時監聽
     function syncOrdersFromSheet() {
       if (!currentUser) return;
       var listContainer = document.getElementById('member-orders-list');
@@ -1604,6 +1680,7 @@
         var order = allOrders[i];
         var detailId = 'order-detail-' + order.orderId;
         var hasUnread = historyUnreads && historyUnreads[order.orderId];
+        // 🚀 修改：新增專屬紅色標籤
         var badgeHtml = hasUnread ? '<span id="badge-' + order.orderId + '" style="background:var(--danger-red); color:#fff; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:6px;">狀態已更新</span>' : '';
 
         var itemsDetailHtml = '';
@@ -1634,6 +1711,7 @@
       if(!currentUser) return;
       var historyUnreads = JSON.parse(localStorage.getItem('dottodot_history_unreads_' + currentUser.userId) || '{}');
       if (historyUnreads[orderId]) {
+        // 🚀 修改：點擊即刪除紅色標籤與已讀紀錄
         delete historyUnreads[orderId];
         localStorage.setItem('dottodot_history_unreads_' + currentUser.userId, JSON.stringify(historyUnreads));
         var badgeEl = document.getElementById('badge-' + orderId);
@@ -1642,49 +1720,6 @@
       var detailId = 'order-detail-' + orderId;
       var el = document.getElementById(detailId);
       if (el) el.style.display = (el.style.display === 'none') ? 'block' : 'none';
-    }
-
-    function openMemberModal() {
-      var memModal = document.getElementById('member-modal');
-      if (memModal) memModal.classList.add('active');
-      
-      if (currentUser) {
-         var savedProfile = localStorage.getItem('dottodot_profile_' + currentUser.userId);
-         if (savedProfile) {
-            var p = JSON.parse(savedProfile);
-            document.getElementById('profile-name').value = p.name || '';
-            document.getElementById('profile-phone').value = p.phone || '';
-            document.getElementById('profile-ship-method').value = p.shipMethod || '711';
-            document.getElementById('profile-store').value = p.store || '';
-            updateShipInputUI();
-         }
-         syncOrdersFromSheet();
-      }
-    }
-
-    function closeMemberModal() {
-      var memModal = document.getElementById('member-modal');
-      if (memModal) memModal.classList.remove('active');
-    }
-
-    function switchMemberTab(tabName) {
-      var btnProf = document.getElementById('tab-btn-profile');
-      var btnOrd = document.getElementById('tab-btn-orders');
-      var tabProf = document.getElementById('member-tab-profile');
-      var tabOrd = document.getElementById('member-tab-orders');
-
-      if (tabName === 'profile') {
-        if (btnProf) btnProf.classList.add('active');
-        if (btnOrd) btnOrd.classList.remove('active');
-        if (tabProf) tabProf.style.display = 'block';
-        if (tabOrd) tabOrd.style.display = 'none';
-      } else {
-        if (btnOrd) btnOrd.classList.add('active');
-        if (btnProf) btnProf.classList.remove('active');
-        if (tabOrd) tabOrd.style.display = 'block';
-        if (tabProf) tabProf.style.display = 'none'; 
-        syncOrdersFromSheet();
-      }
     }
 
     function handleSaveProfile(e) {
@@ -1722,7 +1757,7 @@
 
     var pendingOrderData = null;
     
-    // 🚀 結帳最後防線驗證
+    // 🚀 結帳最後防線檢查
     function goToCheckoutStep2(e) {
       e.preventDefault();
 
@@ -1780,7 +1815,7 @@
       if (chkModal1) { isCheckoutModalOpen = true; chkModal1.classList.add('active'); }
     }
 
-    // 🚀 Firebase 秒下單
+    // 🚀 訂單直接寫入 Firebase (雙向秒讀秒寫)
     function handleFinalOrderSubmit(e) {
       e.preventDefault();
       var remitDate = document.getElementById('remit-date').value;
@@ -1788,7 +1823,7 @@
       var remitAccount = document.getElementById('remit-account').value.trim();
 
       if (!remitDate || !remitTime || !remitAccount) {
-        alert('⚠️ 請填寫完整匯款資訊！');
+        alert('⚠️️ 請填寫完整匯款資訊！');
         return;
       }
 
@@ -1871,7 +1906,7 @@
       alert('📋 訂單內容已自動複製！即將為您前往官方社群，請直接長按貼上即可。');
     }
 
-    // 🚀 後台 Firebase 即時監控
+    // 🚀 Firebase 賣家後台即時監控引擎
     function loadAdminOrders() {
       var container = document.getElementById('admin-orders-container');
       if (!container) return;
@@ -2504,9 +2539,150 @@
       closeProductModal(); 
     }
 
-    var userOrdersListener = null;
-    var adminOrdersListener = null;
+    function loadLineSDK() {
+      var lineScript = document.createElement('script');
+      lineScript.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+      lineScript.onload = function() {
+        try {
+          if (typeof liff !== 'undefined') {
+            liff.init({ liffId: MY_LIFF_ID }).then(function() {
+              if (liff.isLoggedIn()) {
+                liff.getProfile().then(function(profile) {
+                  var userObj = {
+                    provider: 'LINE',
+                    displayName: profile.displayName,
+                    userId: profile.userId,
+                    lineUserId: profile.userId,
+                    contactValue: profile.displayName,
+                    pictureUrl: profile.pictureUrl
+                  };
+                  localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+                  handleUserLoggedIn(userObj, true);
+                });
+              }
+            }).catch(function(e) {});
+          }
+        } catch (e) {}
+      };
+      document.body.appendChild(lineScript);
+    }
 
+    function loginWithLine() {
+      try {
+        if (typeof liff !== 'undefined' && liff.login) {
+          if (!liff.isLoggedIn()) liff.login();
+        } else {
+          alert("LINE SDK 連線中，請稍候重試。");
+        }
+      } catch (e) {
+        alert("LINE 登入遇到問題，請重新整理頁面。");
+      }
+    }
+
+    function loginWithGoogle() {
+      var redirectUri = window.location.origin + window.location.pathname;
+      var googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
+        '&response_type=token' +
+        '&scope=' + encodeURIComponent('email profile');
+      window.location.href = googleAuthUrl;
+    }
+
+    function handleGoogleOAuthRedirectCallback() {
+      try {
+        var hash = window.location.hash;
+        if (hash && hash.indexOf('access_token=') !== -1) {
+          var params = {};
+          hash.substring(1).split('&').forEach(function(item) {
+            var parts = item.split('=');
+            params[parts[0]] = decodeURIComponent(parts[1]);
+          });
+          var accessToken = params['access_token'];
+          if (accessToken) {
+            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { 'Authorization': 'Bearer ' + accessToken }
+            }).then(function(res) {
+              return res.json();
+            }).then(function(userInfo) {
+              var userObj = {
+                provider: 'Google',
+                displayName: userInfo.name,
+                userId: userInfo.sub,
+                lineUserId: '',
+                contactValue: userInfo.email || "dottodot.onlineshop@gmail.com",
+                pictureUrl: userInfo.picture
+              };
+              localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+              window.history.replaceState({}, document.title, window.location.pathname);
+              handleUserLoggedIn(userObj, true);
+            }).catch(function(err) {});
+          }
+        }
+      } catch (e) {}
+    }
+
+    function setAdminMode(active) {
+      isAdminMode = active;
+      var dot = document.getElementById('admin-red-dot');
+      var bellBtn = document.getElementById('bell-btn');
+      var cartWrap = document.getElementById('cart-nav-wrap');
+      var adminShortcut = document.getElementById('admin-shortcut-btn');
+      
+      var addNoticeBtn = document.getElementById('admin-add-notice-btn');
+      var addQaBtn = document.getElementById('admin-add-qa-btn');
+      var addPostBtn = document.getElementById('admin-add-post-btn');
+      var addProdBtn = document.getElementById('admin-add-product-btn');
+      var syncNoticeBtn = document.getElementById('admin-sync-notice-btn');
+      var syncQaBtn = document.getElementById('admin-sync-qa-btn');
+      var syncPostBtn = document.getElementById('admin-sync-post-btn');
+      var syncProdBtn = document.getElementById('admin-sync-product-btn');
+
+      if (active) {
+        if (dot) dot.classList.add('active');
+        if (bellBtn) bellBtn.classList.add('disabled-icon');
+        if (cartWrap) cartWrap.classList.add('disabled-btn');
+        if (adminShortcut) adminShortcut.classList.add('active');
+        if (addNoticeBtn) addNoticeBtn.style.display = 'inline-block';
+        if (addQaBtn) addQaBtn.style.display = 'inline-block';
+        if (addPostBtn) addPostBtn.style.display = 'inline-block';
+        if (addProdBtn) addProdBtn.style.display = 'inline-block';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        switchPage('admin');
+        loadAdminOrders();
+      } else {
+        if (dot) dot.classList.remove('active');
+        if (bellBtn) bellBtn.classList.remove('disabled-icon');
+        if (cartWrap) cartWrap.classList.remove('disabled-btn');
+        if (adminShortcut) adminShortcut.classList.remove('active');
+        if (addNoticeBtn) addNoticeBtn.style.display = 'none';
+        if (addQaBtn) addQaBtn.style.display = 'none';
+        if (addPostBtn) addPostBtn.style.display = 'none';
+        if (addProdBtn) addProdBtn.style.display = 'none';
+        if (syncNoticeBtn) syncNoticeBtn.style.display = 'none';
+        if (syncQaBtn) syncQaBtn.style.display = 'none';
+        if (syncPostBtn) syncPostBtn.style.display = 'none';
+        if (syncProdBtn) syncProdBtn.style.display = 'none';
+        switchPage('shop');
+      }
+      renderProducts();
+      renderNotices();
+      renderQas();
+      renderPosts();
+    }
+
+    function verifyAdminPasswordAndEnter() {
+      var pwd = prompt('為保障帳號安全，請輸入管理員專屬密碼：');
+      if (pwd === ADMIN_PASSWORD) {
+        setAdminMode(true);
+        closeMemberModal();
+      } else if (pwd !== null) {
+        alert('密碼錯誤！無法進入賣家後台。');
+      }
+    }
   </script>
 </body>
 </html>
