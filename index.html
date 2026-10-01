@@ -44,6 +44,7 @@ body{background-color:#fff;color:var(--text-main);display:flex;flex-direction:co
 .bell-popover-box.active{display:flex;flex-direction:column}
 .bell-popover-box::before{content:'';position:absolute;top:-7px;right:90px;width:12px;height:12px;background:#fff;transform:rotate(45deg);border-left:1px solid var(--border-color);border-top:1px solid var(--border-color)}
 .pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:800;color:#333;flex-shrink:0}
+/* 🚀 修正通知列表捲動 */
 #bell-popover-content{max-height:280px;overflow-y:auto;margin-bottom:8px;padding-right:4px}
 #bell-popover-content::-webkit-scrollbar{width:4px}
 #bell-popover-content::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
@@ -55,7 +56,7 @@ main{flex:1;width:100%}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .container{max-width:1180px;margin:0 auto;padding:clamp(20px,5vw,36px) clamp(16px,4vw,20px)}
 .hero-container{background-color:var(--primary-blue);color:#fff;padding:clamp(30px,8vw,50px) 16px clamp(50px,10vw,70px);text-align:center;display:flex;flex-direction:column;align-items:center}
-.hero-title{font-size:clamp(32px,8.5vw,80px);font-weight:900;line-height:0.95;text-transform:uppercase;letter-spacing:-1px;color:var(--accent-lime);margin-bottom:24px;text-shadow:0 4px 15px rgba(0,0,0,0.25)}
+.hero-title{font-size:clamp(20px,6vw,36px);font-weight:900;line-height:0.95;text-transform:uppercase;letter-spacing:-1px;color:var(--accent-lime);margin-bottom:24px;text-shadow:0 4px 15px rgba(0,0,0,0.25)}
 .hero-desc{font-size:clamp(14px,3.8vw,17px);max-width:680px;margin:0 auto 16px;line-height:1.65;color:rgba(255,255,255,0.95);font-weight:500;padding:0 10px}
 .hero-btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .cta-button{display:inline-block;background-color:var(--accent-lime);color:var(--accent-black);padding:12px 28px;font-size:clamp(13px,4vw,15px);font-weight:900;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(204,255,0,0.4);border:2px solid var(--accent-lime);transition:transform 0.2s;text-decoration:none}
@@ -105,7 +106,7 @@ main{flex:1;width:100%}
 .notice-card h4{font-size:15px;font-weight:900;color:var(--primary-blue);margin-bottom:6px;padding-right:40px}
 .notice-card p{font-size:13px;color:var(--text-muted);margin-bottom:6px}
 .qa-box{border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:12px;background:#fff;overflow:hidden;position:relative}
-.qa-q{padding:16px 20px;font-weight:800;font-size:14.5px;cursor:pointer;display:flex;justify-content:space-between;background:#fafbff;padding-right:40px}
+.qa-q{padding:16px 20px;font-weight:800;font-size:14.5px;cursor:pointer;display:flex;justify-content:space-between;background:#fafbff;padding-right:50px}
 .qa-a{padding:16px 20px;font-size:13.5px;color:var(--text-muted);line-height:1.7;border-top:1px solid var(--border-color);display:none}
 .qa-box.open .qa-a{display:block}
 .blog-card{background:#fff;border:1.5px solid var(--border-color);border-radius:16px;margin-bottom:20px;padding:20px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;transition:transform 0.2s,border-color 0.2s;position:relative}
@@ -523,7 +524,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
   <div class="form-group"><label>地區分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-region-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="全站公告">全站公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="泰國相關">泰國相關</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="韓國相關">韓國相關</label></div></div>
   <div class="form-group"><label>標籤 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-tag-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="公告">公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="新團通知">新團通知</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="品牌推介">品牌推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="商品推介">商品推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="現場連線">現場連線</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="其他分享">其他分享</label></div></div><div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required></textarea></div><div class="form-group"><label>外部連結</label><input type="url" class="form-input" id="adm-post-link"></div><div class="form-group"><label>圖片網址</label><input type="url" class="form-input" id="adm-post-file"></div><button type="submit" class="checkout-btn">發布</button></form></div></div>
 
-  <!-- 🚀 上架商品彈窗 -->
+  <!-- 上架商品彈窗 -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title" id="product-modal-title">上架全新商品</div><button class="drawer-close" onclick="closeProductModal()">✕</button></div>
@@ -548,10 +549,6 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
   <footer><p style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">DOT to DOT ONLINE STORE</p><p>© 2026 DOT to DOT. 保留一切權利。</p></footer>
 
 <script>
-window.formatDateString = function(dateStr) {
-  try { var d = new Date(dateStr); if(isNaN(d.getTime())) return dateStr; var pad = function(n){return n<10?'0'+n:n;}; return d.getFullYear() + '/' + pad(d.getMonth()+1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); } catch(e) { return dateStr; }
-};
-
 window.ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"]; window.ADMIN_PASSWORD = "admin888";
 const firebaseConfig = { apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU", authDomain: "dot-to-dotshop.firebaseapp.com", databaseURL: "https://dot-to-dotshop-default-rtdb.firebaseio.com", projectId: "dot-to-dotshop", storageBucket: "dot-to-dotshop.firebasestorage.app", messagingSenderId: "868804558476", appId: "1:868804558476:web:c8c26a49f1d1d6354105a9" };
 firebase.initializeApp(firebaseConfig); window.db = firebase.database();
@@ -618,11 +615,11 @@ window.syncCMSToCloud = function() {
   window.db.ref('cms').set(payload).then(function() { if(window.currentGasWebhook) fetch(window.currentGasWebhook, { method: 'POST', body: JSON.stringify(Object.assign({action: "syncCMS"}, payload)) }).catch(function(){}); });
 };
 
-// 🚀 強迫不用暫存，並處理 undefined 與完美覆寫同步
+// 🚀 從試算表強勢覆寫拉取 (並加入時間戳記防止快取卡死，處理 undefined 屬性，徹底同步刪除訂單)
 window.pullOrdersFromSheet = function() {
   var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
   var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
-  fetch(window.currentGasWebhook + '?admin=true&nocache=' + new Date().getTime(), { method: 'GET' })
+  fetch(window.currentGasWebhook + '?admin=true&t=' + new Date().getTime(), { method: 'GET' })
     .then(function(res){ return res.json(); })
     .then(function(data){
       if(data && data.orders && Array.isArray(data.orders)) {
@@ -631,13 +628,18 @@ window.pullOrdersFromSheet = function() {
           var newOrders = {};
           data.orders.forEach(function(o){
             if(o.orderId) {
+              // 防呆機制：避免 undefined 寫入 Firebase
               o.lastNotifiedHash = (currentOrders[o.orderId] && currentOrders[o.orderId].lastNotifiedHash) ? currentOrders[o.orderId].lastNotifiedHash : "";
               if(o.isCompleted === undefined) o.isCompleted = (currentOrders[o.orderId] && currentOrders[o.orderId].isCompleted) ? currentOrders[o.orderId].isCompleted : false;
               if(o.isClosed === undefined) o.isClosed = (currentOrders[o.orderId] && currentOrders[o.orderId].isClosed) ? currentOrders[o.orderId].isClosed : false;
-              if(o.items) { o.items.forEach(function(it) { Object.keys(it).forEach(function(k) { if(it[k] === undefined) it[k] = ""; }); }); }
+              
+              if(o.items) {
+                 o.items.forEach(function(it) { Object.keys(it).forEach(function(k) { if(it[k] === undefined) it[k] = ""; }); });
+              }
               newOrders[o.orderId] = o;
             }
           });
+          // 🚀 採取「完全覆寫(set)」機制：如果試算表裡已經刪除的訂單，網頁端也會同步刪除
           window.db.ref('orders').set(newOrders).then(function(){
             btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000);
           }).catch(function(e) {
@@ -690,6 +692,7 @@ window.renderProducts = function() {
     var admBtns = window.isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="opacity:0.4;">已下架</button>' : '<button class="add-cart-btn" onclick="window.addToCart(\'' + s.id + '\')">加入購物車</button>');
 
+    // 🚀 備註紫底完美修復與防呆數量框
     var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">⏱ ' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div style="width: 50px;"><label class="spec-label">數量：</label><input type="text" class="qty-input" id="qty-input-' + s.id + '" value="-" disabled ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
 
     if (!isActive) { if (window.isAdminMode) inaHtml += html; } else if (isActuallyClosed) { clsHtml += html; } else { actHtml += html; }
@@ -996,7 +999,7 @@ window.renderAdminOrdersUI = function() {
     var sendBtn = isLockedOrDone ? '' : '<button style="background:#0ea5e9;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminSubmitStatus(\'' + ord.orderId + '\')">📨 發送最新狀態</button>';
     var completeBtn = isDone ? '<button style="background:#94a3b8;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminToggleCompleteOrder(\'' + ord.orderId + '\', false)">🔄 解除結案</button>' : '<button style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminToggleCompleteOrder(\'' + ord.orderId + '\', true)">✅ 結案</button>';
     
-    html += '<div class="admin-card '+(isLockedOrDone?'closed-order':'')+'"><div style="font-weight:900;margin-bottom:8px;">' + doneBadge + newBtn + ord.orderId + '<span style="font-size:11px;color:#666;font-weight:normal;margin-left:10px;">'+window.formatDateString(ord.orderDate)+'</span></div><div style="font-size:12px;margin-bottom:10px;">買家：<b>'+ord.buyerName+'</b> ('+ord.buyerPhone+') | '+ord.buyerStore+'<br>備註：'+(ord.buyerNote||'無')+'</div><div style="font-size:12px;margin-bottom:10px;">對帳：<select class="form-select" style="width:auto;display:inline-block;" id="adm-paystatus-' + ord.orderId + '" '+(isLockedOrDone?'disabled':'')+'><option value="等待對帳中" '+(ord.payStatus==='等待對帳中'?'selected':'')+'>等待對帳中</option><option value="已對帳完成" '+(ord.payStatus==='已對帳完成'?'selected':'')+'>已對帳完成</option><option value="對帳異常" '+(ord.payStatus==='對帳異常'?'selected':'')+'>對帳異常</option></select></div><div style="background:#f1f5f9;padding:10px;border-radius:8px;">' + itemsH + '</div><div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">' + sendBtn + lockBtn + completeBtn + '</div></div>';
+    html += '<div class="admin-card '+(isLockedOrDone?'closed-order':'')+'"><div style="font-weight:900;margin-bottom:8px;">' + doneBadge + newBtn + ord.orderId + '<span style="font-size:11px;color:#666;font-weight:normal;margin-left:10px;">'+ord.orderDate+'</span></div><div style="font-size:12px;margin-bottom:10px;">買家：<b>'+ord.buyerName+'</b> ('+ord.buyerPhone+') | '+ord.buyerStore+'<br>備註：'+(ord.buyerNote||'無')+'</div><div style="font-size:12px;margin-bottom:10px;">對帳：<select class="form-select" style="width:auto;display:inline-block;" id="adm-paystatus-' + ord.orderId + '" '+(isLockedOrDone?'disabled':'')+'><option value="等待對帳中" '+(ord.payStatus==='等待對帳中'?'selected':'')+'>等待對帳中</option><option value="已對帳完成" '+(ord.payStatus==='已對帳完成'?'selected':'')+'>已對帳完成</option><option value="對帳異常" '+(ord.payStatus==='對帳異常'?'selected':'')+'>對帳異常</option></select></div><div style="background:#f1f5f9;padding:10px;border-radius:8px;">' + itemsH + '</div><div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">' + sendBtn + lockBtn + completeBtn + '</div></div>';
   });
   c.innerHTML = html;
   if (pag) {
