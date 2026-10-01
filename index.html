@@ -15,7 +15,7 @@
 
   <style>
     :root {
-      --primary-blue: #0047ba; /* 🚀 統一為 Logo 的寶石藍色 */
+      --primary-blue: #0047ba;
       --accent-lime: #ccff00;
       --accent-black: #111111;
       --accent-gray: #f4f6fb;
@@ -33,7 +33,6 @@
     .nav-container { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
     .nav-top-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
     
-    /* 🚀 導覽列 Logo 改為圖片設定 */
     .brand-logo { height: 34px; width: auto; object-fit: contain; cursor: pointer; user-select: none; margin-top: 2px; }
     
     .nav-actions { display: flex; align-items: center; gap: 12px; position: relative; }
@@ -113,9 +112,8 @@
     .product-card.inactive-product { background: #f8fafc; opacity: 0.6; border-color: #cbd5e1; filter: grayscale(100%); }
     .product-card:hover { transform: translateY(-4px); border-color: var(--primary-blue); }
     
-    /* 🚀 圖片比例 1:1 修改 */
     .product-img-wrap { width: 100%; aspect-ratio: 1 / 1; background: #f1f3f7; position: relative; overflow: hidden; }
-    .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
     
     .preorder-badge { position: absolute; top: 10px; left: 10px; background: var(--accent-black); color: var(--accent-lime); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px; z-index: 2;}
     .closed-badge { position: absolute; top: 10px; right: 10px; background: #64748b; color: #ffffff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 999px; z-index: 2;}
@@ -149,7 +147,7 @@
     .blog-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .blog-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; }
     .blog-thumb { width: 110px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
-    .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; }
+    .blog-detail-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; border-radius: 12px; margin-top: 14px; background: #f8fafc; display: block; margin-left: auto; margin-right: auto; cursor: zoom-in; }
 
     .cart-drawer-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2000; display: none; }
     .cart-drawer-overlay.active { display: block; }
@@ -207,15 +205,24 @@
     .btn-unclose-order { background: #d97706; color: #ffffff; border: none; padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; }
 
     footer { background: var(--accent-black); color: #888888; padding: 30px 20px 50px; font-size: 12.5px; text-align: center; margin-top: auto; }
+    
+    .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .lightbox-overlay.active { display: flex; animation: fadeIn 0.2s; }
+    .lightbox-img { max-width: 100%; max-height: 90vh; border-radius: 12px; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; font-weight: 300; cursor: pointer; background: none; border: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-radius: 50%; }
   </style>
 </head>
 <body>
+
+  <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close">✕</button>
+    <img src="" class="lightbox-img" id="lightbox-img" onclick="event.stopPropagation()">
+  </div>
 
   <header class="header-banner">
     <div class="nav-container">
       
       <div class="nav-top-row">
-        <!-- 🚀 導覽列左上角替換為中文字版 Logo 圖片 -->
         <img class="brand-logo" src="https://github.com/dottodotonlineshop/DOT-to-DOT_SHOP/blob/main/images/%E6%A9%AB%E7%89%88%E4%B8%AD%E5%AD%97.png?raw=true" onclick="switchPage('about')" alt="DOT to DOT">
 
         <div class="nav-actions">
@@ -523,7 +530,6 @@
         <div class="form-group"><label id="buyer-address-label">收件門市(賣貨便) *</label><input type="text" class="form-input" id="buyer-store" required placeholder="例如：7-11 鑫東門市 (123456)"></div>
         <div class="form-group"><label>訂單備註 / 拆單出貨偏好</label><input type="text" class="form-input" id="buyer-note" placeholder="例如：外套提早到請直接寄出"></div>
         
-        <!-- 🚀 必填條款勾選 -->
         <div class="form-group" style="margin-top: 16px; margin-bottom: 4px; padding: 10px; background: #eff6ff; border-radius: 8px;">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-size:12.5px;">
             <input type="checkbox" id="agree-tos" required style="width:18px; height:18px; cursor:pointer;"> 
@@ -624,7 +630,6 @@
         </p>
 
         <div class="auth-btn-group">
-          <!-- 🚀 補上 type="button" 防止觸發網頁重整 -->
           <button type="button" class="auth-common-btn line-login-btn" onclick="loginWithLine()">
             <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 10.3c0-4.6-4.9-8.3-11-8.3S2 5.7 2 10.3c0 4.1 3.9 7.6 9.2 8.2.4.1.9.3 1 .7.1.4.1 1 .1 1.4 0 .4-.2 1.3-.3 1.6-.1.4-.4 1.5 1.3.8 1.7-.7 9.2-5.4 10.4-8.7.2-.6.3-2.6.3-4"></path></svg>
             使用 LINE 帳號一鍵登入 (建議)
@@ -632,7 +637,6 @@
 
           <div class="auth-divider">或使用其他方式登入</div>
 
-          <!-- 🚀 補上 type="button" 防呆 -->
           <button type="button" class="auth-common-btn google-custom-btn" onclick="loginWithGoogle()">
             <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
             使用 Google 帳戶登入 
@@ -858,6 +862,15 @@
       setTimeout(loadLineSDK, 300);
     });
 
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.getElementById('lightbox-img').src = '';
+    }
+
     function switchPage(pageId) {
       var allSections = document.querySelectorAll('.page-section');
       var allButtons = document.querySelectorAll('.pill-btn');
@@ -926,7 +939,7 @@
           if (isCheckoutModalOpen) {
             var hasChanged = validateCartStockAndStatus(true);
             if (hasChanged) {
-              alert("⚠️ 抱歉！您選購的部分商品剛剛被搶購一空或已結單，已為您更新購物車，請重新確認！");
+              alert("⚠️️ 抱歉！您選購的部分商品剛剛被搶購一空或已結單，已為您更新購物車，請重新確認！");
               closeCheckoutModal1();
               toggleCartDrawer(true);
             }
@@ -1113,7 +1126,7 @@
         var closedClass = isActuallyClosed ? 'closed-product' : '';
         var closedBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
 
-        // 🚀 預設防呆選項 "-"，隱藏庫存
+        // 🚀 修改：預設為 "-" 並且隱藏了前台的庫存顯示
         var itemOptions = '<option value="default" selected>-</option>';
         for (var j = 0; j < s.items.length; j++) {
           itemOptions += '<option value="' + j + '">' + s.items[j].name + '</option>';
@@ -1126,7 +1139,7 @@
 
         if (isActive) {
           activeCount++;
-          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️️ 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
+          var adminActionBtn = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button onclick="openProductModal(\'' + s.id + '\')" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminToggleProductActive(\'' + s.id + '\')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 下架</button><button onclick="adminDeleteProductSeries(\'' + s.id + '\')" style="background:#b91c1c; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑 刪除</button><button onclick="adminToggleProductClose(\'' + s.id + '\')" style="background:#334155; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
           var cartBtnHtml = isActuallyClosed ? '<button class="add-cart-btn" disabled style="opacity:0.4; cursor:not-allowed;">已結單</button>' : '<button class="add-cart-btn" onclick="addToCart(\'' + s.id + '\')">加入購物車</button>';
 
           activeHtml += '<div class="product-card ' + closedClass + '" id="card-' + s.id + '">' +
@@ -1182,16 +1195,6 @@
       }
     }
 
-    function openLightbox(src) {
-      document.getElementById('lightbox-img').src = src;
-      document.getElementById('lightbox').classList.add('active');
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('active');
-      document.getElementById('lightbox-img').src = '';
-    }
-
     function adminDeleteProductSeries(seriesId) {
       if (!confirm('確定要永久刪除這個商品系列嗎？此動作無法復原！')) return;
       var newSer = [];
@@ -1218,6 +1221,7 @@
       var selectEl = document.getElementById('item-select-' + seriesId);
       var val = selectEl.value;
 
+      // 🚀 修改：若選回 "-" 防呆選項，將價格與圖片恢復為預設總圖
       if (val === 'default') {
         var pEl = document.getElementById('price-display-' + seriesId);
         if (pEl && series.items.length > 0) pEl.textContent = 'NT$ ' + Number(series.items[0].price).toLocaleString();
@@ -1294,6 +1298,7 @@
         return;
       }
 
+      // 🚀 修改：加入購物車前的 "-" 防呆攔截
       var selectEl = document.getElementById('item-select-' + seriesId);
       if (!selectEl || selectEl.value === 'default' || selectEl.value === '') {
         alert('👉 請先點開下拉選單，選擇您要的商品規格品項！');
@@ -1485,9 +1490,6 @@
       return removedOrChanged;
     }
 
-    // ==========================================
-    // 🚀 全新通知引擎與 Firebase 歷史訂單
-    // ==========================================
     function toggleNotificationPopover(e) {
       if (e) e.stopPropagation();
       var popover = document.getElementById('bell-popover');
@@ -2190,7 +2192,7 @@
       var html = '';
       for (var i = 0; i < qaData.length; i++) {
         var q = qaData[i];
-        var adminBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="openQaModal(' + i + ')" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️️ 編輯</button><button onclick="adminDeleteQa(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除此問題</button></div>' : '';
+        var adminBtns = isAdminMode ? '<div style="margin-top:8px; display:flex; gap:6px;"><button onclick="openQaModal(' + i + ')" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">✏️ 編輯</button><button onclick="adminDeleteQa(' + i + ')" style="background:#ef4444; color:#fff; border:none; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">🗑️ 刪除此問題</button></div>' : '';
         html += '<div class="qa-box">' +
           '<div class="qa-q">' + q.q + ' <span>＋</span></div>' +
           '<div class="qa-a">' + q.a.replace(/\n/g, '<br>') + '</div>' +
@@ -2426,7 +2428,6 @@
         document.getElementById('adm-series-eta').value = series.eta;
         document.getElementById('adm-series-close-time').value = series.closeTime || '';
 
-        // 讀取分類複選
         if (series.categories && Array.isArray(series.categories)) {
           catCheckboxes.forEach(function(cb) {
             if (series.categories.includes(cb.value)) cb.checked = true;
@@ -2568,6 +2569,47 @@
       closeProductModal(); 
     }
 
+    // 🚀 原生穩定登入與狀態切換
+    function handleUserLoggedIn(user, isFirstTime) {
+      currentUser = user;
+
+      var avatarSlot = document.getElementById('user-avatar-slot');
+      if (avatarSlot) {
+        if (user.pictureUrl) {
+          avatarSlot.innerHTML = '<img src="' + user.pictureUrl + '" alt="' + user.displayName + '"><div class="admin-dot ' + (isAdminMode ? 'active' : '') + '" id="admin-red-dot"></div>';
+        } else {
+          avatarSlot.innerHTML = user.displayName.charAt(0) + '<div class="admin-dot ' + (isAdminMode ? 'active' : '') + '" id="admin-red-dot"></div>';
+        }
+      }
+
+      var unlogged = document.getElementById('auth-unlogged');
+      var logged = document.getElementById('auth-logged');
+      if (unlogged) unlogged.style.display = 'none';
+      if (logged) logged.style.display = 'block';
+
+      var dispName = document.getElementById('user-display-name');
+      var dispId = document.getElementById('user-display-id');
+      if (dispName) dispName.textContent = user.displayName + ' (' + user.provider + ')';
+      if (dispId) dispId.textContent = user.contactValue || (user.provider === 'Google' ? 'dottodot.onlineshop@gmail.com' : 'LINE ID: ' + user.userId);
+
+      var profPic = document.getElementById('user-profile-pic');
+      if (profPic && user.pictureUrl) profPic.src = user.pictureUrl;
+
+      var userEmail = (user.contactValue || "").trim().toLowerCase();
+      var isManager = false;
+      for (var i = 0; i < ADMIN_EMAILS.length; i++) {
+        if (ADMIN_EMAILS[i].toLowerCase() === userEmail) {
+          isManager = true;
+          break;
+        }
+      }
+
+      var adminBox = document.getElementById('admin-mode-switch-box');
+      if (adminBox) adminBox.style.display = isManager ? 'block' : 'none';
+
+      syncOrdersFromSheet();
+    }
+
     function loadLineSDK() {
       var lineScript = document.createElement('script');
       lineScript.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
@@ -2634,18 +2676,23 @@
             }).then(function(res) {
               return res.json();
             }).then(function(userInfo) {
-              var userObj = {
-                provider: 'Google',
-                displayName: userInfo.name,
-                userId: userInfo.sub,
-                lineUserId: '',
-                contactValue: userInfo.email || "dottodot.onlineshop@gmail.com",
-                pictureUrl: userInfo.picture
-              };
-              localStorage.setItem('dottodot_user', JSON.stringify(userObj));
-              window.history.replaceState({}, document.title, window.location.pathname);
-              handleUserLoggedIn(userObj, true);
-            }).catch(function(err) {});
+              if (userInfo && (userInfo.sub || userInfo.email)) {
+                var userObj = {
+                  provider: 'Google',
+                  displayName: userInfo.name || 'Google 會員',
+                  userId: userInfo.sub,
+                  lineUserId: '',
+                  contactValue: userInfo.email || "dottodot.onlineshop@gmail.com",
+                  pictureUrl: userInfo.picture || ''
+                };
+                localStorage.setItem('dottodot_user', JSON.stringify(userObj));
+                window.history.replaceState({}, document.title, window.location.pathname);
+                handleUserLoggedIn(userObj, true);
+                openMemberModal();
+              }
+            }).catch(function(err) {
+              console.error("Google userinfo error", err);
+            });
           }
         }
       } catch (e) {}
