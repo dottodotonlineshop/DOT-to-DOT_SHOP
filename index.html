@@ -313,7 +313,6 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
 
     <section id="page-newpost" class="page-section">
       <div class="container">
-        <!-- 🚀 貼文標題與過濾器打包 -->
         <div id="post-header-area">
           <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div><h2 class="section-title">BUYER'S LOG & JOURNAL</h2><p class="section-subtitle">品牌分享、商品推介與開團相關公告</p></div>
@@ -572,7 +571,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
   <div class="form-group"><label>地區分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-region-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="全站公告">全站公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="泰國相關">泰國相關</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="韓國相關">韓國相關</label></div></div>
   <div class="form-group"><label>標籤 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-tag-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="公告">公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="新團通知">新團通知</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="品牌推介">品牌推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="商品推介">商品推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="現場連線">現場連線</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="其他分享">其他分享</label></div></div><div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required></textarea></div><div class="form-group"><label>外部連結</label><input type="url" class="form-input" id="adm-post-link"></div><div class="form-group"><label>圖片網址</label><input type="url" class="form-input" id="adm-post-file"></div><button type="submit" class="checkout-btn">發布</button></form></div></div>
 
-  <!-- 🚀 上架商品彈窗 (加入售出欄位) -->
+  <!-- 🚀 上架商品彈窗 (包含售出數量唯讀欄位) -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title" id="product-modal-title">上架全新商品</div><button class="drawer-close" onclick="closeProductModal()">✕</button></div>
@@ -650,11 +649,10 @@ window.fetchCMSFromCloud = function() {
       if (data.about) { var descEl = document.getElementById('about-us-desc-text'); if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>'); localStorage.setItem('dottodot_about_text', data.about); }
       window.renderProducts(); window.renderNotices(); window.renderQas(); window.renderPosts();
       
-      // 🚀 即時庫存監聽
       if (window.isCheckoutModalOpen) { 
         var removed = window.validateCartStockAndStatus(true); 
         if (removed) {
-            alert("⚠️️ 系統偵測到您購物車內的商品剛被搶購一空或庫存不足，已為您自動更新購物車，請重新確認！");
+            alert("⚠️ 系統偵測到您購物車內的商品剛被搶購一空或庫存不足，已為您自動更新購物車，請重新確認！");
             window.closeCheckoutModal1();
             window.closeCheckoutModal2();
             window.toggleCartDrawer(true);
@@ -692,6 +690,7 @@ window.pushOrdersToSheet = function() {
   });
 };
 
+// 🚀 從試算表拉取資料，並在發現訂單被刪除時「自動釋放庫存」
 window.pullOrdersFromSheet = function() {
   var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
   var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
@@ -699,11 +698,13 @@ window.pullOrdersFromSheet = function() {
     .then(function(res){ return res.json(); })
     .then(function(data){
       if(data && data.orders && Array.isArray(data.orders)) {
-        window.db.ref('orders').once('value').then(function(snap) {
-          var currentOrders = snap.val() || {};
-          var newOrders = {};
+        Promise.all([ window.db.ref('orders').once('value'), window.db.ref('cms/products').once('value') ]).then(function(snaps) {
+          var currentOrders = snaps[0].val() || {};
+          var currentProducts = snaps[1].val() || [];
+          var newOrders = {}; var incomingIds = {};
           data.orders.forEach(function(o){
             if(o.orderId) {
+              incomingIds[o.orderId] = true;
               o.lastNotifiedHash = (currentOrders[o.orderId] && currentOrders[o.orderId].lastNotifiedHash) ? currentOrders[o.orderId].lastNotifiedHash : "";
               if(o.isCompleted === undefined) o.isCompleted = (currentOrders[o.orderId] && currentOrders[o.orderId].isCompleted) ? currentOrders[o.orderId].isCompleted : false;
               if(o.isClosed === undefined) o.isClosed = (currentOrders[o.orderId] && currentOrders[o.orderId].isClosed) ? currentOrders[o.orderId].isClosed : false;
@@ -711,11 +712,36 @@ window.pullOrdersFromSheet = function() {
               newOrders[o.orderId] = o;
             }
           });
-          window.db.ref('orders').set(newOrders).then(function(){
-            btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000);
-          }).catch(function(e) {
-            btn.textContent = '❌ Firebase寫入失敗'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000);
+          
+          // 🚀 差異比對：找出被刪除的訂單並退還庫存
+          var prodChanged = false;
+          Object.keys(currentOrders).forEach(function(oldId) {
+             if (!incomingIds[oldId]) {
+                var oldOrd = currentOrders[oldId];
+                if (oldOrd.payStatus !== '已刪單' && oldOrd.items) {
+                   oldOrd.items.forEach(function(buyIt) {
+                      currentProducts.forEach(function(prod) {
+                         if (prod.seriesName === buyIt.series && prod.items) {
+                            prod.items.forEach(function(sub) {
+                               if (sub.name === buyIt.itemName) {
+                                  sub.sold = Math.max(0, (sub.sold || 0) - buyIt.quantity);
+                                  prodChanged = true;
+                               }
+                            });
+                         }
+                      });
+                   });
+                }
+             }
           });
+
+          var updates = {}; updates['orders'] = newOrders;
+          if (prodChanged) { updates['cms/products'] = currentProducts; window.productSeriesData = currentProducts; localStorage.setItem('dottodot_custom_series', JSON.stringify(currentProducts)); }
+          
+          window.db.ref().update(updates).then(function(){
+            if(prodChanged) window.renderProducts();
+            btn.textContent = '✓ 已同步'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 2000);
+          }).catch(function(e) { btn.textContent = '❌ Firebase寫入失敗'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); });
         });
       } else { btn.textContent = '❌ 無效資料，請重試'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); }
     }).catch(function(e){ btn.textContent = '❌ 連線失敗或逾時'; setTimeout(function(){ btn.textContent=ori; btn.disabled=false; }, 3000); });
@@ -759,7 +785,6 @@ window.renderProducts = function() {
     var badgeHtml = (s.stockType === 'PRE-ORDER') ? '<span class="preorder-badge">PRE-ORDER</span>' : '';
     var clsClass = isActuallyClosed ? 'closed-product' : ''; var clsBadgeTag = isActuallyClosed ? '<span class="closed-badge">已結單</span>' : '';
     
-    // 🚀 計算剩餘庫存 (總庫存 - 已售出)
     var itemOpts = '<option value="default" selected>-</option>'; 
     s.items.forEach(function(it,j){
       var stk = it.stock !== undefined ? parseInt(it.stock, 10) : 99;
@@ -776,6 +801,7 @@ window.renderProducts = function() {
     var curImg = s.img || s.items[0].img;
     var admBtns = window.isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     
+    // 🚀 加上 onclick，恢復加入購物車功能
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已下架</button>' : '<button class="add-cart-btn" id="add-btn-'+s.id+'" onclick="window.addToCart(\''+s.id+'\')" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">請先選規格</button>');
 
     var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div><label class="spec-label">數量：</label><select class="spec-select qty-select" id="qty-select-' + s.id + '" disabled ' + (!isActive ? 'disabled' : '') + '><option value="-">-</option></select></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
@@ -813,7 +839,6 @@ window.handleItemChange = function(seriesId) {
   var sold = it.sold !== undefined ? parseInt(it.sold, 10) : 0;
   var avail = stk - sold;
   
-  // 🚀 自動產生下拉數量，防呆鎖定
   if (qSel) {
     var qHtml = '';
     if(avail <= 0) {
@@ -828,7 +853,6 @@ window.handleItemChange = function(seriesId) {
     qSel.innerHTML = qHtml;
   }
   
-  // 🚀 防呆機制：若無庫存，按鈕變灰且顯示「請選擇其他品項」
   if (addBtn) {
     if (avail <= 0) {
       addBtn.textContent = '請選擇其他品項'; addBtn.disabled = true; addBtn.style.background = '#94a3b8'; addBtn.style.cursor = 'not-allowed';
@@ -966,7 +990,6 @@ window.validateCartStockAndStatus = function(silent) {
   return rm;
 };
 
-// 🚀 結帳前 Loading 動畫與庫存即時連線檢查
 window.startCheckoutProcess = function() {
   if (window.isAdminMode) { alert('賣家模式暫停購物'); return; }
   if (window.cart.length === 0) return;
@@ -1143,7 +1166,6 @@ window.handleFinalOrderSubmit = function(e) {
   var fId = 'ORD-2609' + String(Math.floor(1000 + Math.random() * 9000));
   var payload = { orderId: fId, orderDate: new Date().toLocaleString(), buyerName: window.pendingOrderData.buyerName, buyerContact: window.pendingOrderData.buyerContact, buyerPhone: window.pendingOrderData.buyerPhone, shipMethod: window.pendingOrderData.shipMethod, buyerStore: window.pendingOrderData.buyerStore, remitDate: rDate, remitTime: rTime, remitAccount: rAcc, buyerNote: window.pendingOrderData.buyerNote, totalAmount: window.pendingOrderData.totalAmount, buyerLineUserId: (window.currentUser && window.currentUser.lineUserId) ? window.currentUser.lineUserId : "", items: cItems, payStatus: "等待對帳中", isClosed: false };
   
-  // 🚀 結帳成功瞬間：透過 Firebase Transaction 直接自動增加售出數量 (sold)
   window.db.ref('cms/products').transaction(function(products) {
     if (products) {
       cItems.forEach(function(buyIt) {
@@ -1160,7 +1182,6 @@ window.handleFinalOrderSubmit = function(e) {
     }
     return products; 
   }).then(function() {
-     // 更新本地前端畫面
      window.db.ref('cms/products').once('value').then(function(s) {
          window.productSeriesData = s.val() || [];
          localStorage.setItem('dottodot_custom_series', JSON.stringify(window.productSeriesData));
@@ -1177,6 +1198,7 @@ window.handleFinalOrderSubmit = function(e) {
   window.cart = uncItems; window.saveCartToLocalStorage(); window.updateCartDisplay(); window.closeCheckoutModal2();
   document.getElementById('order-form-1').reset(); document.getElementById('order-form-2').reset(); document.getElementById('order-success-modal').classList.add('active');
 };
+
 window.copyAndOpenCommunity = function() { var t = document.getElementById('order-text-content'); if (t) { t.select(); try { document.execCommand('copy'); } catch(e){} } alert('📋 複製成功！'); };
 
 window.loadAdminOrders = function() {
@@ -1234,7 +1256,6 @@ window.adminChangePayStatus = function(orderId, selectEl) {
         });
     }
   }
-  // 記錄新狀態
   ord.payStatus = newStatus;
   window.db.ref('orders/' + orderId + '/payStatus').set(newStatus);
 };
@@ -1273,7 +1294,6 @@ window.renderAdminOrdersUI = function() {
     var sendBtn = isLockedOrDone ? '' : '<button style="background:#0ea5e9;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminSubmitStatus(\'' + ord.orderId + '\')">📨 發送最新狀態</button>';
     var completeBtn = isDone ? '<button style="background:#94a3b8;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminToggleCompleteOrder(\'' + ord.orderId + '\', false)">🔄 解除結案</button>' : '<button style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;" onclick="window.adminToggleCompleteOrder(\'' + ord.orderId + '\', true)">✅ 結案</button>';
     
-    // 🚀 在這裡呼叫 adminChangePayStatus 觸發退庫存邏輯
     html += '<div class="admin-card '+(isLockedOrDone?'closed-order':'')+'"><div style="font-weight:900;margin-bottom:8px;">' + doneBadge + newBtn + ord.orderId + '<span style="font-size:11px;color:#666;font-weight:normal;margin-left:10px;">'+window.formatDateString(ord.orderDate)+'</span></div><div style="font-size:12px;margin-bottom:10px;">買家：<b>'+ord.buyerName+'</b> ('+ord.buyerPhone+') | '+ord.buyerStore+'<br>備註：'+(ord.buyerNote||'無')+'</div><div style="font-size:12px;margin-bottom:10px;">對帳：<select class="form-select" style="width:auto;display:inline-block;" id="adm-paystatus-' + ord.orderId + '" onchange="window.adminChangePayStatus(\''+ord.orderId+'\', this)" '+(isLockedOrDone?'disabled':'')+'><option value="等待對帳中" '+(ord.payStatus==='等待對帳中'?'selected':'')+'>等待對帳中</option><option value="已對帳完成" '+(ord.payStatus==='已對帳完成'?'selected':'')+'>已對帳完成</option><option value="對帳異常" '+(ord.payStatus==='對帳異常'?'selected':'')+'>對帳異常</option><option value="已刪單" '+(ord.payStatus==='已刪單'?'selected':'')+'>已刪單</option></select></div><div style="background:#f1f5f9;padding:10px;border-radius:8px;">' + itemsH + '</div><div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">' + sendBtn + lockBtn + completeBtn + '</div></div>';
   });
   c.innerHTML = html;
