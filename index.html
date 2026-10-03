@@ -91,8 +91,9 @@ main{flex:1;width:100%}
 .closed-badge{position:absolute;top:10px;right:10px;background:#64748b;color:#fff;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px;z-index:2}
 .product-content{padding:16px;display:flex;flex-direction:column;flex:1}
 .product-series{font-size:clamp(15px,4vw,16.5px);font-weight:900;margin-bottom:4px;color:#111;word-break:break-all}
+/* 🚀 移除碼表 */
 .product-eta{font-size:11.5px;color:#7b46ff;font-weight:700;background:#f2edff;padding:6px 10px;border-radius:6px;margin-bottom:12px;white-space:pre-wrap;line-height:1.5;display:inline-block;max-width:100%;align-self:flex-start;word-break:break-word;}
-.form-row-spec{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.form-row-spec{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:nowrap;}
 .spec-field{flex:1;min-width:0}
 .spec-label{font-size:11px;font-weight:800;color:var(--text-muted);margin-bottom:3px;display:block}
 .spec-select{width:100%;padding:7px 8px;border:1.5px solid var(--border-color);border-radius:8px;font-size:12px;font-weight:600;outline:none;background:#fff}
@@ -102,6 +103,7 @@ main{flex:1;width:100%}
 .product-price{font-size:clamp(16px,4.5vw,18px);font-weight:900;color:var(--primary-blue);min-width:70px}
 .add-cart-btn{background:var(--primary-blue);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;transition:background 0.2s}
 
+/* 🚀 手機版商品雙排顯示與顏色尺寸佈局 */
 @media (max-width: 600px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .product-card { border-radius: 12px; }
@@ -110,9 +112,12 @@ main{flex:1;width:100%}
   .product-eta { font-size: 10px; padding: 4px 6px; margin-bottom: 8px; }
   .spec-label { font-size: 10.5px; }
   .spec-select, .qty-input { font-size: 11.5px; padding: 6px 4px; }
-  .form-row-spec { flex-direction: column; gap: 6px; align-items: stretch; }
-  .form-row-spec > div { width: 100%; }
-  .qty-input { width: 100%; }
+  .form-row-spec { flex-wrap: wrap; align-items: flex-end; }
+  .form-row-spec > .spec-field { flex: 1 1 calc(50% - 4px); }
+  /* 數量框維持固定小正方，不延展 */
+  .form-row-spec > div:last-child { flex: 0 0 auto; width: auto; }
+  .qty-input { width: 60px !important; }
+  
   .product-foot { flex-direction: column; gap: 8px; align-items: stretch; text-align: center; border-top:none; padding-top:4px; }
   .product-price { font-size: 15px; }
   .add-cart-btn { padding: 8px; width: 100%; }
@@ -127,17 +132,19 @@ main{flex:1;width:100%}
 .qa-a{padding:16px 20px;font-size:13.5px;color:var(--text-muted);line-height:1.7;border-top:1px solid var(--border-color);display:none}
 .qa-box.open .qa-a{display:block}
 
-/* 🚀 貼文強制齊平與兩行截斷 CSS */
+/* 🚀 貼文強制齊平與 1 行截斷 CSS */
 .blog-card{background:#fff;border:1.5px solid var(--border-color);border-radius:16px;margin-bottom:20px;padding:20px;cursor:pointer;display:flex;align-items:stretch;gap:16px;transition:transform 0.2s,border-color 0.2s;position:relative}
 .blog-card:hover{border-color:var(--primary-blue);transform:translateY(-2px)}
-.blog-content-part{flex:1; display:flex; flex-direction:column; justify-content:center;}
+.blog-content-part{flex:1; display:flex; flex-direction:column; justify-content:center; min-width:0;}
 .blog-tag{display:inline-block;background:var(--accent-lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:4px;margin-bottom:8px;margin-right:4px}
-.blog-title{font-size:18px;font-weight:800;margin-bottom:6px}
-.blog-desc{font-size:13.5px;color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:2px;}
+.blog-title{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;}
+/* 1行截斷 */
+.blog-desc{font-size:13.5px;color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px;}
 .blog-thumb{width:110px;object-fit:cover;flex-shrink:0;background:#eee;border-radius:10px;align-self:stretch;}
 .blog-detail-img{width:100%;height:auto;max-height:550px;object-fit:contain;border-radius:12px;margin-top:14px;background:#f8fafc;display:block;margin-left:auto;margin-right:auto;cursor:zoom-in}
 
-.admin-sort-btn-group{display:flex;gap:4px;z-index:10;align-items:center}
+/* 按鈕絕對右下角定位 */
+.admin-sort-btn-group{position:absolute;bottom:20px;right:20px;display:flex;gap:4px;z-index:10;align-items:center}
 .admin-sort-btn{background:#e2e8f0;color:#475569;border:none;width:24px;height:24px;border-radius:4px;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .admin-sort-btn:hover{background:#cbd5e1;color:#0f172a}
 .cart-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:2000;display:none}
@@ -172,7 +179,8 @@ main{flex:1;width:100%}
 .line-direct-btn{width:100%;background:var(--line-green);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14.5px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;box-shadow:0 4px 14px rgba(6,199,85,0.3);margin-top:10px}
 .threads-direct-btn{width:100%;background:#000;color:#fff;border:none;padding:13px;border-radius:10px;font-size:14.5px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:8px}
 .order-textarea{width:100%;height:110px;padding:10px;border:1px solid var(--border-color);border-radius:8px;font-size:12px;color:#444;background:#fafbff;resize:none;font-family:monospace;outline:none;margin:8px 0}
-.warning-box{background:#fef2f2;border:1.5px solid #fecaca;border-radius:8px;padding:10px 12px;color:#b91c1c;font-size:12.5px;font-weight:800;line-height:1.5;margin:12px 0 8px;text-align:left}
+/* 🚀 注意警告框優化 */
+.warning-box{background:#fef2f2;border:1.5px solid #fecaca;border-radius:8px;padding:12px 14px;color:#b91c1c;font-size:12.5px;font-weight:800;line-height:1.6;margin:12px 0 8px;text-align:left}
 .bank-info-box{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:14px;font-size:13px;color:#166534;line-height:1.6}
 .auth-btn-group{display:flex;flex-direction:column;gap:14px;margin-top:18px;align-items:center;width:100%}
 .auth-common-btn{width:100%;max-width:380px;height:48px;border-radius:999px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
@@ -414,7 +422,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <h3 style="font-size:17px; font-weight:900; color:var(--primary-blue);">📋 訂單即時狀態控管</h3>
             <div style="display:flex; gap:8px;">
-                <button id="sync-sheet-push-btn" onclick="pushOrdersToSheet()" style="background:#0ea5e9; border:none; color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">⬆️ 網頁備份至試算表</button>
+                <button id="sync-sheet-push-btn" onclick="pushOrdersToSheet()" style="background:#0ea5e9; border:none; color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">⬆️️ 網頁備份至試算表</button>
                 <button id="sync-sheet-btn" onclick="pullOrdersFromSheet()" style="background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary-blue); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer;">⬇️ 從試算表覆寫網頁</button>
             </div>
           </div>
@@ -466,7 +474,13 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title">步驟二：匯款資訊與對帳回報</div><button class="drawer-close" onclick="closeCheckoutModal2()">✕</button></div>
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center;"><div style="font-size:13px; color:#1e40af;" id="step2-total-amount">請匯款訂單總金額:$ 0</div></div>
-      <div class="warning-box" style="margin-top:0; margin-bottom:12px; background:#fffbeb; border-color:#fde68a; color:#b45309;">⚠️ <b>注意⚠️</b><br>無卡匯款/貨到付款者請先洽詢官方客服後再下訂單與履行付款，謝謝！</div>
+      
+      <!-- 🚀 更新警告框文字 -->
+      <div class="warning-box">
+        <div style="font-weight:900; margin-bottom:4px; display:flex; align-items:center; gap:4px;">⚠️ 注意</div>
+        <div style="line-height:1.6;">無卡匯款/貨到付款者請先洽詢官方客服後再下訂單與履行付款，謝謝！</div>
+      </div>
+      
       <div class="bank-info-box">🏦 <b>匯款帳號資訊</b><br>銀行：兆豐銀行（017）<br>帳號：<b>07764002939</b><br>戶名：DOT to DOT 專門店</div>
       <form id="order-form-2" onsubmit="handleFinalOrderSubmit(event)">
         <div style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid var(--border-color); margin-bottom:14px;">
@@ -492,7 +506,10 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
       <textarea id="order-text-content" class="order-textarea" readonly></textarea>
       <a id="line-direct-link" href="#" target="_blank" class="line-direct-btn">直接傳送至官方 LINE 聊天室進行對帳 ➔</a>
       <button class="threads-direct-btn" onclick="copyAndOpenCommunity()">複製文字至其他官方社群進行對帳 ➔</button>
-      <div class="warning-box">⚠️ <b>請務必回傳對帳！</b><br>若未回傳進行確認對帳，將視同未下單成功！</div>
+      <div class="warning-box">
+        <div style="font-weight:900; margin-bottom:4px; display:flex; align-items:center; gap:4px;">⚠️ 務必回傳對帳</div>
+        <div style="line-height:1.6;">若未回傳進行確認對帳，將視同未下單成功！</div>
+      </div>
       <button class="checkout-btn" style="background:#64748b; margin-top: 4px;" onclick="closeSuccessModal()">確定已送出對帳資訊</button>
     </div>
   </div>
@@ -644,7 +661,6 @@ window.syncCMSToCloud = function() {
   window.db.ref('cms').set(payload).then(function() { if(window.currentGasWebhook) fetch(window.currentGasWebhook, { method: 'POST', body: JSON.stringify(Object.assign({action: "syncCMS"}, payload)) }).catch(function(){}); });
 };
 
-// 🚀 從網頁強制局部覆寫試算表 (搭配升級版 Apps Script)
 window.pushOrdersToSheet = function() {
   var btn = document.getElementById('sync-sheet-push-btn');
   if(!btn) return;
@@ -730,10 +746,10 @@ window.renderProducts = function() {
     var curImg = s.img || s.items[0].img;
     var admBtns = window.isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     
-    // 🚀 預設按鈕為「請先選規格」且不可點擊
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已下架</button>' : '<button class="add-cart-btn" id="add-btn-'+s.id+'" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">請先選規格</button>');
 
-    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">⏱ ' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div style="width: 50px;"><label class="spec-label">數量：</label><input type="text" class="qty-input" id="qty-input-' + s.id + '" value="-" disabled ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
+    // 🚀 移除碼表
+    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div><label class="spec-label">數量：</label><input type="text" class="qty-input" id="qty-input-' + s.id + '" value="-" disabled ' + (!isActive ? 'disabled' : '') + '></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
 
     if (!isActive) { if (window.isAdminMode) inaHtml += html; } else if (isActuallyClosed) { clsHtml += html; } else { actHtml += html; }
   });
@@ -779,7 +795,6 @@ window.handleItemChange = function(seriesId) {
     }
   }
   
-  // 🚀 第一線庫存攔截，鎖死已售完按鈕
   if (addBtn) {
     if (stk <= 0) {
       addBtn.textContent = '已售完'; addBtn.disabled = true; addBtn.style.background = '#94a3b8'; addBtn.style.cursor = 'not-allowed';
@@ -876,7 +891,6 @@ window.validateCartStockAndStatus = function(silent) {
     var it = window.cart[i]; var fSer = window.productSeriesData.find(function(s) { return s.seriesName === it.series; });
     var isTC = fSer && fSer.closeTime && nowT >= new Date(fSer.closeTime).getTime();
     
-    // 🚀 完整還原購物車異動的詳細提示內文
     if (!fSer || fSer.isActive === false || fSer.isClosed || isTC) { 
         rm = true; aMsg += "• 【" + it.name + "】已結單或下架。\n"; continue; 
     }
@@ -888,7 +902,6 @@ window.validateCartStockAndStatus = function(silent) {
     
     var stk = fSub.stock !== undefined ? parseInt(fSub.stock, 10) : 99;
     
-    // 🚀 終極 0 庫存攔截
     if (stk <= 0) { 
         rm = true; aMsg += "• 【" + it.name + "】已經售完，已為您從購物車中移除。\n"; continue; 
     }
@@ -1042,7 +1055,7 @@ window.goToCheckoutStep2 = function(e) {
   e.preventDefault();
   if (window.validateCartStockAndStatus(true)) { alert('⚠️ 抱歉，部分商品已結單或無庫存，已為您更新購物車！'); window.closeCheckoutModal1(); window.toggleCartDrawer(true); return; }
   var bName = document.getElementById('buyer-name').value.trim(); var bPhone = document.getElementById('buyer-phone').value.trim(); var bStore = document.getElementById('buyer-store').value.trim();
-  if (!bName || !bPhone || !bStore) { alert('⚠️️ 請填寫必填欄位'); return; }
+  if (!bName || !bPhone || !bStore) { alert('⚠️ 請填寫必填欄位'); return; }
   var cItems = []; var total = 0;
   for (var i = 0; i < window.cart.length; i++) { if (window.cart[i].selected !== false) { cItems.push(window.cart[i]); total += window.cart[i].price * window.cart[i].quantity; } }
   window.pendingOrderData = { buyerName: bName, buyerContact: document.getElementById('buyer-line').value.trim(), buyerPhone: bPhone, shipMethod: document.getElementById('buyer-ship-method').value, buyerStore: bStore, buyerNote: document.getElementById('buyer-note').value.trim(), totalAmount: total, items: cItems };
@@ -1227,7 +1240,7 @@ window.movePost = function(index, dir) { var p=JSON.parse(localStorage.getItem('
 window.renderNotices = function() {
   var c = document.getElementById('dynamic-notice-container'); if (!c) return; var h = '';
   window.noticeData.forEach(function(n, i) {
-    var btns = window.isAdminMode ? '<div class="admin-sort-btn-group"><button class="admin-sort-btn" onclick="window.moveNotice('+i+',-1)">↑</button><button class="admin-sort-btn" onclick="window.moveNotice('+i+',1)">↓</button></div><div style="margin-top:8px;"><button onclick="window.openNoticeModal('+i+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="window.adminDeleteNotice('+i+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
+    var btns = window.isAdminMode ? '<div class="admin-sort-btn-group" style="position:absolute;bottom:20px;right:20px;"><button class="admin-sort-btn" onclick="window.moveNotice('+i+',-1)">↑</button><button class="admin-sort-btn" onclick="window.moveNotice('+i+',1)">↓</button></div><div style="margin-top:8px;"><button onclick="window.openNoticeModal('+i+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="window.adminDeleteNotice('+i+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
     h += '<div class="notice-card"><h4>' + n.title + '</h4><p>' + n.desc.replace(/\n/g, '<br>') + '</p>' + btns + '</div>';
   }); c.innerHTML = h;
 };
@@ -1236,7 +1249,7 @@ window.toggleQaAns = function(idx) { var b = document.getElementById('qa-box-' +
 window.renderQas = function() {
   var c = document.getElementById('dynamic-qa-container'); if (!c) return; var h = '';
   window.qaData.forEach(function(q, i) {
-    var btns = window.isAdminMode ? '<div class="admin-sort-btn-group"><button class="admin-sort-btn" onclick="window.moveQa('+i+',-1)">↑</button><button class="admin-sort-btn" onclick="window.moveQa('+i+',1)">↓</button></div><div style="margin-top:8px;"><button onclick="window.openQaModal('+i+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="window.adminDeleteQa('+i+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
+    var btns = window.isAdminMode ? '<div class="admin-sort-btn-group" style="position:absolute;bottom:20px;right:20px;"><button class="admin-sort-btn" onclick="window.moveQa('+i+',-1)">↑</button><button class="admin-sort-btn" onclick="window.moveQa('+i+',1)">↓</button></div><div style="margin-top:8px;"><button onclick="window.openQaModal('+i+')" style="background:#0284c7;color:#fff;border:none;padding:4px;border-radius:4px;">編輯</button> <button onclick="window.adminDeleteQa('+i+')" style="background:red;color:#fff;border:none;padding:4px;border-radius:4px;">刪除</button></div>' : '';
     h += '<div class="qa-box" id="qa-box-'+i+'"><div class="qa-q" onclick="window.toggleQaAns('+i+')">' + q.q + ' <span id="qa-icon-'+i+'">＋</span></div><div class="qa-a">' + q.a.replace(/\n/g, '<br>') + '</div>' + btns + '</div>';
   }); c.innerHTML = h;
 };
@@ -1276,14 +1289,14 @@ window.renderPosts = function() {
     var cT = Array.isArray(p.tags) ? p.tags : (p.tag ? [p.tag] : []); var rT = Array.isArray(p.regions) ? p.regions : [];
     var tgH = ''; rT.forEach(function(t) { tgH += '<span class="blog-tag" style="background:#e2e8f0;">' + t + '</span>'; }); cT.forEach(function(t) { tgH += '<span class="blog-tag">' + t + '</span>'; });
     
-    // 🚀 移除 javascript 硬切，改用 CSS line-clamp
+    var titleH = '<div class="blog-title">' + p.title + '<span style="font-size:11px;color:#888;font-weight:normal;margin-left:8px;">' + (p.date||'') + '</span></div>';
     var dT = p.desc || '';
-    var cp = '<div style="font-size:12px;color:var(--primary-blue);font-weight:900;margin-top:6px;">點擊查看完整內容</div>';
+    var descH = '<div class="blog-desc">' + dT + '</div>';
+    var cpH = '<div style="font-size:12px;color:var(--primary-blue);font-weight:900;margin-top:4px;">點擊查看完整內容</div>';
 
-    var btns = window.isAdminMode ? '<div style="margin-top:10px;display:flex;gap:6px;align-items:center;"><button onclick="event.stopPropagation();window.openPostModal('+p.oriIdx+')" style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;cursor:pointer;">編輯</button> <button onclick="event.stopPropagation();window.adminDeletePost('+p.oriIdx+')" style="background:red;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;cursor:pointer;">刪除</button><div class="admin-sort-btn-group" style="position:relative;top:0;right:0;bottom:auto;flex-direction:row;margin-left:auto;"><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',-1)">↑</button><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',1)">↓</button></div></div>' : '';
+    var btns = window.isAdminMode ? '<div style="margin-top:12px;display:flex;gap:6px;"><button onclick="event.stopPropagation();window.openPostModal('+p.oriIdx+')" style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;cursor:pointer;">編輯</button> <button onclick="event.stopPropagation();window.adminDeletePost('+p.oriIdx+')" style="background:red;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;cursor:pointer;">刪除</button></div><div class="admin-sort-btn-group"><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',-1)">↑</button><button class="admin-sort-btn" onclick="event.stopPropagation();window.movePost('+p.oriIdx+',1)">↓</button></div>' : '';
     
-    // 🚀 強迫症對齊：blog-card stretch 對齊，無多餘 padding-right
-    h += '<div class="blog-card" onclick="window.viewPostDetail('+p.oriIdx+')"><div class="blog-content-part" style="padding-right:0;"><div>'+tgH+'</div><div style="font-size:11px;color:#888;">'+(p.date||'')+'</div><div class="blog-title">'+p.title+'</div><div class="blog-desc">'+dT+'</div>'+cp+btns+'</div>'+(p.img?'<img src="'+p.img+'" class="blog-thumb">':'')+'</div>';
+    h += '<div class="blog-card" onclick="window.viewPostDetail('+p.oriIdx+')"><div class="blog-content-part"><div>'+tgH+'</div>'+titleH+descH+cpH+btns+'</div>'+(p.img?'<img src="'+p.img+'" class="blog-thumb">':'')+'</div>';
   }); c.innerHTML = h;
 };
 
