@@ -140,6 +140,7 @@ main{flex:1;width:100%}
 .blog-desc{font-size:13.5px;color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px;}
 .blog-thumb{width:110px;object-fit:cover;flex-shrink:0;background:#eee;border-radius:10px;align-self:stretch;}
 .blog-detail-img{width:100%;height:auto;max-height:550px;object-fit:contain;border-radius:12px;margin-top:14px;background:#f8fafc;display:block;margin-left:auto;margin-right:auto;cursor:zoom-in}
+
 .admin-sort-btn-group{position:absolute;bottom:20px;right:20px;display:flex;gap:4px;z-index:10;align-items:center}
 .admin-sort-btn{background:#e2e8f0;color:#475569;border:none;width:24px;height:24px;border-radius:4px;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .admin-sort-btn:hover{background:#cbd5e1;color:#0f172a}
@@ -569,7 +570,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
   <div class="form-group"><label>地區分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-region-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="全站公告">全站公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="泰國相關">泰國相關</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="韓國相關">韓國相關</label></div></div>
   <div class="form-group"><label>標籤 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-tag-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="公告">公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="新團通知">新團通知</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="品牌推介">品牌推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="商品推介">商品推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="現場連線">現場連線</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="其他分享">其他分享</label></div></div><div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required></textarea></div><div class="form-group"><label>外部連結</label><input type="url" class="form-input" id="adm-post-link"></div><div class="form-group"><label>圖片網址</label><input type="url" class="form-input" id="adm-post-file"></div><button type="submit" class="checkout-btn">發布</button></form></div></div>
 
-  <!-- 🚀 上架商品彈窗 (包含售出數量唯讀欄位) -->
+  <!-- 🚀 上架商品彈窗 (解鎖售出數量，加入霸王權限) -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title" id="product-modal-title">上架全新商品</div><button class="drawer-close" onclick="closeProductModal()">✕</button></div>
@@ -647,7 +648,6 @@ window.fetchCMSFromCloud = function() {
       if (data.about) { var descEl = document.getElementById('about-us-desc-text'); if (descEl) descEl.innerHTML = data.about.replace(/\n/g, '<br>'); localStorage.setItem('dottodot_about_text', data.about); }
       window.renderProducts(); window.renderNotices(); window.renderQas(); window.renderPosts();
       
-      // 🚀 即時庫存監聽
       if (window.isCheckoutModalOpen) { 
         var removed = window.validateCartStockAndStatus(true); 
         if (removed) {
@@ -689,7 +689,6 @@ window.pushOrdersToSheet = function() {
   });
 };
 
-// 🚀 終極差異比對防護網：試算表刪單或標註已刪單，皆自動釋放庫存
 window.pullOrdersFromSheet = function() {
   var btn = document.getElementById('sync-sheet-btn'); if(!btn) return;
   var ori = btn.textContent; btn.textContent = '⏳ 拉取資料中...'; btn.disabled = true;
@@ -701,7 +700,7 @@ window.pullOrdersFromSheet = function() {
           var currentOrders = snaps[0].val() || {};
           var currentProducts = snaps[1].val() || [];
           var newOrders = {}; var incomingIds = {};
-          var prodChanged = false; // 追蹤庫存是否有變動
+          var prodChanged = false;
 
           data.orders.forEach(function(o){
             if(o.orderId) {
@@ -714,7 +713,6 @@ window.pullOrdersFromSheet = function() {
               if(o.items) { o.items.forEach(function(it) { Object.keys(it).forEach(function(k) { if(it[k] === undefined) it[k] = ""; }); }); }
               newOrders[o.orderId] = o;
 
-              // 💡 狀況 1：試算表將狀態改為「已刪單」，退回庫存
               if (oldOrd && oldOrd.payStatus !== '已刪單' && o.payStatus === '已刪單') {
                  if (o.items) {
                     o.items.forEach(function(buyIt) {
@@ -735,7 +733,6 @@ window.pullOrdersFromSheet = function() {
             }
           });
           
-          // 💡 狀況 2：試算表直接刪除整列，退回庫存
           Object.keys(currentOrders).forEach(function(oldId) {
              if (!incomingIds[oldId]) {
                 var oldOrd = currentOrders[oldId];
@@ -827,7 +824,6 @@ window.renderProducts = function() {
     var curImg = s.img || s.items[0].img;
     var admBtns = window.isAdminMode ? '<div style="margin-top:8px; display:flex; gap:4px; flex-wrap:wrap;"><button style="background:#0284c7;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.openProductModal(\'' + s.id + '\')">✏️ 編輯</button><button style="background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductActive(\'' + s.id + '\')">' + (isActive ? '下架' : '上架') + '</button><button style="background:#b91c1c;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminDeleteProductSeries(\'' + s.id + '\')">🗑 刪除</button><button style="background:#334155;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.adminToggleProductClose(\'' + s.id + '\')">' + (s.isClosed ? '🔓 解除結單' : '🔒 手動結單') + '</button></div>' : '';
     
-    // 🚀 加上 onclick，恢復加入購物車功能
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已下架</button>' : '<button class="add-cart-btn" id="add-btn-'+s.id+'" onclick="window.addToCart(\''+s.id+'\')" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">請先選規格</button>');
 
     var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div><label class="spec-label">數量：</label><select class="spec-select qty-select" id="qty-select-' + s.id + '" disabled ' + (!isActive ? 'disabled' : '') + '><option value="-">-</option></select></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
@@ -1251,7 +1247,6 @@ window.acknowledgeOrderNew = function(id) {
   localStorage.setItem('dottodot_ack_orders', JSON.stringify(ack)); window.renderAdminOrdersUI(); window.checkNewOrdersNotification(window.adminOrdersList);
 };
 
-// 🚀 賣家更改對帳狀態 (若改為「已刪單」，詢問是否釋放庫存，並使用雙重標籤比對)
 window.adminChangePayStatus = function(orderId, selectEl) {
   var newStatus = selectEl.value;
   var ord = window.adminOrdersList.find(function(f){ return f.orderId === orderId; });
@@ -1263,7 +1258,7 @@ window.adminChangePayStatus = function(orderId, selectEl) {
             var pData = snap.val();
             if (pData) {
                 ord.items.forEach(function(buyIt) {
-                    var matchName = buyIt.itemName || buyIt.name; // 🛡️ 雙重比對防護
+                    var matchName = buyIt.itemName || buyIt.name; 
                     pData.forEach(function(prod) {
                         if (prod.seriesName === buyIt.series && prod.items) {
                             prod.items.forEach(function(subItem) {
@@ -1377,7 +1372,8 @@ window.openProductModal = function(id) {
     var sh = '';
     s.items.forEach(function (it) {
       var so = it.sold !== undefined ? parseInt(it.sold, 10) : 0;
-      sh += '<div class="sub-item-block" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;"><button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="' + (it.stock !== undefined ? it.stock : 99) + '"></div><div style="flex:1;"><label style="font-size:11.5px; color:var(--text-muted);">已售出 (系統計算)</label><input type="number" class="form-input sub-sold" readonly value="' + so + '" style="background:#e2e8f0;color:#64748b;cursor:not-allowed;"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + (it.colors ? it.colors.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + (it.sizes ? it.sizes.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div></div>';
+      // 🚀 解鎖「已售出」欄位，給予手動校正權限
+      sh += '<div class="sub-item-block" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;"><button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="' + (it.stock !== undefined ? it.stock : 99) + '"></div><div style="flex:1;"><label style="font-size:11.5px; font-weight:800; color:#d97706;">已售出 (可手動校正)</label><input type="number" class="form-input sub-sold" min="0" value="' + so + '"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + (it.colors ? it.colors.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + (it.sizes ? it.sizes.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div></div>';
     });
     document.getElementById('sub-items-container').innerHTML = sh;
   } else {
@@ -1385,14 +1381,14 @@ window.openProductModal = function(id) {
     document.getElementById('adm-series-is-preorder').checked = false; document.getElementById('adm-series-region').value = '泰國商品';
     document.getElementById('adm-series-eta').value = ''; document.getElementById('adm-series-close-time').value = '';
     document.getElementById('adm-product-edit-id').value = '';
-    document.getElementById('sub-items-container').innerHTML = '<div class="sub-item-block" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;"><button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99"></div><div style="flex:1;"><label style="font-size:11.5px; color:var(--text-muted);">已售出 (系統計算)</label><input type="number" class="form-input sub-sold" readonly value="0" style="background:#e2e8f0;color:#64748b;cursor:not-allowed;"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div></div>';
+    document.getElementById('sub-items-container').innerHTML = '<div class="sub-item-block" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;"><button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99"></div><div style="flex:1;"><label style="font-size:11.5px; font-weight:800; color:#d97706;">已售出 (可手動校正)</label><input type="number" class="form-input sub-sold" min="0" value="0"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div></div>';
   }
 };
 window.closeProductModal = function() { document.getElementById('product-modal').classList.remove('active'); };
 window.addSubItemBlock = function() {
   var d = document.createElement('div'); d.className = 'sub-item-block';
   d.style.cssText = 'background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;';
-  d.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99"></div><div style="flex:1;"><label style="font-size:11.5px; color:var(--text-muted);">已售出 (系統計算)</label><input type="number" class="form-input sub-sold" readonly value="0" style="background:#e2e8f0;color:#64748b;cursor:not-allowed;"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
+  d.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required placeholder="例如：娃娃"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required placeholder="1280"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="99"></div><div style="flex:1;"><label style="font-size:11.5px; font-weight:800; color:#d97706;">已售出 (可手動校正)</label><input type="number" class="form-input sub-sold" min="0" value="0"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required placeholder="紅, 藍"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required placeholder="F"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" placeholder="https://..."></div>';
   document.getElementById('sub-items-container').appendChild(d);
 };
 window.handleAdminSaveProduct = function(e) {
