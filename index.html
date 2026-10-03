@@ -93,7 +93,7 @@ main{flex:1;width:100%}
 .product-series{font-size:clamp(15px,4vw,16.5px);font-weight:900;margin-bottom:4px;color:#111;word-break:break-all}
 .product-eta{font-size:11.5px;color:#7b46ff;font-weight:700;background:#f2edff;padding:6px 10px;border-radius:6px;margin-bottom:12px;white-space:pre-wrap;line-height:1.5;display:inline-block;max-width:100%;align-self:flex-start;word-break:break-word;}
 
-/* 🚀 選項網格排版 */
+/* 🚀 選項網格排版 (強迫症對齊，併成一列，加上 nowrap) */
 .form-row-spec{display:grid;grid-template-columns:1fr 1fr 65px;gap:8px;margin-bottom:8px;align-items:end;}
 .spec-field{min-width:0;}
 .spec-label{font-size:11px;font-weight:800;color:var(--text-muted);margin-bottom:3px;display:block;white-space:nowrap;}
@@ -106,17 +106,27 @@ main{flex:1;width:100%}
 .add-cart-btn{background:var(--primary-blue);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;transition:background 0.2s}
 .add-cart-btn:disabled{background:#cbd5e1;cursor:not-allowed;color:#fff;}
 
-/* 🚀 手機版雙排顯示 */
+/* 🚀 智慧標籤隱藏 */
+.lbl-mb { display: none; }
+
+/* 🚀 手機版商品雙排顯示與完美三等份排版 */
 @media (max-width: 600px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .product-card { border-radius: 12px; }
   .product-content { padding: 10px; }
   .product-series { font-size: 13px; line-height: 1.4; margin-bottom: 6px; }
   .product-eta { font-size: 10px; padding: 4px 6px; margin-bottom: 8px; }
+  
+  /* 手機版文字替換與三等份網格 */
+  .lbl-dt { display: none; }
+  .lbl-mb { display: inline; }
   .spec-label { font-size: 10.5px; white-space: nowrap; }
-  .form-row-spec { grid-template-columns: 1fr 1fr 58px; gap: 6px; margin-bottom: 6px; }
+  .form-row-spec { grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+  
   .spec-select { font-size: 11.5px; padding: 6px 4px; }
   .qty-select { padding: 6px 0; }
+  
+  /* 價格與按鈕保持上下行，避免過度擁擠 */
   .product-foot { flex-direction: column; gap: 8px; align-items: stretch; text-align: center; border-top:none; padding-top:4px; margin-top:6px;}
   .product-price { font-size: 15px; }
   .add-cart-btn { padding: 8px; width: 100%; }
@@ -140,7 +150,6 @@ main{flex:1;width:100%}
 .blog-desc{font-size:13.5px;color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px;}
 .blog-thumb{width:110px;object-fit:cover;flex-shrink:0;background:#eee;border-radius:10px;align-self:stretch;}
 .blog-detail-img{width:100%;height:auto;max-height:550px;object-fit:contain;border-radius:12px;margin-top:14px;background:#f8fafc;display:block;margin-left:auto;margin-right:auto;cursor:zoom-in}
-
 .admin-sort-btn-group{position:absolute;bottom:20px;right:20px;display:flex;gap:4px;z-index:10;align-items:center}
 .admin-sort-btn{background:#e2e8f0;color:#475569;border:none;width:24px;height:24px;border-radius:4px;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .admin-sort-btn:hover{background:#cbd5e1;color:#0f172a}
@@ -401,7 +410,6 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
       </div>
     </section>
 
-    <!-- 賣家專屬管理後台 -->
     <section id="page-admin" class="page-section">
       <div class="container">
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -570,7 +578,7 @@ footer{background:var(--accent-black);color:#888;padding:15px 20px 25px;font-siz
   <div class="form-group"><label>地區分類 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-region-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="全站公告">全站公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="泰國相關">泰國相關</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-region-chk" value="韓國相關">韓國相關</label></div></div>
   <div class="form-group"><label>標籤 (可複選) *</label><div style="display:flex;flex-wrap:wrap;gap:10px;padding:10px;background:#f8fafc;border:1px solid var(--border-color);border-radius:8px;" id="adm-post-tag-group"><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="公告">公告</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="新團通知">新團通知</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="品牌推介">品牌推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="商品推介">商品推介</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="現場連線">現場連線</label><label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"><input type="checkbox" name="post-tag-chk" value="其他分享">其他分享</label></div></div><div class="form-group"><label>內文 *</label><textarea class="form-textarea" id="adm-post-desc" required></textarea></div><div class="form-group"><label>外部連結</label><input type="url" class="form-input" id="adm-post-link"></div><div class="form-group"><label>圖片網址</label><input type="url" class="form-input" id="adm-post-file"></div><button type="submit" class="checkout-btn">發布</button></form></div></div>
 
-  <!-- 🚀 上架商品彈窗 (解鎖售出數量，加入霸王權限) -->
+  <!-- 上架商品彈窗 -->
   <div class="modal-overlay" id="product-modal">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title" id="product-modal-title">上架全新商品</div><button class="drawer-close" onclick="closeProductModal()">✕</button></div>
@@ -814,6 +822,7 @@ window.renderProducts = function() {
       var sold = it.sold !== undefined ? parseInt(it.sold, 10) : 0;
       var avail = stk - sold;
       
+      // 無庫存允許點選，僅反灰文字並備註
       if (avail <= 0) {
         itemOpts += '<option value="'+j+'" style="color:#94a3b8;">' + it.name + ' (無庫存)</option>';
       } else {
@@ -826,7 +835,7 @@ window.renderProducts = function() {
     
     var cartBtn = isActuallyClosed ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已結單</button>' : (!isActive ? '<button class="add-cart-btn" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">已下架</button>' : '<button class="add-cart-btn" id="add-btn-'+s.id+'" onclick="window.addToCart(\''+s.id+'\')" disabled style="background:#cbd5e1;cursor:not-allowed;color:#fff;">請先選規格</button>');
 
-    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label">顏色/款式：</label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">尺寸/規格：</label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div><label class="spec-label">數量：</label><select class="spec-select qty-select" id="qty-select-' + s.id + '" disabled ' + (!isActive ? 'disabled' : '') + '><option value="-">-</option></select></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
+    var html = '<div class="product-card ' + clsClass + (!isActive ? ' inactive-product' : '') + '"><div class="product-img-wrap">' + badgeHtml + clsBadgeTag + '<img id="img-display-' + s.id + '" src="' + curImg + '" onclick="window.openLightbox(this.src)"></div><div class="product-content"><div class="product-series">' + s.seriesName + '</div>' + (s.eta ? '<div class="product-eta">' + s.eta.replace(/\n/g, '<br>') + '</div>' : '') + '<div style="margin-bottom: 8px;"><label class="spec-label">選取品項：</label><select class="spec-select" id="item-select-' + s.id + '" onchange="window.handleItemChange(\'' + s.id + '\')" ' + (!isActive ? 'disabled' : '') + '>' + itemOpts + '</select></div><div class="form-row-spec"><div class="spec-field"><label class="spec-label"><span class="lbl-dt">顏色/款式：</span><span class="lbl-mb">顏色：</span></label><select class="spec-select" id="color-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label"><span class="lbl-dt">尺寸/規格：</span><span class="lbl-mb">尺寸：</span></label><select class="spec-select" id="size-select-' + s.id + '" ' + (!isActive ? 'disabled' : '') + '><option value="">-</option></select></div><div class="spec-field"><label class="spec-label">數量：</label><select class="spec-select qty-select" id="qty-select-' + s.id + '" disabled ' + (!isActive ? 'disabled' : '') + '><option value="-">-</option></select></div></div><div class="product-foot"><div class="product-price" id="price-display-' + s.id + '">NT$ -</div>' + cartBtn + '</div>' + admBtns + '</div></div>';
 
     if (!isActive) { if (window.isAdminMode) inaHtml += html; } else if (isActuallyClosed) { clsHtml += html; } else { actHtml += html; }
   });
@@ -1220,6 +1229,7 @@ window.handleFinalOrderSubmit = function(e) {
   window.cart = uncItems; window.saveCartToLocalStorage(); window.updateCartDisplay(); window.closeCheckoutModal2();
   document.getElementById('order-form-1').reset(); document.getElementById('order-form-2').reset(); document.getElementById('order-success-modal').classList.add('active');
 };
+
 window.copyAndOpenCommunity = function() { var t = document.getElementById('order-text-content'); if (t) { t.select(); try { document.execCommand('copy'); } catch(e){} } alert('📋 複製成功！'); };
 
 window.loadAdminOrders = function() {
@@ -1372,7 +1382,6 @@ window.openProductModal = function(id) {
     var sh = '';
     s.items.forEach(function (it) {
       var so = it.sold !== undefined ? parseInt(it.sold, 10) : 0;
-      // 🚀 解鎖「已售出」欄位，給予手動校正權限
       sh += '<div class="sub-item-block" style="background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;position:relative;"><button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;width:22px;height:22px;border-radius:50%;font-size:11px;cursor:pointer;">✕</button><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">品項名稱 *</label><input type="text" class="form-input sub-name" required value="' + it.name + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">販售單價 (NT$) *</label><input type="number" class="form-input sub-price" required value="' + it.price + '"></div><div class="form-group" style="margin-bottom:6px; display:flex; gap:10px;"><div style="flex:1;"><label style="font-size:11.5px;">總庫存 (Stock) *</label><input type="number" class="form-input sub-stock" required min="0" value="' + (it.stock !== undefined ? it.stock : 99) + '"></div><div style="flex:1;"><label style="font-size:11.5px; font-weight:800; color:#d97706;">已售出 (可手動校正)</label><input type="number" class="form-input sub-sold" min="0" value="' + so + '"></div></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選顏色/款式 (逗號) *</label><input type="text" class="form-input sub-colors" required value="' + (it.colors ? it.colors.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:6px;"><label style="font-size:11.5px;">可選尺寸 (逗號) *</label><input type="text" class="form-input sub-sizes" required value="' + (it.sizes ? it.sizes.join(', ') : '') + '"></div><div class="form-group" style="margin-bottom:0;"><label style="font-size:11.5px;">此品項專屬圖片網址 (URL)</label><input type="url" class="form-input sub-file" value="' + (it.img || '') + '"></div></div>';
     });
     document.getElementById('sub-items-container').innerHTML = sh;
