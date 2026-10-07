@@ -1162,7 +1162,7 @@ window.renderMemberOrders = function(ordersList, historyUnreads) {
 window.copyOrderHistory = function(orderId) {
   var allOrders = JSON.parse(localStorage.getItem('dottodot_orders_' + window.currentUser.userId) || '[]');
   var o = allOrders.find(function(x) { return x.orderId === orderId; }); if (!o) return;
-  var txt = '【DOT to DOT 委託單】\n編號：' + o.orderId + '\n買家：' + o.buyerName + '\n配送：' + o.buyerStore + '\n匯款：' + o.remitDate + ' ' + o.remitTime + ' (末五碼:' + o.remitAccount + ')\n總計：NT$ ' + o.totalAmount + '\n明細：\n';
+  var txt = '【DOT to DOT 委託單】\n編號：' + o.orderId + '\n買家：' + o.buyerName + '\n社群聯絡方式：' + o.buyerStore + '\n匯款：' + o.remitDate + ' ' + o.remitTime + ' (末五碼:' + o.remitAccount + ')\n總計：NT$ ' + o.totalAmount + '\n明細：\n';
   o.items.forEach(function(it, idx) { txt += (idx+1) + '. ' + it.name + ' (' + it.spec + ') x' + it.quantity + '\n'; });
   txt += '已下單匯款完畢，請協助確認對帳，謝謝！';
   var t = document.createElement("textarea"); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t); alert('📋 複製成功！');
@@ -1249,7 +1249,7 @@ window.handleFinalOrderSubmit = function(e) {
   window.db.ref('orders/' + fId).set(payload).then(function() { if (window.currentGasWebhook) fetch(window.currentGasWebhook, { method: 'POST', body: JSON.stringify(payload) }).catch(function(err){}); });
   
   document.getElementById('success-order-id').textContent = fId;
-  var txt = '【DOT to DOT 委託單】\n編號：' + fId + '\n買家：' + window.pendingOrderData.buyerName + '\n配送方式：' + window.pendingOrderData.buyershipMethod + '\社群聯絡方式：' + window.pendingOrderData.buyerStore + '\n匯款：' + rDate + ' ' + rTime + ' (末五碼:' + rAcc + ')\n總計：NT$ ' + window.pendingOrderData.totalAmount + '\n明細：\n';
+  var txt = '【DOT to DOT 委託單】\n編號：' + fId + '\n買家：' + window.pendingOrderData.buyerName + '\n配送方式：' + shipText + '\社群聯絡方式：' + window.pendingOrderData.buyerStore + '\n匯款：' + rDate + ' ' + rTime + ' (末五碼:' + rAcc + ')\n總計：NT$ ' + window.pendingOrderData.totalAmount + '\n明細：\n';
   cItems.forEach(function(it, idx) { txt += (idx+1) + '. ' + it.name + ' (' + it.spec + ') x' + it.quantity + '\n'; });
   document.getElementById('order-text-content').value = txt; document.getElementById('line-direct-link').href = 'https://line.me/R/oaMessage/%40154bkwlh/?' + encodeURIComponent(txt); document.getElementById('success-order-total').textContent = 'NT$ ' + Number(window.pendingOrderData.totalAmount).toLocaleString();
   window.cart = uncItems; window.saveCartToLocalStorage(); window.updateCartDisplay(); window.closeCheckoutModal2();
