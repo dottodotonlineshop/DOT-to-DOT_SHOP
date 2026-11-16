@@ -600,7 +600,7 @@ window.formatDateString = function(dateStr) {
   try { var d = new Date(dateStr); if(isNaN(d.getTime())) return dateStr; var pad = function(n){return n<10?'0'+n:n;}; return d.getFullYear() + '/' + pad(d.getMonth()+1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); } catch(e) { return dateStr; }
 };
 
-window.ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"]; window.ADMIN_PASSWORD = "admin888";
+window.ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com","siyinglu0502@gmail.com"]; //window.ADMIN_PASSWORD = "admin888";
 const firebaseConfig = { apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU", authDomain: "dot-to-dotshop.firebaseapp.com", databaseURL: "https://dot-to-dotshop-default-rtdb.firebaseio.com", projectId: "dot-to-dotshop", storageBucket: "dot-to-dotshop.firebasestorage.app", messagingSenderId: "868804558476", appId: "1:868804558476:web:c8c26a49f1d1d6354105a9" };
 firebase.initializeApp(firebaseConfig); window.db = firebase.database();
 
@@ -1561,7 +1561,7 @@ window.handleAdminSavePost = function(e) {
   if(idx>=0){p[idx].title=t;p[idx].desc=d;p[idx].tags=st;p[idx].regions=sr;p[idx].link=l;p[idx].img=img;}else{p.unshift({title:t,desc:d,tags:st,regions:sr,link:l,img:img,date:new Date().toLocaleDateString()});}
   localStorage.setItem('dottodot_custom_posts',JSON.stringify(p)); window.syncCMSToCloud(); window.renderPosts(); window.closePostModal();
 };
-
+/*
 window.handleUserLoggedIn = function(user, isFirstTime) {
   window.currentUser = user;
   var avatarSlot = document.getElementById('user-avatar-slot');
@@ -1573,6 +1573,50 @@ window.handleUserLoggedIn = function(user, isFirstTime) {
   if (document.getElementById('user-profile-pic') && user.pictureUrl) document.getElementById('user-profile-pic').src = user.pictureUrl;
   var isManager = false; for (var i = 0; i < window.ADMIN_EMAILS.length; i++) { if (window.ADMIN_EMAILS[i].toLowerCase() === (user.contactValue || "").trim().toLowerCase()) { isManager = true; break; } }
   if (document.getElementById('admin-mode-switch-box')) document.getElementById('admin-mode-switch-box').style.display = isManager ? 'block' : 'none';
+  window.syncOrdersFromSheet();
+};*/
+  window.handleUserLoggedIn = function(user, isFirstTime) {
+  window.currentUser = user;
+  var avatarSlot = document.getElementById('user-avatar-slot');
+  if (avatarSlot) {
+    if (user.pictureUrl) {
+      avatarSlot.innerHTML = '<img src="' + user.pictureUrl + '"><div class="admin-dot active" id="admin-red-dot"></div>';
+    } else {
+      avatarSlot.innerHTML = user.displayName.charAt(0) + '<div class="admin-dot active" id="admin-red-dot"></div>';
+    }
+  }
+  
+  if (document.getElementById('auth-unlogged')) document.getElementById('auth-unlogged').style.display = 'none';
+  if (document.getElementById('auth-logged')) document.getElementById('auth-logged').style.display = 'block';
+  if (document.getElementById('user-display-name')) document.getElementById('user-display-name').textContent = user.displayName + ' (' + user.provider + ')';
+  if (document.getElementById('user-display-id')) document.getElementById('user-display-id').textContent = user.contactValue || (user.provider === 'Google' ? 'Google 帳號' : 'LINE ID: ' + user.userId);
+  if (document.getElementById('user-profile-pic') && user.pictureUrl) document.getElementById('user-profile-pic').src = user.pictureUrl;
+
+  var isManager = false;
+  var userEmail = (user.contactValue || "").trim().toLowerCase();
+  for (var i = 0; i < window.ADMIN_EMAILS.length; i++) {
+    if (window.ADMIN_EMAILS[i].toLowerCase() === userEmail) {
+      isManager = true;
+      break;
+    }
+  }
+
+  if (isManager) {
+    window.isAdminMode = true;
+    if (document.getElementById('admin-shortcut-btn')) {
+      document.getElementById('admin-shortcut-btn').classList.add('active');
+      document.getElementById('admin-shortcut-btn').style.display = 'inline-block';
+    }
+    
+    var arr = ['admin-add-notice-btn', 'admin-add-qa-btn', 'admin-add-post-btn', 'admin-add-product-btn'];
+    arr.forEach(function(id) { 
+      if (document.getElementById(id)) document.getElementById(id).style.display = 'inline-block'; 
+    });
+  }
+  if (document.getElementById('admin-mode-switch-box')) {
+    document.getElementById('admin-mode-switch-box').style.display = 'none';
+  }
+
   window.syncOrdersFromSheet();
 };
 
