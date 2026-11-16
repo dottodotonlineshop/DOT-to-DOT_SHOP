@@ -600,7 +600,7 @@ window.formatDateString = function(dateStr) {
   try { var d = new Date(dateStr); if(isNaN(d.getTime())) return dateStr; var pad = function(n){return n<10?'0'+n:n;}; return d.getFullYear() + '/' + pad(d.getMonth()+1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); } catch(e) { return dateStr; }
 };
 
-window.ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com","siyinglu0502@gmail.com"]; //window.ADMIN_PASSWORD = "admin888";
+window.ADMIN_EMAILS = ["dottodot.onlineshop@gmail.com"]; 
 const firebaseConfig = { apiKey: "AIzaSyCfSMd7HOSCVKYnIgatlUou9ybtaBvb3fU", authDomain: "dot-to-dotshop.firebaseapp.com", databaseURL: "https://dot-to-dotshop-default-rtdb.firebaseio.com", projectId: "dot-to-dotshop", storageBucket: "dot-to-dotshop.firebasestorage.app", messagingSenderId: "868804558476", appId: "1:868804558476:web:c8c26a49f1d1d6354105a9" };
 firebase.initializeApp(firebaseConfig); window.db = firebase.database();
 
